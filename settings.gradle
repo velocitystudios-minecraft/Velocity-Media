@@ -1,0 +1,35 @@
+pluginManagement {
+	repositories {
+		maven {
+			url = "https://repo.u-team.info"
+		}
+		maven {
+			url = "https://maven.minecraftforge.net"
+		}
+		maven {
+			url = "https://maven.parchmentmc.org"
+		}
+		mavenCentral()
+		gradlePluginPortal()
+	}
+	plugins {
+		id "org.gradle.toolchains.foojay-resolver-convention" version "0.8.0"
+				
+		id "net.minecraftforge.gradle" version "6.0.+"
+		id "org.parchmentmc.librarian.forgegradle" version "1.+"
+		id "org.spongepowered.mixin" version "0.7.+"
+		
+		id "info.u_team.gradle_files" version "4.0.1"
+		
+		id "me.modmuss50.mod-publish-plugin" version "0.7.3"
+	}
+}
+
+plugins {
+	id "org.gradle.toolchains.foojay-resolver-convention"
+	id "info.u_team.gradle_files"
+}
+
+gradlefiles.setupProject("Music-Player")
+
+include("musicplayer-lavaplayer-api", "musicplayer-lavaplayer")

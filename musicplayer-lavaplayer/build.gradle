@@ -1,0 +1,75 @@
+plugins {
+	id "java"
+}
+
+sourceSets {
+	main {
+		java
+		resources
+	}
+	test_player {
+		java
+		resources
+	}
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(8)
+	}
+}
+
+configurations {
+	musicplayer
+	musicplayer.exclude group: "commons-logging", module: "commons-logging"
+	implementation.extendsFrom(musicplayer)
+}
+
+evaluationDependsOn(":musicplayer-lavaplayer-api")
+
+tasks.named("jar").configure {
+	archiveExtension.set(archiveExtension.get() + ".packed")
+	
+	exclude("LICENSE-DEPENDENCIES")
+}
+
+tasks.register("deleteOldDependencies", Delete) {
+	delete layout.buildDirectory.dir("dependencies").map { it.asFileTree }
+}
+
+tasks.register("copyNewDependencies", Copy) {
+	dependsOn tasks.named("deleteOldDependencies")
+	
+	from configurations.musicplayer
+	into layout.buildDirectory.dir("dependencies")
+	rename { fileName ->
+		fileName += ".packed"
+	}
+}
+
+tasks.named("assemble").configure {
+	dependsOn tasks.named("copyNewDependencies")
+}
+
+repositories {
+	maven {
+		url "https://repo.u-team.info"
+	}
+	maven {
+		url "https://maven.arbjerg.dev/releases"
+	}
+	mavenCentral()
+	maven {
+		url "https://jitpack.io"
+	}
+}
+
+dependencies {
+	musicplayer "net.hycrafthd.lavaplayer:lavaplayer:2.2.1-j8"
+	musicplayer "dev.lavalink.youtube:v2:1.7.2"
+	
+	musicplayer "org.slf4j:jcl-over-slf4j:2.0.16"
+	musicplayer "org.slf4j:slf4j-simple:2.0.16"
+	
+	implementation project(":musicplayer-lavaplayer-api")
+}
