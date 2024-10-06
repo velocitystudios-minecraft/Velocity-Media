@@ -50,7 +50,7 @@ public class LocalPlayCommand extends CommandBase {
                     playlist.setPlayable(pair.getLeft(), pair.getRight());
                     manager.setTrackQueue(playlist);
                     manager.start();
-                    MusicPlayerManager.getPlayer().setVolume(Integer.parseInt(args[1]));
+                    MusicPlayerManager.getPlayer().setVolume(Integer.parseInt(args[0]));
                 };
 
                 if (!playlist.isLoaded()) {

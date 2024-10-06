@@ -3,6 +3,7 @@ package info.u_team.music_player;
 import info.u_team.music_player.command.LocalPauseCommand;
 import info.u_team.music_player.command.LocalPlayCommand;
 import info.u_team.music_player.command.LocalStopCommand;
+import info.u_team.music_player.command.LocalVolumeCommand;
 import info.u_team.music_player.proxy.CommonProxy;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -41,5 +42,6 @@ public class MusicPlayerMod {
 		event.registerServerCommand(new LocalPlayCommand());
 		event.registerServerCommand(new LocalStopCommand());
 		event.registerServerCommand(new LocalPauseCommand());
+		event.registerServerCommand(new LocalVolumeCommand());
 	}
 }
