@@ -11,7 +11,6 @@ import info.u_team.music_player.lavaplayer.api.audio.*;
 import info.u_team.music_player.lavaplayer.api.queue.ITrackQueue;
 import info.u_team.music_player.lavaplayer.api.search.ITrackSearch;
 import info.u_team.music_player.musicplayer.MusicPlayerManager;
-import info.u_team.music_player.musicplayer.settings.Settings;
 import info.u_team.music_player.util.WrappedObject;
 
 /**
@@ -270,18 +269,13 @@ public class Playlist implements ITrackQueue {
 	
 	@Override
 	public boolean calculateNext() {
-		final Settings settings = MusicPlayerManager.getSettingsManager().getSettings();
 		if (nextLoadedTrack == null || next == null) {
 			return false;
 		} else if (first) {
 			first = false;
 			return true;
-		} else if (settings.isSingleRepeat()) {
-			return true;
-		} else if (settings.isShuffle()) {
-			return selectRandomTrack();
 		} else {
-			return findNextSong(settings, Skip.FORWARD);
+			return findNextSong(Skip.FORWARD);
 		}
 	}
 	
@@ -297,8 +291,7 @@ public class Playlist implements ITrackQueue {
 	 * @return If skip was executed
 	 */
 	public boolean skip(Skip skip) {
-		final Settings settings = MusicPlayerManager.getSettingsManager().getSettings();
-		return first = settings.isShuffle() ? selectRandomTrack() : findNextSong(settings, skip);
+		return first = findNextSong(skip);
 	}
 	
 	/**
@@ -429,20 +422,17 @@ public class Playlist implements ITrackQueue {
 	
 	/**
 	 * Find a next song and set it to the {@link #nextLoadedTrack} and {@link #next} track variable
-	 * 
-	 * @param settings The current settings
+	 *
 	 * @param skip In which direction we want to find the song
 	 * @return Return true if a valid next song could be found. Otherwise return false
 	 */
-	private boolean findNextSong(Settings settings, Skip skip) {
+	private boolean findNextSong(Skip skip) {
 		final Pair<LoadedTracks, IAudioTrack> pair = getOtherTrack(nextLoadedTrack, next, skip);
 		final LoadedTracks loadedTrack = pair.getLeft();
 		final IAudioTrack track = pair.getRight();
 		
 		if (loadedTrack == null || track == null) {
-			if (settings.isFinite()) {
-				return false;
-			} else if (loadedTracks.size() > 0) {
+			if (loadedTracks.size() > 0) {
 				final Pair<LoadedTracks, IAudioTrack> sidePair = skip == Skip.FORWARD ? getFirstTrack() : getLastTrack();
 				final LoadedTracks sideLoadedTrack = sidePair.getLeft();
 				final IAudioTrack sideTrack = sidePair.getRight();

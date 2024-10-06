@@ -1,4 +1,4 @@
-package info.u_team.music_player.command;
+package info.u_team.music_player.command.local;
 
 import info.u_team.music_player.lavaplayer.api.queue.ITrackManager;
 import info.u_team.music_player.musicplayer.MusicPlayerManager;

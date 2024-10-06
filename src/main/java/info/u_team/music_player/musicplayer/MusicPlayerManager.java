@@ -18,15 +18,13 @@ public class MusicPlayerManager {
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	
 	private static final PlaylistManager playlistManager = new PlaylistManager(gson);
-	private static final SettingsManager settingsManager = new SettingsManager(gson);
 	
 	public static void setup() {
 		generatePlayer();
 		Globalplayer.startAudioOutput();
 		playlistManager.loadFromFile();
-		settingsManager.loadFromFile();
 
-		Globalplayer.setVolume(settingsManager.getSettings().getVolume());
+		Globalplayer.setVolume(50);
 	}
 	
 	private static void generatePlayer() {
@@ -51,9 +49,5 @@ public class MusicPlayerManager {
 	
 	public static PlaylistManager getPlaylistManager() {
 		return playlistManager;
-	}
-	
-	public static SettingsManager getSettingsManager() {
-		return settingsManager;
 	}
 }

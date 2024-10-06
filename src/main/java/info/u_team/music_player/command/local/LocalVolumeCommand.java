@@ -1,4 +1,4 @@
-package info.u_team.music_player.command;
+package info.u_team.music_player.command.local;
 
 import info.u_team.music_player.lavaplayer.api.queue.ITrackManager;
 import info.u_team.music_player.musicplayer.MusicPlayerManager;
@@ -8,8 +8,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-
-import java.util.Objects;
 
 public class LocalVolumeCommand extends CommandBase {
 
