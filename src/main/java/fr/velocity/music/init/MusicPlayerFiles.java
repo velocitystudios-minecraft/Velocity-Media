@@ -1,0 +1,29 @@
+package fr.velocity.music.init;
+
+import java.nio.file.*;
+
+import org.apache.logging.log4j.*;
+
+import net.harawata.appdirs.AppDirsFactory;
+import net.minecraft.client.Minecraft;
+
+public class MusicPlayerFiles {
+	
+	private static final Logger logger = LogManager.getLogger();
+	
+	private static Path directory;
+	
+	public static void setup() {
+		directory = Paths.get(Minecraft.getMinecraft().gameDir.toString(), "config/musicplayer");
+		
+		try {
+			Files.createDirectories(directory);
+		} catch (Exception ex) {
+			logger.error("Could not create music player directories", ex);
+		}
+	}
+	
+	public static Path getDirectory() {
+		return directory;
+	}
+}

@@ -5,11 +5,12 @@ plugins {
 	id "me.modmuss50.mod-publish-plugin"
 	id "maven-publish"
 	id "com.github.johnrengelman.shadow" version "8.1.1"
+	id "idea"
 }
 
 gradlefiles.loaderSuffix = "forge"
 
-group = "info.u-team"
+group = "fr.velocity"
 base.archivesName = gradlefiles.archivesName()
 version = gradlefiles.version()
 
@@ -122,8 +123,8 @@ tasks.named("shadowJar").configure {
 		from project.layout.buildDirectory.dir("tinyfd")
 	}
 	
-	relocate "org.slf4j", "info.u_team.music_player.shade.org.slf4j"
-	relocate "net.harawata.appdirs", "info.u_team.music_player.shade.net.harawata.appdirs"
+	relocate "org.slf4j", "fr.velocity.music.shade.org.slf4j"
+	relocate "net.harawata.appdirs", "fr.velocity.music.shade.net.harawata.appdirs"
 	
 	mergeServiceFiles()
 	
@@ -204,6 +205,8 @@ dependencies {
 	tinyfd ("org.lwjgl:lwjgl-tinyfd:3.2.2:natives-windows") {
 		transitive=false
 	}
+
+	implementation fileTree(dir: "libs", includes: ["*jar"])
 }
 
 publishMods {
@@ -297,6 +300,8 @@ publishing {
 		}
 	}
 }
+
+
 
 def lavaplayerLibraries() {
 	final def buildDir = project(":musicplayer-lavaplayer").layout.buildDirectory
