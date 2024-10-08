@@ -1,5 +1,6 @@
 package fr.velocity.music.command.local;
 
+import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.queue.ITrackManager;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
@@ -11,6 +12,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.concurrent.TimeUnit;
 
 public class LocalPlayCommand extends CommandBase {
     @Override
@@ -45,7 +48,7 @@ public class LocalPlayCommand extends CommandBase {
                 final Runnable runnable = () -> {
                     final ITrackManager manager = MusicPlayerManager.getPlayer().getTrackManager();
                     playlist.add(track);
-
+                    System.out.println(track);
                     Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
                     playlist.setPlayable(pair.getLeft(), pair.getRight());
                     manager.setTrackQueue(playlist);

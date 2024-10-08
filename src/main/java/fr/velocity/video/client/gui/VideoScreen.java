@@ -2,10 +2,12 @@ package fr.velocity.video.client.gui;
 
 import fr.velocity.Main;
 import fr.velocity.video.util.MemoryTracker;
+import javafx.scene.input.KeyCode;
 import me.lib720.caprica.vlcj.player.base.State;
 import me.srrapero720.watermedia.api.image.ImageAPI;
 import me.srrapero720.watermedia.api.image.ImageRenderer;
 import me.srrapero720.watermedia.api.player.SyncVideoPlayer;
+import me.srrapero720.watermedia.core.tools.FileTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -22,6 +24,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.IOException;
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
@@ -44,6 +47,9 @@ public class VideoScreen extends GuiScreen {
     boolean paused = false;
     float volume;
     boolean controlBlocked;
+    int TimePosition;
+    boolean AlreadyTime = true;
+    float VideoSpeed = 1;
 
     // TOOLS
     private final SyncVideoPlayer player;
@@ -51,7 +57,7 @@ public class VideoScreen extends GuiScreen {
     // VIDEO INFO
     int videoTexture = -1;
 
-    public VideoScreen(String url, int volume, boolean controlBlocked) {
+    public VideoScreen(String url, int volume, boolean controlBlocked, int TimePosition, float VideoSpeed) {
         super();
 
         Minecraft minecraft = Minecraft.getMinecraft();
@@ -59,11 +65,15 @@ public class VideoScreen extends GuiScreen {
 
         this.volume = volume;
         this.controlBlocked = controlBlocked;
-
+        this.TimePosition = TimePosition;
         this.player = new SyncVideoPlayer(null, Runnable::run, MemoryTracker::create);
+        this.AlreadyTime = false;
+        this.VideoSpeed = VideoSpeed;
         System.out.println("Playing video (" + (!controlBlocked ? "not" : "") + "blocked) (" + url + " with volume: " + (int) (Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER) * volume));
 
         player.setVolume((int) (Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER) * volume));
+        System.out.println("Speed: " + VideoSpeed + " Position: " + TimePosition);
+        player.setSpeed(VideoSpeed);
         player.start(url);
 
         tickTimer = new Timer(20);
@@ -84,7 +94,7 @@ public class VideoScreen extends GuiScreen {
                 if (closingOnTick == -1) closingOnTick = tick + 20;
                 if (tick >= closingOnTick) fadeLevel = Math.max(fadeLevel - (pPartialTicks / 8), 0.0f);
                 renderBlackBackground();
-                renderIcon(ImageAPI.loadingGif());
+                renderLoading(Main.loadingGif());
                 onGuiClosed();
                 mc.displayGuiScreen(null);
                 return;
@@ -108,7 +118,15 @@ public class VideoScreen extends GuiScreen {
             if (player.isPaused() && player.getRawPlayerState().equals(State.PAUSED)) {
                 renderIcon(Main.pausedImage());
             } else {
-                renderIcon(ImageAPI.loadingGif());
+                renderLoading(Main.loadingGif());
+            }
+        } else {
+            if (!AlreadyTime) {
+                AlreadyTime = true;
+                player.seekTo(TimePosition);
+            }
+            if (!controlBlocked) {
+                renderSkip(Main.SkipImage());
             }
         }
 
@@ -199,6 +217,28 @@ public class VideoScreen extends GuiScreen {
         GlStateManager.disableBlend();
     }
 
+    private void renderLoading(ImageRenderer image) {
+        tickTimer.updateTimer();
+        tick += tickTimer.elapsedTicks;
+
+        GlStateManager.enableBlend();
+        GlStateManager.bindTexture(image.texture(tick, 1, true));
+        drawScaledCustomSizeModalRect(width - 96, height - 25, 0, 0, 36, 36, 94, 23, 36, 36);
+        GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GlStateManager.disableBlend();
+    }
+
+    private void renderSkip(ImageRenderer image) {
+        tickTimer.updateTimer();
+        tick += tickTimer.elapsedTicks;
+
+        GlStateManager.enableBlend();
+        GlStateManager.bindTexture(image.texture(tick, 1, true));
+        drawScaledCustomSizeModalRect(width - 58, height - 20 , 0, 0, 36, 36, 54, 14, 36, 36);
+        GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GlStateManager.disableBlend();
+    }
+
 //    private int getHeightCenter(int offset) {
 //        return (height / 2) + offset;
 //    }
@@ -215,12 +255,7 @@ public class VideoScreen extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         // Ignore ESC
-        if (!isShiftKeyDown() && keyCode == 1) return;
-
-        // Shift + ESC (Exit)
-        if (isShiftKeyDown() && keyCode == 1) {
-            this.onGuiClosed();
-        }
+        if (keyCode == 1) return;
 
         // Up arrow key (Volume)
         if (keyCode == 200) {
@@ -266,18 +301,24 @@ public class VideoScreen extends GuiScreen {
         // If control blocked can't modify the video time
         if (controlBlocked) return;
 
+        if (keyCode == 10 || keyCode == 28) {
+            System.out.println("QUIT MOD");
+            this.onGuiClosed();
+            mc.displayGuiScreen(null);
+        }
+
         // Shift + Right arrow key (Forwards)
-        if (isShiftKeyDown() && keyCode == 205) {
-            player.seekTo(player.getTime() + 30000);
+        if (keyCode == 205) {
+            player.seekTo(player.getTime() + 20000);
         }
 
         // Shift + Left arrow key (Backwards)
-        if (isShiftKeyDown() && keyCode == 203) {
+        if (keyCode == 203) {
             player.seekTo(player.getTime() - 10000);
         }
 
         // Shift + Space (Pause / Play)
-        if (isShiftKeyDown() && keyCode == 57) {
+        if (keyCode == 57) {
             if (!player.isPaused()) {
                 paused = true;
                 player.pause();

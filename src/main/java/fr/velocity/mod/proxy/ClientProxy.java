@@ -24,8 +24,8 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void openVideo(String url, int volume, boolean controlBlocked) {
-		Minecraft.getMinecraft().displayGuiScreen(new VideoScreen(url, volume, controlBlocked));
+	public void openVideo(String url, int volume, boolean controlBlocked, int TimePosition, float VideoSpeed) {
+		Minecraft.getMinecraft().displayGuiScreen(new VideoScreen(url, volume, controlBlocked, TimePosition, VideoSpeed));
 	}
 
 	@Override

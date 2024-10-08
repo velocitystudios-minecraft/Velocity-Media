@@ -15,13 +15,17 @@ public class SendVideoMessage implements IMessage
 	private String url;
 	private int volume;
 	private boolean controlBlocked;
+	private int TimePosition;
+	private float VideoSpeed;
 
 	public SendVideoMessage() {}
 
-	public SendVideoMessage(String url, int volume, boolean controlBlocked) {
+	public SendVideoMessage(String url, int volume, boolean controlBlocked, int TimePosition, float VideoSpeed) {
 		this.url = url;
 		this.volume = volume;
 		this.controlBlocked = controlBlocked;
+		this.TimePosition = TimePosition;
+		this.VideoSpeed = VideoSpeed;
 	}
 
 	@Override
@@ -30,6 +34,8 @@ public class SendVideoMessage implements IMessage
 		this.url = String.valueOf(buffer.readCharSequence(l, StandardCharsets.UTF_8));
 		this.volume = buffer.readInt();
 		this.controlBlocked = buffer.readBoolean();
+		this.TimePosition = buffer.readInt();
+		this.VideoSpeed = buffer.readFloat();
 	}
 
 	@Override
@@ -38,6 +44,8 @@ public class SendVideoMessage implements IMessage
 		buffer.writeCharSequence(url, StandardCharsets.UTF_8);
 		buffer.writeInt(volume);
 		buffer.writeBoolean(controlBlocked);
+		buffer.writeInt(TimePosition);
+		buffer.writeFloat(VideoSpeed);
 	}
 
 	public static class Handler implements IMessageHandler<SendVideoMessage, IMessage> {
@@ -50,7 +58,7 @@ public class SendVideoMessage implements IMessage
 
 		private void handle(SendVideoMessage message, MessageContext ctx)
 		{
-			Main.proxy.openVideo(message.url, message.volume, message.controlBlocked);
+			Main.proxy.openVideo(message.url, message.volume, message.controlBlocked, message.TimePosition, message.VideoSpeed);
 		}
 	}
 }

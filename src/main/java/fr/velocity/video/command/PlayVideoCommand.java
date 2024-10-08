@@ -13,6 +13,7 @@ import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Array;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,13 +57,13 @@ public class PlayVideoCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/playvideo <target> <volume> <url> [<control_blocked>]";
+        return "/playvideo <target> <volume> <url> [<control_blocked>] [<position>] [<speed>]";
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 3) {
-            sender.sendMessage(new TextComponentString("Invalid command. The format is: /playvideo <target> <volume> <url> [<control_blocked>]"));
+            sender.sendMessage(new TextComponentString("Invalid command. The format is: /playvideo <target> <volume> <url> [<control_blocked>] [<position>] [<speed>]"));
             return;
         }
 
@@ -76,13 +77,28 @@ public class PlayVideoCommand extends CommandBase {
         String url = args[2];
 
         boolean controlBlocked = false;
-        if (args.length == 4) {
+        if (args.length >= 4) {
             controlBlocked = parseBoolean(args[3]);
         }
 
+        int TimePosition = 0;
+        if (args.length >= 5) {
+            TimePosition = parseInt(args[4]);
+        }
+
+        float VideoSpeed = 1;
+        if (args.length >= 6) {
+            VideoSpeed = Float.parseFloat(args[5]);
+            if (VideoSpeed < 0) {
+                sender.sendMessage(new TextComponentString("Invalid speed, only between 0 and inf"));
+            }
+        }
+
+        System.out.println("Speed: " + VideoSpeed + " Position: " + TimePosition);
+
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new SendVideoMessage(url, volume, controlBlocked), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new SendVideoMessage(url, volume, controlBlocked, TimePosition, VideoSpeed), (EntityPlayerMP) e);
             }
         }
     }

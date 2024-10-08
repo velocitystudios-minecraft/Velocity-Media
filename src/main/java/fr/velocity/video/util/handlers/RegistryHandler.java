@@ -48,6 +48,8 @@ public class RegistryHandler {
     @SideOnly(Side.CLIENT)
     public static void initClient() {
         Main.IMG_PAUSED = ImageAPI.renderer(JarTool.readImage(RegistryHandler.class.getClassLoader(), "/pictures/paused.png"), true);
+        Main.IMG_SKIP = ImageAPI.renderer(JarTool.readImage(RegistryHandler.class.getClassLoader(), "/pictures/skip.png"), true);
+        Main.LOADINGGIF = ImageAPI.renderer(JarTool.readGif(RegistryHandler.class.getClassLoader(), "/pictures/load.gif"), true);
         ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(ModBlocks.TV_BLOCK), stack -> new ModelResourceLocation(stack.getItem().getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.TV_BLOCK), 0,  new ModelResourceLocation(new ResourceLocation("velocity-media:tv_block"), "inventory"));
         ClientRegistry.bindTileEntitySpecialRenderer(TVBlockEntity.class, new TVBlockRenderer());

@@ -1,6 +1,5 @@
 package fr.velocity.music.musicplayer;
 
-import net.minecraft.entity.player.EntityPlayer;
 import org.apache.logging.log4j.*;
 
 import com.google.gson.*;
@@ -26,8 +25,8 @@ public class MusicPlayerManager {
 
 		Globalplayer.setVolume(50);
 	}
-	
-	private static void generatePlayer() {
+
+	public static void generatePlayer() {
 		try {
 			Class<?> clazz = Class.forName("fr.velocity.music.lavaplayer.MusicPlayer", true, DependencyManager.MUSICPLAYER_CLASSLOADER);
 			if (!IMusicPlayer.class.isAssignableFrom(clazz)) {
@@ -44,8 +43,6 @@ public class MusicPlayerManager {
 	public static IMusicPlayer getPlayer() {
 		return Globalplayer;
 	}
-
-
 	
 	public static PlaylistManager getPlaylistManager() {
 		return playlistManager;

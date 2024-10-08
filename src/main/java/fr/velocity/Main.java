@@ -53,9 +53,13 @@ public class Main {
 
 	@SideOnly(Side.CLIENT)
 	public static ImageRenderer IMG_PAUSED;
+	public static ImageRenderer IMG_SKIP;
+	public static ImageRenderer LOADINGGIF;
 
 	@SideOnly(Side.CLIENT)
 	public static ImageRenderer pausedImage() { return IMG_PAUSED; }
+	public static ImageRenderer SkipImage() { return IMG_SKIP; }
+	public static ImageRenderer loadingGif() { return LOADINGGIF; }
 
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent event) {
