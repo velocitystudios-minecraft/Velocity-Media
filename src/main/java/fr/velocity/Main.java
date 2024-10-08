@@ -27,7 +27,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = Main.mcversion, dependencies = Main.dependencies, /*updateJSON = Main.updateurl,*/ clientSideOnly = true)
+@Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = Main.mcversion, dependencies = Main.dependencies, /*updateJSON = Main.updateurl,*/ /*clientSideOnly = true*/)
 public class Main {
 	
 	public static final String modid = "velocity-media";
