@@ -5,10 +5,6 @@ import fr.velocity.music.command.PauseCommand;
 import fr.velocity.music.command.PlayCommand;
 import fr.velocity.music.command.StopCommand;
 import fr.velocity.music.command.VolumeCommand;
-import fr.velocity.music.command.local.LocalPauseCommand;
-import fr.velocity.music.command.local.LocalPlayCommand;
-import fr.velocity.music.command.local.LocalStopCommand;
-import fr.velocity.music.command.local.LocalVolumeCommand;
 import fr.velocity.video.block.entity.TVBlockEntity;
 import fr.velocity.video.command.PlayVideoCommand;
 import fr.velocity.mod.proxy.CommonProxy;
@@ -27,7 +23,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = Main.mcversion, dependencies = Main.dependencies, /*updateJSON = Main.updateurl,*/ clientSideOnly = true)
+@Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = Main.mcversion, dependencies = Main.dependencies/*, updateJSON = Main.updateurl, clientSideOnly = true*/)
 public class Main {
 	
 	public static final String modid = "velocity-media";
@@ -85,10 +81,6 @@ public class Main {
 
 	@Mod.EventHandler
 	public void onServerStarting(FMLServerStartingEvent event) {
-		event.registerServerCommand(new LocalPlayCommand());
-		event.registerServerCommand(new LocalStopCommand());
-		event.registerServerCommand(new LocalPauseCommand());
-		event.registerServerCommand(new LocalVolumeCommand());
 		event.registerServerCommand(new PlayCommand());
 		event.registerServerCommand(new StopCommand());
 		event.registerServerCommand(new VolumeCommand());

@@ -1,5 +1,9 @@
 package fr.velocity.mod.proxy;
 
+import fr.velocity.music.client.MusicPause;
+import fr.velocity.music.client.MusicStop;
+import fr.velocity.music.client.MusicVolume;
+import fr.velocity.music.command.PauseCommand;
 import fr.velocity.music.dependency.DependencyManager;
 import fr.velocity.music.init.MusicPlayerFiles;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
@@ -12,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.model.ModelLoader;
+import fr.velocity.music.client.MusicPlay;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.relauncher.*;
 
@@ -26,6 +31,26 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void openVideo(String url, int volume, boolean controlBlocked, int TimePosition, float VideoSpeed) {
 		Minecraft.getMinecraft().displayGuiScreen(new VideoScreen(url, volume, controlBlocked, TimePosition, VideoSpeed));
+	}
+
+	@Override
+	public void Playmusic(String url, int volume) {
+		MusicPlay.Playmusic(url, volume);
+	}
+
+	@Override
+	public void Stopmusic() {
+		MusicStop.Stopmusic();
+	}
+
+	@Override
+	public void Volumemusic(int volume) {
+		MusicVolume.Volumemusic(volume);
+	}
+
+	@Override
+	public void Pausemusic(String IsPaused) {
+		MusicPause.Pausemusic(IsPaused);
 	}
 
 	@Override

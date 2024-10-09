@@ -1,9 +1,6 @@
-package fr.velocity.video.network;
+package fr.velocity.mod.network;
 
-import fr.velocity.video.network.messages.FrameVideoMessage;
-import fr.velocity.video.network.messages.OpenVideoManagerScreen;
-import fr.velocity.video.network.messages.SendVideoMessage;
-import fr.velocity.video.network.messages.UploadVideoUpdateMessage;
+import fr.velocity.mod.network.messages.*;
 import fr.velocity.Main;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -32,6 +29,10 @@ public class PacketHandler {
     private static void register() {
         INSTANCE.registerMessage(OpenVideoManagerScreen.Handler.class, OpenVideoManagerScreen.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(SendVideoMessage.Handler.class, SendVideoMessage.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(PlaymusicMessage.Handler.class, PlaymusicMessage.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(StopmusicMessage.Handler.class, StopmusicMessage.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(PausemusicMessage.Handler.class, PausemusicMessage.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(VolumemusicMessage.Handler.class, VolumemusicMessage.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(FrameVideoMessage.Handler.class, FrameVideoMessage.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(UploadVideoUpdateMessage.Handler.class, UploadVideoUpdateMessage.class, nextID(), Side.SERVER);
     }

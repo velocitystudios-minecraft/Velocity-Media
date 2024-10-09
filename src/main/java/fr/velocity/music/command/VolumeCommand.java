@@ -1,8 +1,12 @@
 package fr.velocity.music.command;
 
+import fr.velocity.mod.network.PacketHandler;
+import fr.velocity.mod.network.messages.StopmusicMessage;
+import fr.velocity.mod.network.messages.VolumemusicMessage;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +34,8 @@ public class VolumeCommand extends CommandBase {
             return;
         }
 
-        String targetName = args[0];
+        List<Entity> entity = getEntityList(server, sender, args[0]);
+
         int volume;
 
         try {
@@ -39,12 +44,11 @@ public class VolumeCommand extends CommandBase {
             return;
         }
 
-        EntityPlayerMP target = getPlayer(server, sender, targetName);
-        if (target == null) {
-            return;
+        for (Entity e : entity) {
+            if (e instanceof EntityPlayerMP) {
+                PacketHandler.INSTANCE.sendTo(new VolumemusicMessage(volume), (EntityPlayerMP) e);
+            }
         }
-
-        target.getServer().getCommandManager().executeCommand(target, "localvolumemusic " + volume);
     }
 
     @Override

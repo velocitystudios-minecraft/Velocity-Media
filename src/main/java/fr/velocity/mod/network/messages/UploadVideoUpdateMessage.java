@@ -1,4 +1,4 @@
-package fr.velocity.video.network.messages;
+package fr.velocity.mod.network.messages;
 
 import fr.velocity.video.block.entity.TVBlockEntity;
 import io.netty.buffer.ByteBuf;

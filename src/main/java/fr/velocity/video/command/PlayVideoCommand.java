@@ -1,7 +1,7 @@
 package fr.velocity.video.command;
 
-import fr.velocity.video.network.PacketHandler;
-import fr.velocity.video.network.messages.SendVideoMessage;
+import fr.velocity.mod.network.PacketHandler;
+import fr.velocity.mod.network.messages.SendVideoMessage;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -12,13 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Array;
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class PlayVideoCommand extends CommandBase {
 

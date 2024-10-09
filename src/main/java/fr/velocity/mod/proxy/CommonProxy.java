@@ -3,7 +3,7 @@ package fr.velocity.mod.proxy;
 import fr.velocity.Main;
 import fr.velocity.mod.handler.RegistryHandler;
 import fr.velocity.video.block.entity.TVBlockEntity;
-import fr.velocity.video.network.PacketHandler;
+import fr.velocity.mod.network.PacketHandler;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -43,4 +43,8 @@ public class CommonProxy {
 	public void openVideo(String url, int volume, boolean controlBlocked, int TimePosition, float VideoSpeed) {}
 	public void openVideoGUI(BlockPos pos, String url, int tick, int volume, boolean loop) {}
 	public void manageVideo(BlockPos pos, boolean playing, int tick) {}
+	public void Playmusic(String url, int volume) {}
+	public void Stopmusic() {}
+	public void Volumemusic(int volume) {}
+	public void Pausemusic(String IsPaused) {}
 }
