@@ -12,14 +12,14 @@ import org.apache.commons.lang3.tuple.Pair;
 
 @SideOnly(Side.CLIENT)
 public class MusicPlay {
-    public static void Playmusic(String url, int volume) {
+    public static void Playmusic(String url, int volume, String RepeatMode) {
         Playlist playlist = new Playlist();
         MusicPlayerManager.getPlayer().getTrackSearch().getTracks(url, result -> {
             if (result.hasError()) {
                 System.out.println(new TextComponentString(result.getErrorMessage()));
             } else {
                 final IAudioTrack track = result.getTrack();
-
+                playlist.RepeatMode = RepeatMode;
                 final Runnable runnable = () -> {
                     final ITrackManager manager = MusicPlayerManager.getPlayer().getTrackManager();
                     playlist.add(track);

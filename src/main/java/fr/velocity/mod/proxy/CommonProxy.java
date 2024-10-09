@@ -43,7 +43,7 @@ public class CommonProxy {
 	public void openVideo(String url, int volume, boolean controlBlocked, int TimePosition, float VideoSpeed) {}
 	public void openVideoGUI(BlockPos pos, String url, int tick, int volume, boolean loop) {}
 	public void manageVideo(BlockPos pos, boolean playing, int tick) {}
-	public void Playmusic(String url, int volume) {}
+	public void Playmusic(String url, int volume, String RepeatMode) {}
 	public void Stopmusic() {}
 	public void Volumemusic(int volume) {}
 	public void Pausemusic(String IsPaused) {}

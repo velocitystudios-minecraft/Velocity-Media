@@ -23,7 +23,7 @@ public class PlayCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "Usage: /playmusic <player> <volume> <url>";
+        return "Usage: /playmusic <player> <volume> <url> [<repeat>]";
     }
 
     @Override
@@ -44,9 +44,14 @@ public class PlayCommand extends CommandBase {
             return;
         }
 
+        String RepeatMode = "false";
+        if (args.length >= 4) {
+            RepeatMode = args[3];
+        }
+
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new PlaymusicMessage(url, volume), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new PlaymusicMessage(url, volume, RepeatMode), (EntityPlayerMP) e);
             }
         }
     }

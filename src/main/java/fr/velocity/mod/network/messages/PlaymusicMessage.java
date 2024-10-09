@@ -14,19 +14,21 @@ public class PlaymusicMessage implements IMessage
 
 	private String url;
 	private int volume;
+	private String RepeatMode;
 
 	public PlaymusicMessage() {}
 
-	public PlaymusicMessage(String url, int volume) {
+	public PlaymusicMessage(String url, int volume, String RepeatMode) {
 		this.url = url;
 		this.volume = volume;
+		this.RepeatMode = RepeatMode;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buffer) {
-		int l = buffer.readInt();
-		this.url = String.valueOf(buffer.readCharSequence(l, StandardCharsets.UTF_8));
+		this.url = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
 		this.volume = buffer.readInt();
+		this.RepeatMode = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
 	}
 
 	@Override
@@ -34,6 +36,8 @@ public class PlaymusicMessage implements IMessage
 		buffer.writeInt(url.length());
 		buffer.writeCharSequence(url, StandardCharsets.UTF_8);
 		buffer.writeInt(volume);
+		buffer.writeInt(RepeatMode.length());
+		buffer.writeCharSequence(RepeatMode, StandardCharsets.UTF_8);
 	}
 
 	public static class Handler implements IMessageHandler<PlaymusicMessage, IMessage> {
@@ -46,7 +50,7 @@ public class PlaymusicMessage implements IMessage
 
 		private void handle(PlaymusicMessage message, MessageContext ctx)
 		{
-			Main.proxy.Playmusic(message.url, message.volume);
+			Main.proxy.Playmusic(message.url, message.volume, message.RepeatMode);
 		}
 	}
 }

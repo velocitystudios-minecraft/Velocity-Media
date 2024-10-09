@@ -264,8 +264,8 @@ public class Playlist implements ITrackQueue {
 	
 	private transient LoadedTracks nextLoadedTrack;
 	private transient IAudioTrack next;
-	
-	private transient boolean first;
+	public String RepeatMode = "false";
+	public boolean first = false;
 	
 	private transient Random random;
 	
@@ -273,12 +273,14 @@ public class Playlist implements ITrackQueue {
 	public boolean calculateNext() {
 		if (nextLoadedTrack == null || next == null) {
 			return false;
-		} else if (first) {
+		} else if (Objects.equals(RepeatMode, "true")) {
+			return true;
+		}
+		if (first) {
 			first = false;
 			return true;
-		} else {
-			return findNextSong(Skip.FORWARD);
 		}
+		return false;
 	}
 	
 	@Override
