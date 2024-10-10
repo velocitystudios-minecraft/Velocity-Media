@@ -15,7 +15,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
 
 public class TVVideoScreen extends GuiScreen {
 
@@ -112,9 +118,11 @@ public class TVVideoScreen extends GuiScreen {
     }
 
 
+
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
+
         if (button == playButton) {
             PacketHandler.INSTANCE.sendToServer(new UploadVideoUpdateMessage(be.getPos(), url, volume, true, true, false));
         }
@@ -158,6 +166,4 @@ public class TVVideoScreen extends GuiScreen {
     public boolean doesGuiPauseGame() {
         return false;
     }
-
-
 }

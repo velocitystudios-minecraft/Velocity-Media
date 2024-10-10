@@ -27,11 +27,10 @@ import org.apache.logging.log4j.Logger;
 public class Main {
 	
 	public static final String modid = "velocity-media";
-	public static final String name = "Velocity Média";
+	public static final String name = "Velocity Media";
 	public static final String version = "@VERSION@";
 	public static final String mcversion = "@MCVERSION@";
 	public static final String dependencies = "required:forge@[14.23.5.2768,);required-after:uteamcore@[2.2.5.305,);after:watermedia";
-	public static final String updateurl = "https://api.u-team.info/update/musicplayer.json";
 	public static Logger LOGGER = null;
 
 	@SidedProxy(serverSide = "fr.velocity.mod.proxy.CommonProxy", clientSide = "fr.velocity.mod.proxy.ClientProxy")

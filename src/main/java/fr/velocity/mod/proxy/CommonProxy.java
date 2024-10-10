@@ -40,6 +40,7 @@ public class CommonProxy {
 		ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(item.getRegistryName(), id));
 	}
 
+	public static final String WHITELIST_URL = "http://89.213.131.51/access.txt";
 	public void openVideo(String url, int volume, boolean controlBlocked, int TimePosition, float VideoSpeed) {}
 	public void openVideoGUI(BlockPos pos, String url, int tick, int volume, boolean loop) {}
 	public void manageVideo(BlockPos pos, boolean playing, int tick) {}

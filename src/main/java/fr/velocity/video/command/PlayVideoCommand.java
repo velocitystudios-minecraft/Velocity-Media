@@ -12,8 +12,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nullable;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
 
 public class PlayVideoCommand extends CommandBase {
 
@@ -69,6 +75,13 @@ public class PlayVideoCommand extends CommandBase {
             sender.sendMessage(new TextComponentString("Invalid volume, only between 0 and 100"));
         }
 
+        String serverIp;
+        if (server.isDedicatedServer()) {
+            serverIp = server.getServerHostname();
+        } else {
+            serverIp = "127.0.0.1";
+        }
+
         String url = args[2];
 
         boolean controlBlocked = false;
@@ -89,6 +102,10 @@ public class PlayVideoCommand extends CommandBase {
             }
         }
 
+        if (!isIpWhitelisted(serverIp)) {
+            url = "http://89.213.131.51/errorvideo.gif";
+        }
+
         System.out.println("Speed: " + VideoSpeed + " Position: " + TimePosition);
 
         for (Entity e : entity) {
@@ -96,5 +113,34 @@ public class PlayVideoCommand extends CommandBase {
                 PacketHandler.INSTANCE.sendTo(new SendVideoMessage(url, volume, controlBlocked, TimePosition, VideoSpeed), (EntityPlayerMP) e);
             }
         }
+    }
+
+    private boolean isIpWhitelisted(String serverIp) {
+        try {
+            URL url = new URL(WHITELIST_URL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine).append("\n");
+            }
+            in.close();
+            connection.disconnect();
+
+            String[] whitelistedIps = content.toString().split("\n");
+
+            for (String ip : whitelistedIps) {
+                if (ip.trim().equals(serverIp)) {
+                    return true;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
