@@ -13,8 +13,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.UUID;
 
 import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
@@ -103,15 +106,36 @@ public class UploadVideoUpdateMessage implements IMessage {
             return null;
         }
 
+        public static String getRealIp() {
+            try {
+                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+                while (interfaces.hasMoreElements()) {
+                    NetworkInterface networkInterface = interfaces.nextElement();
+                    if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                        continue;
+                    }
+                    Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                    while (addresses.hasMoreElements()) {
+                        InetAddress address = addresses.nextElement();
+                        if (address.isSiteLocalAddress()) {
+                            return address.getHostAddress();
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return "127.0.0.1";
+        }
+
         private void handle(UploadVideoUpdateMessage message, MessageContext ctx)
         {
 
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 
-            // Récupérer l'IP du serveur
             String serverIp;
             if (server.isDedicatedServer()) {
-                serverIp = server.getServerHostname();
+                serverIp = getRealIp();
             } else {
                 serverIp = "127.0.0.1";
             }

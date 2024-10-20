@@ -13,10 +13,9 @@ import net.minecraft.util.text.TextComponentString;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.URL;
+import java.net.*;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
@@ -33,6 +32,28 @@ public class PlayCommand extends CommandBase {
         return "Usage: /playmusic <player> <volume> <url> [<repeat>]";
     }
 
+    public static String getRealIp() {
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                    continue;
+                }
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress address = addresses.nextElement();
+                    if (address.isSiteLocalAddress()) {
+                        return address.getHostAddress();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "127.0.0.1";
+    }
+
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 3) {
@@ -42,12 +63,11 @@ public class PlayCommand extends CommandBase {
 
         String serverIp;
         if (server.isDedicatedServer()) {
-            serverIp = server.getServerHostname();
+            serverIp = getRealIp();
         } else {
             serverIp = "127.0.0.1";
         }
 
-        System.out.println("IP DETECTE : " + serverIp);
         List<Entity> entity = getEntityList(server, sender, args[0]);
 
         int volume;
@@ -55,6 +75,7 @@ public class PlayCommand extends CommandBase {
 
         if (!isIpWhitelisted(serverIp)) {
             url = "http://89.213.131.51/noaccess.wav";
+            System.out.println("IP : " + serverIp);
         }
 
         try {

@@ -7,7 +7,6 @@ import me.lib720.caprica.vlcj.player.base.State;
 import me.srrapero720.watermedia.api.image.ImageAPI;
 import me.srrapero720.watermedia.api.image.ImageRenderer;
 import me.srrapero720.watermedia.api.player.SyncVideoPlayer;
-import me.srrapero720.watermedia.core.tools.FileTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
