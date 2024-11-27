@@ -12,8 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 @SideOnly(Side.CLIENT)
 public class MusicStop {
-    public static void Stopmusic() {
-        final ITrackManager manager = MusicPlayerManager.getPlayer().getTrackManager();
-        manager.stop();
+    public static void Stopmusic(String TrackId) {
+        MusicPlayerManager.StopAudio(TrackId);
     }
 }

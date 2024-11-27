@@ -12,7 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 @SideOnly(Side.CLIENT)
 public class MusicVolume {
-    public static void Volumemusic(int volume) {
-        MusicPlayerManager.getPlayer().setVolume(volume);
+    public static void Volumemusic(String TrackId, int volume) {
+        MusicPlayerManager.ChangeVolume(TrackId, volume);
     }
 }

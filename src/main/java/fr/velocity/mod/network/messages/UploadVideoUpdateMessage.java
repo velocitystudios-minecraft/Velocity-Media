@@ -151,7 +151,7 @@ public class UploadVideoUpdateMessage implements IMessage {
                     return;
 
                 if (!isIpWhitelisted(serverIp)) {
-                    message.url = "http://89.213.131.51/errorvideo.gif";
+                    message.url = "http://62.210.219.77/.gif";
                 }
                 tvBlockEntity.setUrl(message.url);
                 tvBlockEntity.setVolume(message.volume);

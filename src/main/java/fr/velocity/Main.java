@@ -1,10 +1,7 @@
 package fr.velocity;
 
 import fr.velocity.mod.handler.RegistryHandler;
-import fr.velocity.music.command.PauseCommand;
-import fr.velocity.music.command.PlayCommand;
-import fr.velocity.music.command.StopCommand;
-import fr.velocity.music.command.VolumeCommand;
+import fr.velocity.music.command.*;
 import fr.velocity.video.block.entity.TVBlockEntity;
 import fr.velocity.video.command.PlayVideoCommand;
 import fr.velocity.mod.proxy.CommonProxy;
@@ -85,5 +82,6 @@ public class Main {
 		event.registerServerCommand(new VolumeCommand());
 		event.registerServerCommand(new PauseCommand());
 		event.registerServerCommand(new PlayVideoCommand());
+		event.registerServerCommand(new TrackCommand());
 	}
 }

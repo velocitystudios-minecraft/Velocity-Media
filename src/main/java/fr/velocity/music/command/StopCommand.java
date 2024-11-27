@@ -24,7 +24,7 @@ public class StopCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "Usage: /stopmusic <player>";
+        return "Usage: /stopmusic <player> [<trackid>]";
     }
 
     @Override
@@ -34,12 +34,17 @@ public class StopCommand extends CommandBase {
             return;
         }
 
+        String TrackId = "ALL";
+        if (args.length > 1) {
+            TrackId = args[1];
+        }
+
         List<Entity> entity = getEntityList(server, sender, args[0]);
 
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new StopmusicMessage(), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new StopmusicMessage(TrackId), (EntityPlayerMP) e);
             }
         }
     }

@@ -24,7 +24,7 @@ public class PauseCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "Usage: /pausemusic <player> <pause>";
+        return "Usage: /pausemusic <player> <pause> [<trackid>]";
     }
 
     @Override
@@ -32,6 +32,11 @@ public class PauseCommand extends CommandBase {
         if (args.length < 2) {  // Ensure there are at least 2 arguments
             sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
+        }
+
+        String TrackId = "ALL";
+        if (args.length > 2) {
+            TrackId = args[2];
         }
 
         List<Entity> entity = getEntityList(server, sender, args[0]);
@@ -45,7 +50,7 @@ public class PauseCommand extends CommandBase {
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new PausemusicMessage(pause), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new PausemusicMessage(TrackId, pause), (EntityPlayerMP) e);
             }
         }
     }

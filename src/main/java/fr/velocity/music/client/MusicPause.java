@@ -5,20 +5,16 @@ import fr.velocity.music.musicplayer.MusicPlayerManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.sound.midi.Track;
 import java.util.Objects;
 
 @SideOnly(Side.CLIENT)
 public class MusicPause {
-    public static void Pausemusic(String IsPause) {
-        final ITrackManager manager = MusicPlayerManager.getPlayer().getTrackManager();
+    public static void Pausemusic(String TrackId, String IsPause) {
         if (Objects.equals(IsPause, "true")) {
-            if (!manager.isPaused()) {
-                manager.setPaused(true);
-            }
+            MusicPlayerManager.Pause(TrackId, true);
         } else {
-            if (manager.isPaused()) {
-                manager.setPaused(false);
-            }
+            MusicPlayerManager.Pause(TrackId, false);
         }
     }
 }

@@ -24,12 +24,12 @@ public class VolumeCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "Usage: /volumemusic <player> <volume>";
+        return "Usage: /volumemusic <player> <volume> [<trackid>]";
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        if (args.length < 1) {
+        if (args.length < 2) {
             sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }
@@ -44,9 +44,14 @@ public class VolumeCommand extends CommandBase {
             return;
         }
 
+        String TrackId = "ALL";
+        if (args.length > 2) {
+            TrackId = args[2];
+        }
+
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new VolumemusicMessage(volume), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new VolumemusicMessage(TrackId, volume), (EntityPlayerMP) e);
             }
         }
     }

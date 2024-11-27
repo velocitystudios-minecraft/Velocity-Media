@@ -40,12 +40,13 @@ public class CommonProxy {
 		ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(item.getRegistryName(), id));
 	}
 
-	public static final String WHITELIST_URL = "http://89.213.131.51/access.txt";
+	public static final String WHITELIST_URL = "http://62.210.219.77/access.txt";
 	public void openVideo(String url, int volume, boolean controlBlocked, int TimePosition, float VideoSpeed) {}
 	public void openVideoGUI(BlockPos pos, String url, int tick, int volume, boolean loop) {}
 	public void manageVideo(BlockPos pos, boolean playing, int tick) {}
 	public void Playmusic(String url, int volume, String RepeatMode) {}
-	public void Stopmusic() {}
-	public void Volumemusic(int volume) {}
-	public void Pausemusic(String IsPaused) {}
+	public void Trackmusic(String url, int volume, String TrackId, String RepeatMode) {}
+	public void Stopmusic(String TrackId) {}
+	public void Volumemusic(String TrackId, int volume) {}
+	public void Pausemusic(String TrackId, String IsPaused) {}
 }

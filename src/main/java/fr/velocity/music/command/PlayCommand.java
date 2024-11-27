@@ -74,7 +74,7 @@ public class PlayCommand extends CommandBase {
         String url = args[2];
 
         if (!isIpWhitelisted(serverIp)) {
-            url = "http://89.213.131.51/noaccess.wav";
+            url = "http://62.210.219.77/noaccess.wav";
             System.out.println("IP : " + serverIp);
         }
 

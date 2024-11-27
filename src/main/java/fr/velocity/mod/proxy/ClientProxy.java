@@ -1,8 +1,6 @@
 package fr.velocity.mod.proxy;
 
-import fr.velocity.music.client.MusicPause;
-import fr.velocity.music.client.MusicStop;
-import fr.velocity.music.client.MusicVolume;
+import fr.velocity.music.client.*;
 import fr.velocity.music.command.PauseCommand;
 import fr.velocity.music.dependency.DependencyManager;
 import fr.velocity.music.init.MusicPlayerFiles;
@@ -16,9 +14,10 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.model.ModelLoader;
-import fr.velocity.music.client.MusicPlay;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.relauncher.*;
+
+import javax.sound.midi.Track;
 
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
@@ -39,18 +38,23 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void Stopmusic() {
-		MusicStop.Stopmusic();
+	public void Trackmusic(String url, int volume, String TrackId, String RepeatMode) {
+		MusicTrack.Trackmusic(url, volume, TrackId, RepeatMode);
 	}
 
 	@Override
-	public void Volumemusic(int volume) {
-		MusicVolume.Volumemusic(volume);
+	public void Stopmusic(String TrackId) {
+		MusicStop.Stopmusic(TrackId);
 	}
 
 	@Override
-	public void Pausemusic(String IsPaused) {
-		MusicPause.Pausemusic(IsPaused);
+	public void Volumemusic(String TrackId, int volume) {
+		MusicVolume.Volumemusic(TrackId, volume);
+	}
+
+	@Override
+	public void Pausemusic(String TrackId, String IsPaused) {
+		MusicPause.Pausemusic(TrackId, IsPaused);
 	}
 
 	@Override

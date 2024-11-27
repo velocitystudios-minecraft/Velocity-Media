@@ -30,6 +30,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(OpenVideoManagerScreen.Handler.class, OpenVideoManagerScreen.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(SendVideoMessage.Handler.class, SendVideoMessage.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(PlaymusicMessage.Handler.class, PlaymusicMessage.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(TrackmusicMessage.Handler.class, TrackmusicMessage.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(StopmusicMessage.Handler.class, StopmusicMessage.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(PausemusicMessage.Handler.class, PausemusicMessage.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(VolumemusicMessage.Handler.class, VolumemusicMessage.class, nextID(), Side.CLIENT);

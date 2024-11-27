@@ -215,6 +215,21 @@ dependencies {
 	implementation fileTree(dir: "libs", includes: ["*jar"])
 }
 
+task fatJar(type: Jar) {
+
+	manifest {
+		attributes 'Main-Class': "fr.velocity.Main"
+	}
+
+	archiveBaseName = "${rootProject.name}"
+	tasks.withType(Jar){
+		duplicatesStrategy = DuplicatesStrategy.INCLUDE
+	}
+	from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+	//from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } setDuplicatesStrategy(DuplicatesStrategy.INCLUDE) }
+	with jar
+}
+
 publishMods {
 	file = tasks.named("jar").flatMap { jar -> jar.archiveFile }
 	displayName = "${config.publish.display}-Forge-${config.minecraft.version}-${project.version}"

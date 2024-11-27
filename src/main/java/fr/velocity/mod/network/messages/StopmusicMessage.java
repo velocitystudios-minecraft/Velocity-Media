@@ -11,22 +11,23 @@ import java.nio.charset.StandardCharsets;
 
 public class StopmusicMessage implements IMessage
 {
-
+	private String TrackId;
 
 	public StopmusicMessage() {}
 
-	public StopmusicMessage(String url, int volume) {
-
+	public StopmusicMessage(String TrackId) {
+		this.TrackId = TrackId;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buffer) {
-
+		this.TrackId = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
 	}
 
 	@Override
 	public void toBytes(ByteBuf buffer) {
-
+		buffer.writeInt(TrackId.length());
+		buffer.writeCharSequence(TrackId, StandardCharsets.UTF_8);
 	}
 
 	public static class Handler implements IMessageHandler<StopmusicMessage, IMessage> {
@@ -39,7 +40,7 @@ public class StopmusicMessage implements IMessage
 
 		private void handle(StopmusicMessage message, MessageContext ctx)
 		{
-			Main.proxy.Stopmusic();
+			Main.proxy.Stopmusic(message.TrackId);
 		}
 	}
 }
