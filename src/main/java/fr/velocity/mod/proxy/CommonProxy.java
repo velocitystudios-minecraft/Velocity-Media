@@ -45,7 +45,9 @@ public class CommonProxy {
 	public void openVideoGUI(BlockPos pos, String url, int tick, int volume, boolean loop) {}
 	public void manageVideo(BlockPos pos, boolean playing, int tick) {}
 	public void Playmusic(String url, int volume, String RepeatMode) {}
-	public void Trackmusic(String url, int volume, String TrackId, String RepeatMode) {}
+	public void Trackmusic(String url, int volume, String TrackId, String Option) {}
+	public void PlayerTrackmusic(String targetPlayer, int radius, String url, int volume, String TrackId, String RepeatMode) {}
+	public void PositionTrackmusic(int x, int y, int z, int radius, String url, int volume, String TrackId, String RepeatMode) {}
 	public void Stopmusic(String TrackId) {}
 	public void Volumemusic(String TrackId, int volume) {}
 	public void Pausemusic(String TrackId, String IsPaused) {}

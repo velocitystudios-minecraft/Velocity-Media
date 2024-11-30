@@ -68,10 +68,8 @@ public class VideoScreen extends GuiScreen {
         this.player = new SyncVideoPlayer(null, Runnable::run, MemoryTracker::create);
         this.AlreadyTime = false;
         this.VideoSpeed = VideoSpeed;
-        System.out.println("Playing video (" + (!controlBlocked ? "not" : "") + "blocked) (" + url + " with volume: " + (int) (Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER) * volume));
 
         player.setVolume((int) (Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER) * volume));
-        System.out.println("Speed: " + VideoSpeed + " Position: " + TimePosition);
         player.setSpeed(VideoSpeed);
         player.start(url);
 
@@ -89,7 +87,6 @@ public class VideoScreen extends GuiScreen {
         if (player.isEnded() || player.isStopped() || player.getRawPlayerState().equals(State.ERROR)) {
             if (fadeLevel == 1 || closing) {
                 closing = true;
-                System.out.println("VIDEO FINISHED");
                 if (closingOnTick == -1) closingOnTick = tick + 20;
                 if (tick >= closingOnTick) fadeLevel = Math.max(fadeLevel - (pPartialTicks / 8), 0.0f);
                 renderBlackBackground();
@@ -271,7 +268,6 @@ public class VideoScreen extends GuiScreen {
 
             float actualVolume = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER);
             float newVolume = volume * actualVolume;
-            System.out.println("Volume UP to: " + newVolume);
             player.setVolume((int) newVolume);
         }
 
@@ -284,7 +280,6 @@ public class VideoScreen extends GuiScreen {
             }
             float actualVolume = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER);
             float newVolume = volume * actualVolume;
-            System.out.println("Volume DOWN to: " + newVolume);
             player.setVolume((int) newVolume);
         }
 
@@ -301,7 +296,6 @@ public class VideoScreen extends GuiScreen {
         if (controlBlocked) return;
 
         if (keyCode == 10 || keyCode == 28) {
-            System.out.println("QUIT MOD");
             this.onGuiClosed();
             mc.displayGuiScreen(null);
         }
@@ -351,7 +345,6 @@ public class VideoScreen extends GuiScreen {
         if (Minecraft.getMinecraft().currentScreen != null) {
             this.width = Minecraft.getMinecraft().currentScreen.width;
             this.height = Minecraft.getMinecraft().currentScreen.height;
-            System.out.println(this.width + " " + this.height);
         }
     }
 }

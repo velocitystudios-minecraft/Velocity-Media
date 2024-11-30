@@ -9,17 +9,25 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.nio.charset.StandardCharsets;
 
-public class TrackmusicMessage implements IMessage
+public class PositionTrackmusicMessage implements IMessage
 {
 
+	private int x;
+	private int y;
+	private int z;
+	private int radius;
 	private String url;
 	private int volume;
 	private String Option;
 	private String TrackId;
 
-	public TrackmusicMessage() {}
+	public PositionTrackmusicMessage() {}
 
-	public TrackmusicMessage(String url, int volume, String TrackId, String Option) {
+	public PositionTrackmusicMessage(int x, int y, int z, int radius, String url, int volume, String TrackId, String Option) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.radius = radius;
 		this.url = url;
 		this.volume = volume;
 		this.TrackId = TrackId;
@@ -28,6 +36,10 @@ public class TrackmusicMessage implements IMessage
 
 	@Override
 	public void fromBytes(ByteBuf buffer) {
+		this.x = buffer.readInt();
+		this.y = buffer.readInt();
+		this.z = buffer.readInt();
+		this.radius = buffer.readInt();
 		this.url = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
 		this.volume = buffer.readInt();
 		this.TrackId = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
@@ -36,6 +48,10 @@ public class TrackmusicMessage implements IMessage
 
 	@Override
 	public void toBytes(ByteBuf buffer) {
+		buffer.writeInt(x);
+		buffer.writeInt(y);
+		buffer.writeInt(z);
+		buffer.writeInt(radius);
 		buffer.writeInt(url.length());
 		buffer.writeCharSequence(url, StandardCharsets.UTF_8);
 		buffer.writeInt(volume);
@@ -45,17 +61,17 @@ public class TrackmusicMessage implements IMessage
 		buffer.writeCharSequence(Option, StandardCharsets.UTF_8);
 	}
 
-	public static class Handler implements IMessageHandler<TrackmusicMessage, IMessage> {
+	public static class Handler implements IMessageHandler<PositionTrackmusicMessage, IMessage> {
 
 		@Override
-		public IMessage onMessage(TrackmusicMessage message, MessageContext ctx) {
+		public IMessage onMessage(PositionTrackmusicMessage message, MessageContext ctx) {
 			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
 			return null;
 		}
 
-		private void handle(TrackmusicMessage message, MessageContext ctx)
+		private void handle(PositionTrackmusicMessage message, MessageContext ctx)
 		{
-			Main.proxy.Trackmusic(message.url, message.volume, message.TrackId, message.Option);
+			Main.proxy.PositionTrackmusic(message.x, message.y, message.z, message.radius, message.url, message.volume, message.TrackId, message.Option);
 		}
 	}
 }

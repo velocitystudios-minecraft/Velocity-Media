@@ -32,8 +32,13 @@ public class TrackCommand extends CommandBase {
     }
 
     @Override
+    public int getRequiredPermissionLevel() {
+        return 2;
+    }
+
+    @Override
     public String getUsage(ICommandSender sender) {
-        return "Usage: /playtrack <player> <volume> <trackid> <url> [<repeat>]";
+        return "Usage: /playtrack <player> <volume> <trackid> <url> [<option>]";
     }
 
     public static String getRealIp() {
@@ -88,16 +93,16 @@ public class TrackCommand extends CommandBase {
             return;
         }
 
-        String RepeatMode = "false";
+        String Option = "";
         if (args.length >= 5) {
-            RepeatMode = args[4];
+            Option = args[4];
         }
 
         String TrackId = args[2];
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new TrackmusicMessage(url, volume, TrackId, RepeatMode), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new TrackmusicMessage(url, volume, TrackId, Option), (EntityPlayerMP) e);
             }
         }
     }

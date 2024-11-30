@@ -95,7 +95,6 @@ public class MusicPlayerManager {
 
 	public static IMusicPlayer TestGenerate(String trackId) {
 		if (playerCache.containsKey(trackId)) {
-			System.out.println("Cache deja existant, renvoie");
 			return playerCache.get(trackId);
 		} else {
 			try {

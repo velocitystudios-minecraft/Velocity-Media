@@ -131,7 +131,6 @@ public class Playlist implements ITrackQueue {
 	 */
 	public WrappedObject<String> add(IAudioTrack track) {
 		if (!loaded) {
-			System.out.println("Musique non chargé, impossible de l'ajouter a la playlist");
 			return null;
 		}
 		final WrappedObject<String> uri = new WrappedObject<>(track.getInfo().getURI());

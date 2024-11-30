@@ -50,8 +50,6 @@ public class TVVideoScreen extends GuiScreen {
         this.be = be;
         this.url = url;
         this.volume = volume;
-
-        System.out.println("TV Gui opened");
     }
 
     @Override
@@ -134,9 +132,6 @@ public class TVVideoScreen extends GuiScreen {
         }
         if (button == saveButton) {
             int tempVolume = (int) volumeSlider.getValue();
-
-            System.out.println("Volume: " + volumeSlider.getValue());
-
             String tempUrl = urlBox.getText();
 
             this.url = tempUrl;

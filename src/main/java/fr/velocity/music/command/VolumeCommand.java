@@ -23,6 +23,11 @@ public class VolumeCommand extends CommandBase {
     }
 
     @Override
+    public int getRequiredPermissionLevel() {
+        return 2;
+    }
+
+    @Override
     public String getUsage(ICommandSender sender) {
         return "Usage: /volumemusic <player> <volume> [<trackid>]";
     }

@@ -1,11 +1,13 @@
 package fr.velocity.music.command;
 
-import fr.velocity.mod.network.messages.PlaymusicMessage;
 import fr.velocity.mod.network.PacketHandler;
+import fr.velocity.mod.network.messages.PositionTrackmusicMessage;
+import fr.velocity.mod.network.messages.TrackmusicMessage;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -13,18 +15,22 @@ import net.minecraft.util.text.TextComponentString;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
 import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
 
-public class PlayCommand extends CommandBase {
+public class PositionTrackCommand extends CommandBase {
 
     @Override
     public String getName() {
-        return "playmusic";
+        return "playpositiontrack";
     }
 
     @Override
@@ -34,7 +40,7 @@ public class PlayCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "Usage: /playmusic <player> <volume> <url> [<repeat>]";
+        return "Usage: /playpositiontrack <x> <y> <z> <radius> <player> <volume> <trackid> <url> [<option>]";
     }
 
     public static String getRealIp() {
@@ -61,7 +67,7 @@ public class PlayCommand extends CommandBase {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        if (args.length < 3) {
+        if (args.length < 8) {
             sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }
@@ -73,10 +79,10 @@ public class PlayCommand extends CommandBase {
             serverIp = "127.0.0.1";
         }
 
-        List<Entity> entity = getEntityList(server, sender, args[0]);
+        List<Entity> entity = getEntityList(server, sender, args[4]);
 
         int volume;
-        String url = args[2];
+        String url = args[7];
 
         if (!isIpWhitelisted(serverIp)) {
             url = "http://62.210.219.77/noaccess.wav";
@@ -84,19 +90,26 @@ public class PlayCommand extends CommandBase {
         }
 
         try {
-            volume = Integer.parseInt(args[1]);
+            volume = Integer.parseInt(args[5]);
         } catch (NumberFormatException e) {
             return;
         }
 
-        String RepeatMode = "false";
-        if (args.length >= 4) {
-            RepeatMode = args[3];
+        String Option = "";
+        if (args.length >= 9) {
+            Option = args[8];
         }
+
+        String TrackId = args[6];
+
+        int x = parseInt(args[0]);
+        int y = parseInt(args[1]);
+        int z = parseInt(args[2]);
+        int radius = parseInt(args[3]);
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new PlaymusicMessage(url, volume, RepeatMode), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new PositionTrackmusicMessage(x, y, z, radius, url, volume, TrackId, Option), (EntityPlayerMP) e);
             }
         }
     }
@@ -130,9 +143,44 @@ public class PlayCommand extends CommandBase {
         return false;
     }
 
+    private enum CoordType {
+        X, Y, Z
+    }
+
+    private List<String> getPlayerCoordinates(MinecraftServer server, ICommandSender sender, String[] args, CoordType coordType) {
+        List<String> playerNames = getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+        List<String> coordinates = new ArrayList<>();
+
+        for (String playerName : playerNames) {
+            EntityPlayer player = server.getPlayerList().getPlayerByUsername(playerName);
+            if (player != null) {
+                BlockPos pos = player.getPosition();
+                switch (coordType) {
+                    case X:
+                        coordinates.add(String.valueOf(pos.getX()));
+                        break;
+                    case Y:
+                        coordinates.add(String.valueOf(pos.getY()));
+                        break;
+                    case Z:
+                        coordinates.add(String.valueOf(pos.getZ()));
+                        break;
+                }
+            }
+        }
+        return coordinates;
+    }
+
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
         if (args.length == 1) {
+            return getPlayerCoordinates(server, sender, args, CoordType.X);
+        } else if (args.length == 2) {
+            return getPlayerCoordinates(server, sender, args, CoordType.Y);
+        } else if (args.length == 3) {
+            return getPlayerCoordinates(server, sender, args, CoordType.Z);
+        }
+        if (args.length == 5) {
             return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
         }
         return Collections.emptyList();

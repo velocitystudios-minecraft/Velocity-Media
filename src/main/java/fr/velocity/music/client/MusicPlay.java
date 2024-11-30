@@ -23,7 +23,7 @@ public class MusicPlay {
                 final Runnable runnable = () -> {
                     final ITrackManager manager = MusicPlayerManager.getPlayer().getTrackManager();
                     playlist.add(track);
-                    System.out.println(track);
+
                     Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
                     playlist.setPlayable(pair.getLeft(), pair.getRight());
                     manager.setTrackQueue(playlist);

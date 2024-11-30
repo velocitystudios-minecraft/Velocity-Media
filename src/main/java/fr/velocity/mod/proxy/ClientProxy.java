@@ -43,6 +43,16 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
+	public void PlayerTrackmusic(String targetPlayer, int radius, String url, int volume, String TrackId, String RepeatMode) {
+		MusicPlayerTrack.PlayerTrackmusic(targetPlayer, radius, url, volume, TrackId, RepeatMode);
+	}
+
+	@Override
+	public void PositionTrackmusic(int x, int y, int z, int radius, String url, int volume, String TrackId, String RepeatMode) {
+		MusicPositionTrack.positionTrackmusic(x, y, z, radius, url, volume, TrackId, RepeatMode);
+	}
+
+	@Override
 	public void Stopmusic(String TrackId) {
 		MusicStop.Stopmusic(TrackId);
 	}

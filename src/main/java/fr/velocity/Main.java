@@ -83,5 +83,7 @@ public class Main {
 		event.registerServerCommand(new PauseCommand());
 		event.registerServerCommand(new PlayVideoCommand());
 		event.registerServerCommand(new TrackCommand());
+		event.registerServerCommand(new PositionTrackCommand());
+		event.registerServerCommand(new PlayerTrackCommand());
 	}
 }

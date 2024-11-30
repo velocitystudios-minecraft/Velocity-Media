@@ -132,8 +132,6 @@ public class PlayVideoCommand extends CommandBase {
             System.out.println("IP : " + serverIp);
         }
 
-        System.out.println("Speed: " + VideoSpeed + " Position: " + TimePosition);
-
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
                 PacketHandler.INSTANCE.sendTo(new SendVideoMessage(url, volume, controlBlocked, TimePosition, VideoSpeed), (EntityPlayerMP) e);
