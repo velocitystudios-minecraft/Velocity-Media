@@ -143,42 +143,14 @@ public class PositionTrackCommand extends CommandBase {
         return false;
     }
 
-    private enum CoordType {
-        X, Y, Z
-    }
-
-    private List<String> getPlayerCoordinates(MinecraftServer server, ICommandSender sender, String[] args, CoordType coordType) {
-        List<String> playerNames = getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
-        List<String> coordinates = new ArrayList<>();
-
-        for (String playerName : playerNames) {
-            EntityPlayer player = server.getPlayerList().getPlayerByUsername(playerName);
-            if (player != null) {
-                BlockPos pos = player.getPosition();
-                switch (coordType) {
-                    case X:
-                        coordinates.add(String.valueOf(pos.getX()));
-                        break;
-                    case Y:
-                        coordinates.add(String.valueOf(pos.getY()));
-                        break;
-                    case Z:
-                        coordinates.add(String.valueOf(pos.getZ()));
-                        break;
-                }
-            }
-        }
-        return coordinates;
-    }
-
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
         if (args.length == 1) {
-            return getPlayerCoordinates(server, sender, args, CoordType.X);
+            return getListOfStringsMatchingLastWord(args, String.valueOf(sender.getPosition().getX()));
         } else if (args.length == 2) {
-            return getPlayerCoordinates(server, sender, args, CoordType.Y);
+            return getListOfStringsMatchingLastWord(args, String.valueOf(sender.getPosition().getY()));
         } else if (args.length == 3) {
-            return getPlayerCoordinates(server, sender, args, CoordType.Z);
+            return getListOfStringsMatchingLastWord(args, String.valueOf(sender.getPosition().getZ()));
         }
         if (args.length == 5) {
             return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());

@@ -65,7 +65,7 @@ public class PlayerTrackCommand extends CommandBase {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        if (args.length < 4) {
+        if (args.length < 5) {
             sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }

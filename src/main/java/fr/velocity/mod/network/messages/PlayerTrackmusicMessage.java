@@ -42,8 +42,8 @@ public class PlayerTrackmusicMessage implements IMessage
 
 	@Override
 	public void toBytes(ByteBuf buffer) {
-		buffer.writeInt(url.length());
-		buffer.writeCharSequence(url, StandardCharsets.UTF_8);
+		buffer.writeInt(targetPlayer.length());
+		buffer.writeCharSequence(targetPlayer, StandardCharsets.UTF_8);
 		buffer.writeInt(radius);
 		buffer.writeInt(url.length());
 		buffer.writeCharSequence(url, StandardCharsets.UTF_8);

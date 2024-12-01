@@ -13,12 +13,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.sound.midi.Track;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
@@ -33,6 +36,7 @@ public class MusicPlayerTrack {
     public static void PlayerTrackmusic(String targetPlayer, int radius, String url, int volume, String TrackId, String Option) {
         Playlist playlist = new Playlist();
         IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId);
+
         NewPlayer.getTrackSearch().getTracks(url, result -> {
             if (result.hasError()) {
                 System.out.println(new TextComponentString(result.getErrorMessage()));
@@ -65,12 +69,11 @@ public class MusicPlayerTrack {
                         }
                     }
 
-                    EntityPlayer NewtargetPlayer = Minecraft.getMinecraft().world.getPlayerEntityByName(targetPlayer);
                     stopThreadForTrackId(TrackId);
                     AtomicBoolean controlFlag = new AtomicBoolean(true);
                     trackControlFlags.put(TrackId, controlFlag);
 
-                    Thread thread = new Thread(() -> playAroundPlayer(manager, NewPlayer, NewtargetPlayer, volume, radius, Option, controlFlag));
+                    Thread thread = new Thread(() -> playAroundEntity(manager, NewPlayer, targetPlayer, volume, radius, Option, controlFlag, TrackId));
                     activeThreads.put(TrackId, thread);
                     thread.start();
                 };
@@ -105,15 +108,31 @@ public class MusicPlayerTrack {
         }
     }
 
-    private static void playAroundPlayer(ITrackManager manager, IMusicPlayer player, EntityPlayer targetPlayer, int maxVolume, int maxDistance, String Option, AtomicBoolean controlFlag) {
+    public static Entity getEntityByUUID(World world, UUID uuid) {
+        for (Entity entity : world.loadedEntityList) {
+            if (entity.getUniqueID().equals(uuid)) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    private static void playAroundEntity(ITrackManager manager, IMusicPlayer player, String targetPlayer, int maxVolume, int maxDistance, String Option, AtomicBoolean controlFlag, String IdTrack) {
+        Entity NewtargetPlayer = Minecraft.getMinecraft().world.getPlayerEntityByName(targetPlayer);
+        if (Option.contains("--useuuid")) {
+            NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));
+        }
+
+
+
         Boolean HasFade = Boolean.TRUE;
         if (Option.contains("--nofade")) {
             HasFade = Boolean.FALSE;
         }
         while (controlFlag.get() && manager.getCurrentTrack() != null) {
             EntityPlayer clientPlayer = net.minecraft.client.Minecraft.getMinecraft().player;
-            if (clientPlayer != null && targetPlayer != null) {
-                Vec3d source = targetPlayer.getPositionVector();
+            if (clientPlayer != null && NewtargetPlayer != null) {
+                Vec3d source = NewtargetPlayer.getPositionVector();
                 double distance = clientPlayer.getPositionVector().distanceTo(source);
                 int volume = 0;
 
@@ -130,6 +149,8 @@ public class MusicPlayerTrack {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            } else {
+                stopThreadForTrackId(IdTrack);
             }
         }
     }
