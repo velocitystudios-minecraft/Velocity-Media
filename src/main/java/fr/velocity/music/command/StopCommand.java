@@ -15,6 +15,8 @@ import net.minecraft.util.text.TextComponentString;
 import java.util.Collections;
 import java.util.List;
 
+import static fr.velocity.util.ServerListPersistence.RemoveTrackId;
+
 public class StopCommand extends CommandBase {
 
     @Override
@@ -45,6 +47,8 @@ public class StopCommand extends CommandBase {
         }
 
         List<Entity> entity = getEntityList(server, sender, args[0]);
+
+        RemoveTrackId(TrackId);
 
 
         for (Entity e : entity) {

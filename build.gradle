@@ -10,7 +10,7 @@ plugins {
 
 group = "fr.velocity"
 base.archivesName = 'velocitymedia'
-version = '2.1.5'
+version = '2.1.6'
 
 
 
@@ -160,7 +160,7 @@ tasks.register("prepareSources", Copy) {
 	from sourceSets.main.java
 	into file("${buildDir}/prepareSources")
 	filter (org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-		"VERSION": "2.1.5",
+		"VERSION": "2.1.6",
 		"MCVERSION": "1.12.2"
 	])
 	outputs.upToDateWhen { false }
@@ -173,11 +173,11 @@ tasks.named("compileJava").configure { task ->
 }
 
 processResources {
-	inputs.property "version", '2.1.5'
+	inputs.property "version", '2.1.6'
 	inputs.property "mcversion", '1.12.2'
 	
 	filesMatching("mcmod.info") {
-		expand "version": '2.1.5', "mcversion": '1.12.2'
+		expand "version": '2.1.6', "mcversion": '1.12.2'
 	}
 }
 

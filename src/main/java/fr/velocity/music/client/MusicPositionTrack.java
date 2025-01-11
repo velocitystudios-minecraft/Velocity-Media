@@ -17,6 +17,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.swing.text.html.Option;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
@@ -51,6 +52,21 @@ public class MusicPositionTrack {
 
                     Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
                     playlist.setPlayable(pair.getLeft(), pair.getRight());
+
+                    if (Option.contains("--noplayagain")) {
+                        if(NewPlayer.getTrackManager().getCurrentTrack() != null) {
+                            if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getTrackManager().getCurrentTrack().getInfo().getTitle())) {
+                                return;
+                            }
+                        }
+                    }
+
+                    if (Option.contains("--onlyplaying")) {
+                        if(NewPlayer.getTrackManager().getCurrentTrack() == null) {
+                            return;
+                        }
+                    }
+
                     manager.setTrackQueue(playlist);
                     manager.start();
 

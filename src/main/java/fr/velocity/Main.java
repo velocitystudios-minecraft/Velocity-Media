@@ -1,32 +1,39 @@
 package fr.velocity;
 
 import fr.velocity.mod.handler.RegistryHandler;
+import fr.velocity.music.client.ClientManager;
 import fr.velocity.music.command.*;
+import fr.velocity.util.ServerListPersistence;
 import fr.velocity.video.block.entity.TVBlockEntity;
 import fr.velocity.video.command.PlayVideoCommand;
 import fr.velocity.mod.proxy.CommonProxy;
 import fr.velocity.video.block.ModBlocks;
 import me.srrapero720.watermedia.api.image.ImageRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiErrorScreen;
+import net.minecraft.command.CommandException;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
-import java.awt.*;
+
+import static fr.velocity.util.ServerListPersistence.AskForSavedData;
 
 @Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = Main.mcversion, dependencies = Main.dependencies/*, updateJSON = Main.updateurl, clientSideOnly = true*/)
 public class Main {
+
+
 	
 	public static final String modid = "velocity-media";
 	public static final String name = "Velocity Media";
@@ -59,15 +66,33 @@ public class Main {
 	public static ImageRenderer SkipImage() { return IMG_SKIP; }
 	public static ImageRenderer loadingGif() { return LOADINGGIF; }
 
+
+	private ClientManager clientManager;
+
+	public static class ModEventSubscriber {
+		@SubscribeEvent()
+		public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) throws CommandException {
+			System.out.println("Le joueur " + event.player.getName() + " a rejoint le jeu.");
+			AskForSavedData(event.player);
+		}
+	}
+
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent event) {
 		RegistryHandler.preInitRegistries(event);
 		proxy.preinit(event);
+
+		MinecraftForge.EVENT_BUS.register(new ModEventSubscriber());
 	}
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		GameRegistry.registerTileEntity(TVBlockEntity.class, new ResourceLocation(modid, "TVBlockEntity"));
+
+		if(event.getSide().isClient()) {
+			clientManager = new ClientManager();
+		}
+
 		proxy.init(event);
 	}
 
@@ -99,5 +124,12 @@ public class Main {
 		event.registerServerCommand(new TrackCommand());
 		event.registerServerCommand(new PositionTrackCommand());
 		event.registerServerCommand(new PlayerTrackCommand());
+
+		ServerListPersistence.loadData();
+	}
+
+	@Mod.EventHandler
+	public void serverStopped(FMLServerStoppedEvent event) {
+		ServerListPersistence.saveData();
 	}
 }

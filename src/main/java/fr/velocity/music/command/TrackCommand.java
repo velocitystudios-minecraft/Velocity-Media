@@ -3,6 +3,8 @@ package fr.velocity.music.command;
 import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.PlaymusicMessage;
 import fr.velocity.mod.network.messages.TrackmusicMessage;
+import fr.velocity.music.lavaplayer.api.IMusicPlayer;
+import fr.velocity.music.musicplayer.MusicPlayerManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -18,11 +20,13 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
 import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
+import static fr.velocity.util.ServerListPersistence.AddTrackSaved;
 
 public class TrackCommand extends CommandBase {
 
@@ -93,12 +97,30 @@ public class TrackCommand extends CommandBase {
             return;
         }
 
-        String Option = "";
+        String Option;
         if (args.length >= 5) {
-            Option = args[4];
+            Option = String.join(" ", Arrays.copyOfRange(args, 4, args.length));
+        } else {
+            Option = "";
         }
 
         String TrackId = args[2];
+
+        String finalUrl = url;
+        if(Option.contains("--save")) {
+            if(Option.contains("--position")) {
+                sender.sendMessage(new TextComponentString("§cImpossible de combiner --position et --save."));
+                return;
+            }
+
+            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server");
+
+            NewPlayer.getTrackSearch().getTracks(url, result -> {
+                if(result.getTrack() != null) {
+                    AddTrackSaved(result.getTrack().getDuration(), finalUrl, volume, TrackId, Option, args[0]);
+                }
+            });
+        }
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {

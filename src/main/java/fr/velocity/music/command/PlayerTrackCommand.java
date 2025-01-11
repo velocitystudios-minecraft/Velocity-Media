@@ -3,6 +3,8 @@ package fr.velocity.music.command;
 import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.PlayerTrackmusicMessage;
 import fr.velocity.mod.network.messages.TrackmusicMessage;
+import fr.velocity.music.lavaplayer.api.IMusicPlayer;
+import fr.velocity.music.musicplayer.MusicPlayerManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -18,11 +20,14 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
 import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
+import static fr.velocity.util.ServerListPersistence.AddLocationTrackSaved;
+import static fr.velocity.util.ServerListPersistence.AddPlayerTrackSaved;
 
 public class PlayerTrackCommand extends CommandBase {
 
@@ -102,12 +107,29 @@ public class PlayerTrackCommand extends CommandBase {
             return;
         }
 
-        String Option = "false";
+        String Option;
         if (args.length >= 6) {
-            Option = args[5];
+            Option = String.join(" ", Arrays.copyOfRange(args, 5, args.length));
+        } else {
+            Option = "false";
         }
 
         String TrackId = args[3];
+
+        if(Option.contains("--save")) {
+            if(Option.contains("--position")) {
+                sender.sendMessage(new TextComponentString("§cImpossible de combiner --position et --save."));
+                return;
+            }
+            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server");
+
+            String finalUrl = url;
+            NewPlayer.getTrackSearch().getTracks(url, result -> {
+                if(result.getTrack() != null) {
+                    AddPlayerTrackSaved(result.getTrack().getDuration(), finalUrl, volume, TrackId, Option, args[0], Radius);
+                }
+            });
+        }
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {

@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.sound.midi.Track;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -57,6 +58,20 @@ public class MusicPlayerTrack {
                     Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
                     playlist.setPlayable(pair.getLeft(), pair.getRight());
                     manager.setTrackQueue(playlist);
+
+                    if (Option.contains("--noplayagain")) {
+                        if(NewPlayer.getTrackManager().getCurrentTrack() != null) {
+                            if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getTrackManager().getCurrentTrack().getInfo().getTitle())) {
+                                return;
+                            }
+                        }
+                    }
+
+                    if (Option.contains("--onlyplaying")) {
+                        if(NewPlayer.getTrackManager().getCurrentTrack() == null) {
+                            return;
+                        }
+                    }
 
                     stopThreadForTrackId(TrackId);
                     AtomicBoolean controlFlag = new AtomicBoolean(true);
@@ -115,10 +130,11 @@ public class MusicPlayerTrack {
         }
 
         if(NewtargetPlayer== null) {
+            System.out.println("Le joueur / entité n'es pas trouvé, annulation.");
             manager.stop();
             stopThreadForTrackId(IdTrack);
         } else {
-
+            System.out.println("Lancement du systeme reliant : " + NewtargetPlayer.getName());
             manager.start();
 
             int StartTime = 0;
@@ -158,6 +174,7 @@ public class MusicPlayerTrack {
                     }
                 } else {
                     manager.stop();
+                    System.out.println("Entité plus trouvé");
                     stopThreadForTrackId(IdTrack);
                 }
             }
