@@ -4,11 +4,11 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.zip.*;
 
+import fr.velocity.music.init.MusicPlayerFiles;
 import org.apache.logging.log4j.*;
 
 import com.google.gson.Gson;
 
-import fr.velocity.music.init.MusicPlayerFiles;
 import fr.velocity.music.musicplayer.playlist.Playlists;
 
 public class PlaylistManager implements IGsonLoadable {
@@ -16,7 +16,7 @@ public class PlaylistManager implements IGsonLoadable {
 	private final Logger logger = LogManager.getLogger();
 	
 	private final Gson gson;
-	
+
 	private final Path path;
 	
 	private Playlists playlists;
@@ -25,7 +25,7 @@ public class PlaylistManager implements IGsonLoadable {
 		this.gson = gson;
 		path = MusicPlayerFiles.getDirectory().resolve("playlist.json.gz");
 	}
-	
+
 	@Override
 	public void loadFromFile() {
 		try {

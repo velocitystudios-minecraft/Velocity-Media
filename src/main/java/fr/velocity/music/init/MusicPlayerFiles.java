@@ -24,6 +24,9 @@ public class MusicPlayerFiles {
 	}
 	
 	public static Path getDirectory() {
+		if(directory==null) {
+			setup();
+		}
 		return directory;
 	}
 }

@@ -108,7 +108,7 @@ public class TVBlockRenderer extends TileEntitySpecialRenderer<TVBlockEntity> {
 
         GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
 
-        EnumFacing direction = EnumFacing.byIndex(frame.getBlockMetadata());
+        EnumFacing direction = EnumFacing.values()[frame.getBlockMetadata()];
         applyDirection(direction);
         if (direction == EnumFacing.UP || direction == EnumFacing.DOWN)
             GL11.glRotatef(90, 0, 1, 0);

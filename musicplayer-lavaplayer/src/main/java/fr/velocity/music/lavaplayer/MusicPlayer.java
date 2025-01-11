@@ -2,6 +2,8 @@ package fr.velocity.music.lavaplayer;
 
 import javax.sound.sampled.DataLine.Info;
 
+import com.sedmelluq.discord.lavaplayer.filter.AudioFilter;
+import com.sedmelluq.discord.lavaplayer.filter.PcmFilterFactory;
 import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.format.Pcm16AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration.ResamplingQuality;
@@ -9,6 +11,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 
+import com.sedmelluq.discord.lavaplayer.track.playback.AudioProcessingContext;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.output.IOutputConsumer;
 import fr.velocity.music.lavaplayer.api.queue.ITrackManager;
@@ -17,6 +20,9 @@ import fr.velocity.music.lavaplayer.output.AudioOutput;
 import fr.velocity.music.lavaplayer.queue.TrackManager;
 import fr.velocity.music.lavaplayer.search.TrackSearch;
 import fr.velocity.music.lavaplayer.sources.AudioSources;
+
+import java.util.List;
+import java.util.function.BiFunction;
 
 public class MusicPlayer implements IMusicPlayer {
 	
@@ -112,5 +118,9 @@ public class MusicPlayer implements IMusicPlayer {
 	@Override
 	public void setOutputConsumer(IOutputConsumer consumer) {
 		outputConsumer = consumer;
+	}
+
+	public void setFilterFactory(PcmFilterFactory pcm) {
+		audioPlayer.setFilterFactory(pcm);
 	}
 }

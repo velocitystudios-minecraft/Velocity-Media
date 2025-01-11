@@ -1,5 +1,6 @@
 package fr.velocity.music.client;
 
+
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IPlayingTrack;
@@ -13,6 +14,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.sound.midi.Track;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,10 +38,25 @@ public class MusicTrack {
 
                 final Runnable runnable = () -> {
                     final ITrackManager manager = NewPlayer.getTrackManager();
-                    playlist.add(track);
 
+                    playlist.add(track);
                     Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
                     playlist.setPlayable(pair.getLeft(), pair.getRight());
+
+                    if (Option.contains("--noplayagain")) {
+                        if(NewPlayer.getTrackManager().getCurrentTrack() != null) {
+                            if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getTrackManager().getCurrentTrack().getInfo().getTitle())) {
+                                return;
+                            }
+                        }
+                    }
+
+                    if (Option.contains("--onlyplaying")) {
+                        if(NewPlayer.getTrackManager().getCurrentTrack() == null) {
+                            return;
+                        }
+                    }
+
                     manager.setTrackQueue(playlist);
                     manager.start();
                     NewPlayer.setVolume(volume);

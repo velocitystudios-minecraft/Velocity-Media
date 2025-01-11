@@ -79,7 +79,13 @@ public class PlayerTrackCommand extends CommandBase {
 
         List<Entity> entity = getEntityList(server, sender, "@a");
 
-        int Radius = Integer.parseInt(args[1]);
+        int Radius;
+        try {
+            Radius = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(new TextComponentString("Problème avec le Radius"));
+            return;
+        }
 
         int volume;
         String url = args[4];
@@ -92,6 +98,7 @@ public class PlayerTrackCommand extends CommandBase {
         try {
             volume = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
+            sender.sendMessage(new TextComponentString("Problème avec le volume"));
             return;
         }
 

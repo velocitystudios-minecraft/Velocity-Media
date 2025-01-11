@@ -7,6 +7,8 @@ import fr.velocity.video.command.PlayVideoCommand;
 import fr.velocity.mod.proxy.CommonProxy;
 import fr.velocity.video.block.ModBlocks;
 import me.srrapero720.watermedia.api.image.ImageRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiErrorScreen;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,6 +22,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.*;
+import java.awt.*;
+
 @Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = Main.mcversion, dependencies = Main.dependencies/*, updateJSON = Main.updateurl, clientSideOnly = true*/)
 public class Main {
 	
@@ -27,8 +32,9 @@ public class Main {
 	public static final String name = "Velocity Media";
 	public static final String version = "@VERSION@";
 	public static final String mcversion = "@MCVERSION@";
-	public static final String dependencies = "required:forge@[14.23.5.2768,);required-after:uteamcore@[2.2.5.305,);after:watermedia";
+	public static final String dependencies = "required:forge@[14.23.5.2768,);after:watermedia";
 	public static Logger LOGGER = null;
+	public static Boolean DebugMode = true;
 
 	@SidedProxy(serverSide = "fr.velocity.mod.proxy.CommonProxy", clientSide = "fr.velocity.mod.proxy.ClientProxy")
 	public static CommonProxy proxy;
@@ -64,13 +70,21 @@ public class Main {
 		GameRegistry.registerTileEntity(TVBlockEntity.class, new ResourceLocation(modid, "TVBlockEntity"));
 		proxy.init(event);
 	}
+
+	private void showWindowsNotification(String title, String message) {
+		JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+	}
 	
 	@EventHandler
 	public void postinit(FMLPostInitializationEvent event) {
 		if (FMLCommonHandler.instance().getSide().isClient()) {
-			MissingModsException exception = new MissingModsException(modid, name);
-			exception.addMissingMod(new DefaultArtifactVersion("[2.0,2.1)"), null, true);
-			if (!Loader.instance().getIndexedModList().containsKey("watermedia")) throw exception;
+			if (!me.srrapero720.watermedia.api.WaterMediaAPI.vlc_isReady()) {
+				System.out.println("VLC n'es pas detecté");
+				showWindowsNotification("Erreur fatale", "Le lecteur VLC n'est pas installé. Veuillez l'installer.");
+				System.exit(1);
+			} else {
+				System.out.println("VLC est actif");
+			}
 		}
 		proxy.postinit(event);
 	}

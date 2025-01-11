@@ -1,6 +1,5 @@
 package fr.velocity.music.client;
 
-import com.sun.media.jfxmedia.track.AudioTrack;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IPlayingTrack;
@@ -26,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static fr.velocity.Main.DebugMode;
 
 @SideOnly(Side.CLIENT)
 public class MusicPlayerTrack {
@@ -56,18 +57,6 @@ public class MusicPlayerTrack {
                     Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
                     playlist.setPlayable(pair.getLeft(), pair.getRight());
                     manager.setTrackQueue(playlist);
-                    manager.start();
-
-                    int StartTime = 0;
-                    if (Option.contains("--position")) {
-                        Pattern pattern = Pattern.compile("--position(\\d+)");
-                        Matcher matcher = pattern.matcher(Option);
-                        if (matcher.find()) {
-                            StartTime = Integer.parseInt(matcher.group(1));
-                            IPlayingTrack currentTrack = NewPlayer.getTrackManager().getCurrentTrack();
-                            currentTrack.setPosition(StartTime);
-                        }
-                    }
 
                     stopThreadForTrackId(TrackId);
                     AtomicBoolean controlFlag = new AtomicBoolean(true);
@@ -110,6 +99,8 @@ public class MusicPlayerTrack {
 
     public static Entity getEntityByUUID(World world, UUID uuid) {
         for (Entity entity : world.loadedEntityList) {
+            System.out.println(entity.getUniqueID());
+            System.out.println(uuid);
             if (entity.getUniqueID().equals(uuid)) {
                 return entity;
             }
@@ -118,40 +109,75 @@ public class MusicPlayerTrack {
     }
 
     private static void playAroundEntity(ITrackManager manager, IMusicPlayer player, String targetPlayer, int maxVolume, int maxDistance, String Option, AtomicBoolean controlFlag, String IdTrack) {
-        Entity NewtargetPlayer = Minecraft.getMinecraft().world.getPlayerEntityByName(targetPlayer);
+        System.out.println("Lancement du PlayAroundEntity");
+
+        Entity NewtargetPlayer;
         if (Option.contains("--useuuid")) {
             NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));
+        } else {
+            NewtargetPlayer = Minecraft.getMinecraft().world.getPlayerEntityByName(targetPlayer);
         }
 
+        if(NewtargetPlayer== null) {
+            System.out.println("Entité non existante: ");
+            System.out.println(targetPlayer);
+            manager.stop();
+            stopThreadForTrackId(IdTrack);
+        } else {
 
+            manager.start();
 
-        Boolean HasFade = Boolean.TRUE;
-        if (Option.contains("--nofade")) {
-            HasFade = Boolean.FALSE;
-        }
-        while (controlFlag.get() && manager.getCurrentTrack() != null) {
-            EntityPlayer clientPlayer = net.minecraft.client.Minecraft.getMinecraft().player;
-            if (clientPlayer != null && NewtargetPlayer != null) {
-                Vec3d source = NewtargetPlayer.getPositionVector();
-                double distance = clientPlayer.getPositionVector().distanceTo(source);
-                int volume = 0;
-
-                if (distance < maxDistance) {
-                    volume = (int) (maxVolume - (distance / maxDistance * maxVolume));
-                    if (HasFade == Boolean.FALSE) {
-                        volume = maxVolume;
-                    }
+            int StartTime = 0;
+            if (Option.contains("--position")) {
+                Pattern pattern = Pattern.compile("--position(\\d+)");
+                Matcher matcher = pattern.matcher(Option);
+                if (matcher.find()) {
+                    StartTime = Integer.parseInt(matcher.group(1));
+                    IPlayingTrack currentTrack = player.getTrackManager().getCurrentTrack();
+                    currentTrack.setPosition(StartTime);
                 }
-
-                player.setVolume(volume);
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                stopThreadForTrackId(IdTrack);
             }
+
+            System.out.println("Lancement du système audio");
+
+            Boolean HasFade = Boolean.TRUE;
+            if (Option.contains("--nofade")) {
+                HasFade = Boolean.FALSE;
+            }
+            System.out.println("LANCEMENT DU SYSTEME DE VERIFICATION DE POSITION");
+            while (controlFlag.get() && manager.getCurrentTrack() != null) {
+                EntityPlayer clientPlayer = net.minecraft.client.Minecraft.getMinecraft().player;
+                if (clientPlayer != null && NewtargetPlayer != null) {
+                    Vec3d source = NewtargetPlayer.getPositionVector();
+                    double distance = clientPlayer.getPositionVector().distanceTo(source);
+                    int volume = 0;
+
+                    if (distance < maxDistance) {
+                        volume = (int) (maxVolume - (distance / maxDistance * maxVolume));
+                        if (HasFade == Boolean.FALSE) {
+                            volume = maxVolume;
+                        }
+                    }
+
+                    System.out.println(volume);
+
+                    player.setVolume(volume);
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    if(clientPlayer==null) {
+                        System.out.println("clientPlayer not set");
+                    } else {
+                        System.out.println("NewtargetPlayer not set");
+                    }
+                    manager.stop();
+                    stopThreadForTrackId(IdTrack);
+                }
+            }
+            System.out.println("ARRET DE LA WHILE DU SYSTEME DE VERIFICATION DE POSITION");
         }
     }
 }

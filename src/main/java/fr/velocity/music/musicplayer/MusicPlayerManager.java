@@ -24,7 +24,7 @@ public class MusicPlayerManager {
 
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private static final Map<String, IMusicPlayer> playerCache = new ConcurrentHashMap<>();
-	
+
 	private static final PlaylistManager playlistManager = new PlaylistManager(gson);
 	
 	public static void setup() {
