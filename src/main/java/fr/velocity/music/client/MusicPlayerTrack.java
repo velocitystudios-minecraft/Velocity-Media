@@ -99,8 +99,6 @@ public class MusicPlayerTrack {
 
     public static Entity getEntityByUUID(World world, UUID uuid) {
         for (Entity entity : world.loadedEntityList) {
-            System.out.println(entity.getUniqueID());
-            System.out.println(uuid);
             if (entity.getUniqueID().equals(uuid)) {
                 return entity;
             }
@@ -109,8 +107,6 @@ public class MusicPlayerTrack {
     }
 
     private static void playAroundEntity(ITrackManager manager, IMusicPlayer player, String targetPlayer, int maxVolume, int maxDistance, String Option, AtomicBoolean controlFlag, String IdTrack) {
-        System.out.println("Lancement du PlayAroundEntity");
-
         Entity NewtargetPlayer;
         if (Option.contains("--useuuid")) {
             NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));
@@ -119,8 +115,6 @@ public class MusicPlayerTrack {
         }
 
         if(NewtargetPlayer== null) {
-            System.out.println("Entité non existante: ");
-            System.out.println(targetPlayer);
             manager.stop();
             stopThreadForTrackId(IdTrack);
         } else {
@@ -138,13 +132,10 @@ public class MusicPlayerTrack {
                 }
             }
 
-            System.out.println("Lancement du système audio");
-
             Boolean HasFade = Boolean.TRUE;
             if (Option.contains("--nofade")) {
                 HasFade = Boolean.FALSE;
             }
-            System.out.println("LANCEMENT DU SYSTEME DE VERIFICATION DE POSITION");
             while (controlFlag.get() && manager.getCurrentTrack() != null) {
                 EntityPlayer clientPlayer = net.minecraft.client.Minecraft.getMinecraft().player;
                 if (clientPlayer != null && NewtargetPlayer != null) {
@@ -159,8 +150,6 @@ public class MusicPlayerTrack {
                         }
                     }
 
-                    System.out.println(volume);
-
                     player.setVolume(volume);
                     try {
                         Thread.sleep(200);
@@ -168,16 +157,10 @@ public class MusicPlayerTrack {
                         e.printStackTrace();
                     }
                 } else {
-                    if(clientPlayer==null) {
-                        System.out.println("clientPlayer not set");
-                    } else {
-                        System.out.println("NewtargetPlayer not set");
-                    }
                     manager.stop();
                     stopThreadForTrackId(IdTrack);
                 }
             }
-            System.out.println("ARRET DE LA WHILE DU SYSTEME DE VERIFICATION DE POSITION");
         }
     }
 }

@@ -34,7 +34,7 @@ public class Main {
 	public static final String mcversion = "@MCVERSION@";
 	public static final String dependencies = "required:forge@[14.23.5.2768,);after:watermedia";
 	public static Logger LOGGER = null;
-	public static Boolean DebugMode = true;
+	public static Boolean DebugMode = false;
 
 	@SidedProxy(serverSide = "fr.velocity.mod.proxy.CommonProxy", clientSide = "fr.velocity.mod.proxy.ClientProxy")
 	public static CommonProxy proxy;
