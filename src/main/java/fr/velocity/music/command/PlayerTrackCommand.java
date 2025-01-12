@@ -121,6 +121,12 @@ public class PlayerTrackCommand extends CommandBase {
                 sender.sendMessage(new TextComponentString("§cImpossible de combiner --position et --save."));
                 return;
             }
+            if(args[0].contains("@")) {
+                if(!args[0].contains("@a")) {
+                    sender.sendMessage(new TextComponentString("§cUniquement @a est autorisé en sauvegarde."));
+                    return;
+                }
+            }
             IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server");
 
             String finalUrl = url;

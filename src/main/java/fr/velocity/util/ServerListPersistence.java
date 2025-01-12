@@ -148,12 +148,16 @@ public class ServerListPersistence {
                 double startTime = GetDouble(subList.get(1));
                 double duration = GetDouble(subList.get(2));
                 String option = (String) subList.get(6);
-                if (currentTime - startTime >= duration) {
-                    if(!option.contains("--repeat")) {
-                        itemsToRemove.add(subList);
-                        System.out.println("objet retiré");
-                        continue;
+                if(!option.contains("--norestartsave")) {
+                    if (currentTime - startTime >= duration) {
+                        if(!option.contains("--repeat")) {
+                            itemsToRemove.add(subList);
+                            continue;
+                        }
                     }
+                } else {
+                    itemsToRemove.add(subList);
+                    continue;
                 }
 
                 String url = (String) subList.get(3);
@@ -227,8 +231,18 @@ public class ServerListPersistence {
                                     }
                                 }
                             }
-                            System.out.println("Lancer un son jouer sur probablement quelqu'un...");
-                            PacketHandler.INSTANCE.sendTo(new PlayerTrackmusicMessage(User, (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
+                            if(User.equals("@a")) {
+                                System.out.println("Tout les joueurs font du sons");
+                                List<Entity> allplayer = getEntityList(MPPlayer.getServer(), MPPlayer, "@a");
+                                for (Entity e : allplayer) {
+                                    if (e instanceof EntityPlayerMP) {
+                                        PacketHandler.INSTANCE.sendTo(new PlayerTrackmusicMessage(e.getName(), (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
+                                    }
+                                }
+                            } else {
+                                System.out.println("Lancer un son jouer sur probablement quelqu'un...");
+                                PacketHandler.INSTANCE.sendTo(new PlayerTrackmusicMessage(User, (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
+                            }
                         }
                     }
                 }

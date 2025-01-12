@@ -122,60 +122,52 @@ public class MusicPlayerTrack {
     }
 
     private static void playAroundEntity(ITrackManager manager, IMusicPlayer player, String targetPlayer, int maxVolume, int maxDistance, String Option, AtomicBoolean controlFlag, String IdTrack) {
-        Entity NewtargetPlayer;
-        if (Option.contains("--useuuid")) {
-            NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));
-        } else {
-            NewtargetPlayer = Minecraft.getMinecraft().world.getPlayerEntityByName(targetPlayer);
+        Entity NewtargetPlayer = null;
+        
+        manager.start();
+
+        int StartTime = 0;
+        if (Option.contains("--position")) {
+            Pattern pattern = Pattern.compile("--position(\\d+)");
+            Matcher matcher = pattern.matcher(Option);
+            if (matcher.find()) {
+                StartTime = Integer.parseInt(matcher.group(1));
+                IPlayingTrack currentTrack = player.getTrackManager().getCurrentTrack();
+                currentTrack.setPosition(StartTime);
+            }
         }
 
-        if(NewtargetPlayer== null) {
-            System.out.println("Le joueur / entité n'es pas trouvé, annulation.");
-            manager.stop();
-            stopThreadForTrackId(IdTrack);
-        } else {
-            System.out.println("Lancement du systeme reliant : " + NewtargetPlayer.getName());
-            manager.start();
+        Boolean HasFade = Boolean.TRUE;
+        if (Option.contains("--nofade")) {
+            HasFade = Boolean.FALSE;
+        }
 
-            int StartTime = 0;
-            if (Option.contains("--position")) {
-                Pattern pattern = Pattern.compile("--position(\\d+)");
-                Matcher matcher = pattern.matcher(Option);
-                if (matcher.find()) {
-                    StartTime = Integer.parseInt(matcher.group(1));
-                    IPlayingTrack currentTrack = player.getTrackManager().getCurrentTrack();
-                    currentTrack.setPosition(StartTime);
+        while (controlFlag.get() && manager.getCurrentTrack() != null) {
+            EntityPlayer clientPlayer = Minecraft.getMinecraft().player;
+            if (clientPlayer != null && NewtargetPlayer != null) {
+                Vec3d source = NewtargetPlayer.getPositionVector();
+                double distance = clientPlayer.getPositionVector().distanceTo(source);
+                int volume = 0;
+
+                if (distance < maxDistance) {
+                    volume = (int) (maxVolume - (distance / maxDistance * maxVolume));
+                    if (HasFade == Boolean.FALSE) {
+                        volume = maxVolume;
+                    }
                 }
-            }
 
-            Boolean HasFade = Boolean.TRUE;
-            if (Option.contains("--nofade")) {
-                HasFade = Boolean.FALSE;
-            }
-            while (controlFlag.get() && manager.getCurrentTrack() != null) {
-                EntityPlayer clientPlayer = net.minecraft.client.Minecraft.getMinecraft().player;
-                if (clientPlayer != null && NewtargetPlayer != null) {
-                    Vec3d source = NewtargetPlayer.getPositionVector();
-                    double distance = clientPlayer.getPositionVector().distanceTo(source);
-                    int volume = 0;
-
-                    if (distance < maxDistance) {
-                        volume = (int) (maxVolume - (distance / maxDistance * maxVolume));
-                        if (HasFade == Boolean.FALSE) {
-                            volume = maxVolume;
-                        }
-                    }
-
-                    player.setVolume(volume);
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                player.setVolume(volume);
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                player.setVolume(0);
+                if (Option.contains("--useuuid")) {
+                    NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));
                 } else {
-                    manager.stop();
-                    System.out.println("Entité plus trouvé");
-                    stopThreadForTrackId(IdTrack);
+                    NewtargetPlayer = Minecraft.getMinecraft().world.getPlayerEntityByName(targetPlayer);
                 }
             }
         }
