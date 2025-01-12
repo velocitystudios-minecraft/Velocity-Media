@@ -27,12 +27,10 @@ public class Playlists implements Iterable<Playlist> {
 
 	public void add(Playlist playlist) {
 		playlists.add(playlist);
-		save();
 	}
 
 	public void remove(Playlist playlist) {
 		playlists.remove(playlist);
-		save();
 	}
 
 	public void setPlayingLock() {
@@ -58,10 +56,6 @@ public class Playlists implements Iterable<Playlist> {
 	@Override
 	public Iterator<Playlist> iterator() {
 		return Iterators.unmodifiableIterator(playlists.iterator());
-	}
-
-	private void save() {
-		MusicPlayerManager.getPlaylistManager().writeToFile();
 	}
 
 }

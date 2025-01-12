@@ -57,6 +57,7 @@ minecraft {
 		
 		server {
 			workingDirectory file("run/server")
+			property "musicplayer.dev", lavaplayerLibraries()
 			
 			mods {
 				"velocitymedia" {

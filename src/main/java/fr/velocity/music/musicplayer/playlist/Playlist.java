@@ -137,7 +137,6 @@ public class Playlist implements ITrackQueue {
 		final int index = uris.size();
 		uris.add(index, uri);
 		loadedTracks.add(index, new LoadedTracks(uri, track));
-		save();
 		return uri;
 	}
 	
@@ -157,7 +156,6 @@ public class Playlist implements ITrackQueue {
 			final int index = uris.size();
 			uris.add(index, uri);
 			loadedTracks.add(index, new LoadedTracks(uri, trackList));
-			save();
 			return uri;
 		}
 		return null;
@@ -177,7 +175,6 @@ public class Playlist implements ITrackQueue {
 		if (index >= 0) {
 			uris.remove(index);
 			loadedTracks.remove(index);
-			save();
 			return true;
 		}
 		return false;
@@ -199,7 +196,6 @@ public class Playlist implements ITrackQueue {
 		if (newIndex >= 0 && newIndex < uris.size()) {
 			uris.add(newIndex, uris.remove(oldIndex));
 			loadedTracks.add(newIndex, loadedTracks.remove(oldIndex));
-			save();
 			return true;
 		} else {
 			return false;
@@ -213,7 +209,6 @@ public class Playlist implements ITrackQueue {
 	 */
 	public void setName(String name) {
 		this.name = name;
-		save();
 	}
 	
 	/**
@@ -252,10 +247,7 @@ public class Playlist implements ITrackQueue {
 	public boolean isEmpty() {
 		return uris.isEmpty();
 	}
-	
-	private void save() {
-		MusicPlayerManager.getPlaylistManager().writeToFile();
-	}
+
 	
 	// -------------------------------------------------------------------------------------------------
 	// Start of implementation for playing this playlist. Nothing here is serializable.

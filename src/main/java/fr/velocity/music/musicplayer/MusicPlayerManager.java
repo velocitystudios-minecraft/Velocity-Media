@@ -25,14 +25,9 @@ public class MusicPlayerManager {
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private static final Map<String, IMusicPlayer> playerCache = new ConcurrentHashMap<>();
 
-	private static final PlaylistManager playlistManager = new PlaylistManager(gson);
-	
 	public static void setup() {
 		generatePlayer1();
 		Globalplayer.startAudioOutput();
-
-		playlistManager.loadFromFile();
-
 		Globalplayer.setVolume(50);
 	}
 
@@ -117,9 +112,5 @@ public class MusicPlayerManager {
 	
 	public static IMusicPlayer getPlayer() {
 		return Globalplayer;
-	}
-
-	public static PlaylistManager getPlaylistManager() {
-		return playlistManager;
 	}
 }

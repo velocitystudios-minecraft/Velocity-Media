@@ -7,11 +7,9 @@ import fr.velocity.mod.network.messages.PlayerTrackmusicMessage;
 import fr.velocity.mod.network.messages.PositionTrackmusicMessage;
 import fr.velocity.mod.network.messages.TrackmusicMessage;
 import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import org.lwjgl.Sys;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -120,6 +118,18 @@ public class ServerListPersistence {
         }
     };
 
+    public static double GetDouble(Object o) {
+        if (o instanceof Long) {
+            return ((Long) o).doubleValue();
+        } else if (o instanceof Double) {
+            return (Double) o;
+        } else if (o instanceof Integer) {
+            return (Integer) o;
+        } else {
+            throw new IllegalArgumentException("Unsupported type: " + o.getClass().getName());
+        }
+    }
+
     public static void AskForSavedData(EntityPlayer player) throws CommandException {
         if (player == null) {
             System.out.println("Le joueur est nul, impossible de traiter.");
@@ -134,8 +144,9 @@ public class ServerListPersistence {
 
             for (List<Object> subList : mainList) {
                 String TrackType = (String) subList.get(0);
-                double startTime = (double) subList.get(1);
-                double duration = (double) subList.get(2);
+
+                double startTime = GetDouble(subList.get(1));
+                double duration = GetDouble(subList.get(2));
                 String option = (String) subList.get(6);
                 if (currentTime - startTime >= duration) {
                     if(!option.contains("--repeat")) {
@@ -145,10 +156,8 @@ public class ServerListPersistence {
                     }
                 }
 
-                System.out.println("CHECKING");
-
                 String url = (String) subList.get(3);
-                double volume = (double) subList.get(4);
+                double volume = GetDouble(subList.get(4));
                 String TrackId = (String) subList.get(5);
                 String User = (String) subList.get(7);
 
@@ -198,16 +207,16 @@ public class ServerListPersistence {
                 } else {
                     if(Objects.equals(TrackType, "LocationTrack")) {
                         if(entitylist.contains(MPPlayer)) {
-                            double X = (double) subList.get(8);
-                            double Y = (double) subList.get(9);
-                            double Z = (double) subList.get(10);
-                            double Radius = (double) subList.get(11);
+                            double X = GetDouble(subList.get(8));
+                            double Y = GetDouble(subList.get(9));
+                            double Z = GetDouble(subList.get(10));
+                            double Radius = GetDouble(subList.get(11));
 
                             PacketHandler.INSTANCE.sendTo(new PositionTrackmusicMessage((int) X, (int) Y, (int) Z, (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
                         }
                     } else {
                         if(Objects.equals(TrackType, "PlayerTrack")) {
-                            double Radius = (double) subList.get(8);
+                            double Radius = GetDouble(subList.get(8));
 
                             if(User.equals(player.getName())) {
                                 System.out.println("Le joueur est le mec a qui le son est relié cela joue le son donc a tous");
