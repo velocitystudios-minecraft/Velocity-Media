@@ -13,10 +13,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static net.minecraft.command.CommandBase.getEntityList;
 
@@ -106,17 +103,19 @@ public class ServerListPersistence {
     }
 
     public static void RemoveTrackId(String TrackId) {
-        if(Objects.equals(TrackId, "ALL")) {
+        if (Objects.equals(TrackId, "ALL")) {
             mainList = new ArrayList<>();
         } else {
-            for (List<Object> subList : mainList) {
+            Iterator<List<Object>> iterator = mainList.iterator();
+            while (iterator.hasNext()) {
+                List<Object> subList = iterator.next();
                 String GetTrackId = (String) subList.get(5);
-                if(Objects.equals(GetTrackId, TrackId)) {
-                    mainList.remove(subList);
+                if (Objects.equals(GetTrackId, TrackId)) {
+                    iterator.remove();
                 }
-            };
+            }
         }
-    };
+    }
 
     public static double GetDouble(Object o) {
         if (o instanceof Long) {

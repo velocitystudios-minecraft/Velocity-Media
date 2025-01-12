@@ -144,6 +144,12 @@ public class MusicPlayerTrack {
 
         while (controlFlag.get() && manager.getCurrentTrack() != null) {
             EntityPlayer clientPlayer = Minecraft.getMinecraft().player;
+            if (Option.contains("--useuuid")) {
+                NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));
+            } else {
+                NewtargetPlayer = Minecraft.getMinecraft().world.getPlayerEntityByName(targetPlayer);
+            }
+
             if (clientPlayer != null && NewtargetPlayer != null) {
                 Vec3d source = NewtargetPlayer.getPositionVector();
                 double distance = clientPlayer.getPositionVector().distanceTo(source);
@@ -164,11 +170,6 @@ public class MusicPlayerTrack {
                 }
             } else {
                 player.setVolume(0);
-                if (Option.contains("--useuuid")) {
-                    NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));
-                } else {
-                    NewtargetPlayer = Minecraft.getMinecraft().world.getPlayerEntityByName(targetPlayer);
-                }
             }
         }
     }
