@@ -2,6 +2,9 @@ package fr.velocity.mod.proxy;
 
 import fr.velocity.Main;
 import fr.velocity.mod.handler.RegistryHandler;
+import fr.velocity.music.dependency.DependencyManager;
+import fr.velocity.music.init.MusicPlayerFiles;
+import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.video.block.entity.TVBlockEntity;
 import fr.velocity.mod.network.PacketHandler;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -22,10 +25,16 @@ public class CommonProxy {
 		Main.LOGGER = event.getModLog();
 		RegistryHandler.preInitRegistries(event);
 		PacketHandler.registerMessages();
+
+		System.setProperty("http.agent", "Chrome");
+
+		DependencyManager.load();
 	}
 	
 	public void init(FMLInitializationEvent event) {
 		GameRegistry.registerTileEntity(TVBlockEntity.class, new ResourceLocation(Main.modid, "TVBlockEntity"));
+		MusicPlayerFiles.setup();
+		MusicPlayerManager.setup();
 	}
 	
 	public void postinit(FMLPostInitializationEvent event) {

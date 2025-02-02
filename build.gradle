@@ -1,22 +1,18 @@
 plugins {
 	id "net.minecraftforge.gradle"
 	id "org.parchmentmc.librarian.forgegradle"
-	id "info.u_team.gradle_files"
 	id "me.modmuss50.mod-publish-plugin"
 	id "maven-publish"
 	id "com.github.johnrengelman.shadow" version "8.1.1"
 	id "idea"
 }
 
-gradlefiles.loaderSuffix = "forge"
 
 group = "fr.velocity"
-base.archivesName = gradlefiles.archivesName()
-version = gradlefiles.version()
+base.archivesName = 'velocitymedia'
+version = '2.1.6'
 
-gradlefiles {
-	vendor = "Team UTeam"
-}
+
 
 sourceSets {
 	main {
@@ -43,7 +39,7 @@ configurations {
 }
 
 minecraft {
-	mappings channel: config.forge.mapping_channel, version: config.forge.mapping
+	mappings channel: 'stable', version: '39-1.12'
 	
 	accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
 	
@@ -53,7 +49,7 @@ minecraft {
 			property "musicplayer.dev", lavaplayerLibraries()
 			
 			mods {
-				"${config.mod.modid}" {
+				"velocitymedia" {
 					source sourceSets.main
 				}
 			}
@@ -61,9 +57,10 @@ minecraft {
 		
 		server {
 			workingDirectory file("run/server")
+			property "musicplayer.dev", lavaplayerLibraries()
 			
 			mods {
-				"${config.mod.modid}" {
+				"velocitymedia" {
 					source sourceSets.main
 				}
 			}
@@ -142,15 +139,15 @@ reobf.create("jar") {
 	dependsOn tasks.named("shadowJar")
 }
 
-tasks.withType(Jar).configureEach { task ->
-	gradlefiles.defaultJar(task)
-}
+//tasks.withType(Jar).configureEach { task ->
+//	gradlefiles.defaultJar(task)
+//}
 
 tasks.withType(Javadoc).configureEach { task ->
 	task.options.addStringOption("Xdoclint:none", "-quiet")
 }
 
-signjar.sign(tasks.named("reobfJar"))
+//signjar.sign(tasks.named("reobfJar"))
 
 processResources {
 	doLast {
@@ -164,8 +161,8 @@ tasks.register("prepareSources", Copy) {
 	from sourceSets.main.java
 	into file("${buildDir}/prepareSources")
 	filter (org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-		"VERSION": project.version.toString(),
-		"MCVERSION": config.minecraft.version.toString()
+		"VERSION": "2.1.6",
+		"MCVERSION": "1.12.2"
 	])
 	outputs.upToDateWhen { false }
 }
@@ -177,11 +174,11 @@ tasks.named("compileJava").configure { task ->
 }
 
 processResources {
-	inputs.property "version", project.version
-	inputs.property "mcversion", config.minecraft.version
+	inputs.property "version", '2.1.6'
+	inputs.property "mcversion", '1.12.2'
 	
 	filesMatching("mcmod.info") {
-		expand "version": project.version, "mcversion": config.minecraft.version
+		expand "version": '2.1.6', "mcversion": '1.12.2'
 	}
 }
 
@@ -192,9 +189,7 @@ repositories {
 }
 
 dependencies {
-	minecraft gradlefiles.forgeDependency()
-
-	implementation fg.deobf("info.u-team:u_team_core-forge-1.12.2:2.2.5.305")
+	minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 
 	library project(":musicplayer-lavaplayer-api")
 	shade "org.slf4j:slf4j-simple:2.0.16"
@@ -215,112 +210,7 @@ dependencies {
 	implementation fileTree(dir: "libs", includes: ["*jar"])
 }
 
-task fatJar(type: Jar) {
 
-	manifest {
-		attributes 'Main-Class': "fr.velocity.Main"
-	}
-
-	archiveBaseName = "${rootProject.name}"
-	tasks.withType(Jar){
-		duplicatesStrategy = DuplicatesStrategy.INCLUDE
-	}
-	from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-	//from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } setDuplicatesStrategy(DuplicatesStrategy.INCLUDE) }
-	with jar
-}
-
-publishMods {
-	file = tasks.named("jar").flatMap { jar -> jar.archiveFile }
-	displayName = "${config.publish.display}-Forge-${config.minecraft.version}-${project.version}"
-	changelog = "[Changelog for version ${project.version}](${gradlefiles.changelogUrl()})"
-	type = me.modmuss50.mpp.ReleaseType.of(config.publish.type)
-	modLoaders.add("forge")
-	
-	curseforge {
-		accessToken = defaultPropertyValue("curseforge.token")
-		
-		projectId = config.curse.id
-		projectSlug = config.curse.slug
-		minecraftVersions.add(config.minecraft.version)
-		javaVersions.add(JavaVersion.VERSION_1_8)
-		clientRequired = true
-		
-		requires("u-team-core")
-		optional("voice-chat")
-	}
-	
-	modrinth {
-		accessToken = defaultPropertyValue("modrinth.token")
-		
-		projectId = config.modrinth.id
-		minecraftVersions.add(config.minecraft.version)
-		
-		requires("u-team-core")
-	}
-	
-	discord {
-		webhookUrl = defaultPropertyValue("discord.update_webhook")
-		
-		username = "Mod Update"
-		avatarUrl = "https://raw.githubusercontent.com/MC-U-Team/${config.github.name}/${config.github.branch}/logo.png"
-		
-		content = changelog.map { log -> "# ${config.minecraft.version}: ${config.publish.display} (Forge)\n" + log}
-	}
-}
-
-publishing {
-	repositories {
-		maven {
-			url "https://repo.u-team.info"
-			credentials {
-				username = "maven"
-				password = defaultPropertyValue("maven.password")
-			}
-		}
-	}
-	publications {
-		mavenJava(MavenPublication) {
-			artifactId project.base.archivesName.get()
-			
-			from gradlefiles.filteredJavaComponent {
-				filterDependency { holder ->
-					"appdirs" == holder.dependency.name
-				}
-				filterDependency { holder ->
-					"musicplayer-lavaplayer-api" == holder.dependency.name
-				}
-			}
-			
-			pom {
-				name = project.base.archivesName.get()
-				description = "${config.github.name}"
-				url = "https://github.com/MC-U-Team/${config.github.name}"
-				scm {
-					url = "https://github.com/MC-U-Team/${config.github.name}"
-					connection = "scm:git:git://github.com/MC-U-Team/${config.github.name}.git"
-					developerConnection = "scm:git:git@github.com:MC-U-Team/${config.github.name}.git"
-				}
-				issueManagement {
-					system = "github"
-					url = "https://github.com/MC-U-Team/${config.github.name}/issues"
-				}
-				licenses {
-					license {
-						name = "Apache License 2.0"
-						url = "https://github.com/MC-U-Team/${config.github.name}/blob/${config.github.branch}/LICENSE"
-						distribution = "repo"
-					}
-				}
-				developers {
-					developer {
-						name = "HyCraftHD"
-					}
-				}
-			}
-		}
-	}
-}
 
 
 

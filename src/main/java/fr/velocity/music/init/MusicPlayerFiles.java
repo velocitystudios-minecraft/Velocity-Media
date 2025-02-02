@@ -2,6 +2,7 @@ package fr.velocity.music.init;
 
 import java.nio.file.*;
 
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.*;
 
 import net.harawata.appdirs.AppDirsFactory;
@@ -14,16 +15,20 @@ public class MusicPlayerFiles {
 	private static Path directory;
 	
 	public static void setup() {
-		directory = Paths.get(Minecraft.getMinecraft().gameDir.toString(), "config/musicplayer");
-		
-		try {
-			Files.createDirectories(directory);
-		} catch (Exception ex) {
-			logger.error("Could not create music player directories", ex);
+		if (FMLCommonHandler.instance().getSide().isClient()) {
+			directory = Paths.get(Minecraft.getMinecraft().gameDir.toString(), "config/musicplayer");
+			try {
+				Files.createDirectories(directory);
+			} catch (Exception ex) {
+				logger.error("Could not create music player directories", ex);
+			}
 		}
 	}
 	
 	public static Path getDirectory() {
+		if(directory==null) {
+			setup();
+		}
 		return directory;
 	}
 }

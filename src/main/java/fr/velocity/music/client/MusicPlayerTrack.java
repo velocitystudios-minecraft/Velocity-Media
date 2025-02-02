@@ -1,6 +1,5 @@
 package fr.velocity.music.client;
 
-import com.sun.media.jfxmedia.track.AudioTrack;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IPlayingTrack;
@@ -21,11 +20,14 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.sound.midi.Track;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static fr.velocity.Main.DebugMode;
 
 @SideOnly(Side.CLIENT)
 public class MusicPlayerTrack {
@@ -56,16 +58,18 @@ public class MusicPlayerTrack {
                     Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
                     playlist.setPlayable(pair.getLeft(), pair.getRight());
                     manager.setTrackQueue(playlist);
-                    manager.start();
 
-                    int StartTime = 0;
-                    if (Option.contains("--position")) {
-                        Pattern pattern = Pattern.compile("--position(\\d+)");
-                        Matcher matcher = pattern.matcher(Option);
-                        if (matcher.find()) {
-                            StartTime = Integer.parseInt(matcher.group(1));
-                            IPlayingTrack currentTrack = NewPlayer.getTrackManager().getCurrentTrack();
-                            currentTrack.setPosition(StartTime);
+                    if (Option.contains("--noplayagain")) {
+                        if(NewPlayer.getTrackManager().getCurrentTrack() != null) {
+                            if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getTrackManager().getCurrentTrack().getInfo().getTitle())) {
+                                return;
+                            }
+                        }
+                    }
+
+                    if (Option.contains("--onlyplaying")) {
+                        if(NewPlayer.getTrackManager().getCurrentTrack() == null) {
+                            return;
                         }
                     }
 
@@ -118,19 +122,34 @@ public class MusicPlayerTrack {
     }
 
     private static void playAroundEntity(ITrackManager manager, IMusicPlayer player, String targetPlayer, int maxVolume, int maxDistance, String Option, AtomicBoolean controlFlag, String IdTrack) {
-        Entity NewtargetPlayer = Minecraft.getMinecraft().world.getPlayerEntityByName(targetPlayer);
-        if (Option.contains("--useuuid")) {
-            NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));
+        Entity NewtargetPlayer = null;
+        
+        manager.start();
+
+        int StartTime = 0;
+        if (Option.contains("--position")) {
+            Pattern pattern = Pattern.compile("--position(\\d+)");
+            Matcher matcher = pattern.matcher(Option);
+            if (matcher.find()) {
+                StartTime = Integer.parseInt(matcher.group(1));
+                IPlayingTrack currentTrack = player.getTrackManager().getCurrentTrack();
+                currentTrack.setPosition(StartTime);
+            }
         }
-
-
 
         Boolean HasFade = Boolean.TRUE;
         if (Option.contains("--nofade")) {
             HasFade = Boolean.FALSE;
         }
+
         while (controlFlag.get() && manager.getCurrentTrack() != null) {
-            EntityPlayer clientPlayer = net.minecraft.client.Minecraft.getMinecraft().player;
+            EntityPlayer clientPlayer = Minecraft.getMinecraft().player;
+            if (Option.contains("--useuuid")) {
+                NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));
+            } else {
+                NewtargetPlayer = Minecraft.getMinecraft().world.getPlayerEntityByName(targetPlayer);
+            }
+
             if (clientPlayer != null && NewtargetPlayer != null) {
                 Vec3d source = NewtargetPlayer.getPositionVector();
                 double distance = clientPlayer.getPositionVector().distanceTo(source);
@@ -150,7 +169,7 @@ public class MusicPlayerTrack {
                     e.printStackTrace();
                 }
             } else {
-                stopThreadForTrackId(IdTrack);
+                player.setVolume(0);
             }
         }
     }

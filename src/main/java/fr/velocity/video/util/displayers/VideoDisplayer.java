@@ -114,7 +114,7 @@ public class VideoDisplayer implements IDisplay {
 
             player.setPauseMode(!currentPlaying);
             if (!stream && player.isSeekAble()) {
-                long time = WaterMediaAPI.math_ticksToMillis(tick);
+                long time = tick * 50L;
                 if (time > player.getTime()) time = floorMod(time, player.getMediaInfoDuration());
 
                     //System.out.println("Tick: " + tick + " Time: " + time + " Player time: " + player.getTime() + " correction: " + Math.abs(time - player.getTime()));

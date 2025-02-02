@@ -3,6 +3,8 @@ package fr.velocity.music.command;
 import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.PositionTrackmusicMessage;
 import fr.velocity.mod.network.messages.TrackmusicMessage;
+import fr.velocity.music.lavaplayer.api.IMusicPlayer;
+import fr.velocity.music.musicplayer.MusicPlayerManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -19,12 +21,11 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
+import static fr.velocity.util.ServerListPersistence.AddLocationTrackSaved;
+import static fr.velocity.util.ServerListPersistence.AddTrackSaved;
 
 public class PositionTrackCommand extends CommandBase {
 
@@ -95,9 +96,11 @@ public class PositionTrackCommand extends CommandBase {
             return;
         }
 
-        String Option = "";
+        String Option;
         if (args.length >= 9) {
-            Option = args[8];
+            Option = String.join(" ", Arrays.copyOfRange(args, 8, args.length));
+        } else {
+            Option = "";
         }
 
         String TrackId = args[6];
@@ -106,6 +109,21 @@ public class PositionTrackCommand extends CommandBase {
         int y = parseInt(args[1]);
         int z = parseInt(args[2]);
         int radius = parseInt(args[3]);
+
+        if(Option.contains("--save")) {
+            if(Option.contains("--position")) {
+                sender.sendMessage(new TextComponentString("§cImpossible de combiner --position et --save."));
+                return;
+            }
+            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server");
+
+            String finalUrl = url;
+            NewPlayer.getTrackSearch().getTracks(url, result -> {
+                if(result.getTrack() != null) {
+                    AddLocationTrackSaved(result.getTrack().getDuration(), finalUrl, volume, TrackId, Option, args[4], x, y, z, radius);
+                }
+            });
+        }
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {

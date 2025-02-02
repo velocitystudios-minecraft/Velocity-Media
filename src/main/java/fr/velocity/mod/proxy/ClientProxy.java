@@ -99,16 +99,11 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void preinit(FMLPreInitializationEvent event) {
 		super.preinit(event);
-		System.setProperty("http.agent", "Chrome");
-		
-		DependencyManager.load();
 	}
 	
 	@Override
 	public void init(FMLInitializationEvent event) {
 		super.init(event);
-		MusicPlayerFiles.setup();
-		MusicPlayerManager.setup();
 	}
 	
 	@Override
