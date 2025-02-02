@@ -33,11 +33,6 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void Playmusic(String url, int volume, String RepeatMode) {
-		MusicPlay.Playmusic(url, volume, RepeatMode);
-	}
-
-	@Override
 	public void Trackmusic(String url, int volume, String TrackId, String RepeatMode) {
 		MusicTrack.Trackmusic(url, volume, TrackId, RepeatMode);
 	}

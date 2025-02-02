@@ -116,7 +116,6 @@ public class Main {
 
 	@Mod.EventHandler
 	public void onServerStarting(FMLServerStartingEvent event) {
-		event.registerServerCommand(new PlayCommand());
 		event.registerServerCommand(new StopCommand());
 		event.registerServerCommand(new VolumeCommand());
 		event.registerServerCommand(new PauseCommand());
