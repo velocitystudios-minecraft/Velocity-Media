@@ -75,7 +75,7 @@ public class TVBlockRenderer extends TileEntitySpecialRenderer<TVBlockEntity> {
             if (!frame.isPlaying()) return;
             tickTimer.updateTimer();
             tick += tickTimer.elapsedTicks;
-            renderTexture(frame, x, y, z, null, ImageAPI.loadingGif().texture(tick, 1, true), true);
+            //renderTexture(frame, x, y, z, null, ImageAPI.loadingGif().texture(tick, 1, true), true);
             return;
         }
 

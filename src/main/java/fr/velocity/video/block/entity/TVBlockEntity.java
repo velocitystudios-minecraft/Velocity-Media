@@ -222,11 +222,13 @@ public class TVBlockEntity extends TileEntity implements ITickable {
     }
 
     public float getSizeX() {
-        return 1.4F;
+
+        return (((1 - getVolume()) * 10F) + 1.4F);
     }
 
     public float getSizeY() {
-        return 0.81F;
+
+        return (((1 - getVolume()) * 10F) + 0.81F);
     }
 
     public AlignedBox getBox() {
