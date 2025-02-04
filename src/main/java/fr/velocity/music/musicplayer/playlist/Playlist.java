@@ -84,25 +84,25 @@ public class Playlist implements ITrackQueue {
 				return;
 			}
 			
-			final ITrackSearch search = MusicPlayerManager.getPlayer().getTrackSearch();
-			
-			uris.forEach(uri -> loadedTracks.add(new LoadedTracks(uri))); // Add dummy elements
-			
-			final AtomicInteger counterIfReady = new AtomicInteger();
-			
-			for (int index = 0; index < uris.size(); index++) {
-				final int immutableIndex = index; // Little workaround for using the index in closure
-				final WrappedObject<String> uri = uris.get(immutableIndex);
-				search.getTracks(uri.get(), result -> {
-					final LoadedTracks loadedTrack = new LoadedTracks(uri, result);
-					loadedTracks.set(immutableIndex, loadedTrack);
-					if (counterIfReady.incrementAndGet() == loadedTracks.size()) { // Count up for every replaced track in loadedTracks. When its the last one it sets the loaded flag and runs the
-																					// runnable
-						loaded = true;
-						runnable.run();
-					}
-				});
-			}
+			//final ITrackSearch search = MusicPlayerManager.getPlayer().getTrackSearch();
+
+			//uris.forEach(uri -> loadedTracks.add(new LoadedTracks(uri))); // Add dummy elements
+
+			//final AtomicInteger counterIfReady = new AtomicInteger();
+
+			//for (int index = 0; index < uris.size(); index++) {
+			//	final int immutableIndex = index; // Little workaround for using the index in closure
+			//	final WrappedObject<String> uri = uris.get(immutableIndex);
+			//	search.getTracks(uri.get(), result -> {
+			//		//		final LoadedTracks loadedTrack = new LoadedTracks(uri, result);
+			//		loadedTracks.set(immutableIndex, loadedTrack);
+			//		if (counterIfReady.incrementAndGet() == loadedTracks.size()) { // Count up for every replaced track in loadedTracks. When its the last one it sets the loaded flag and runs the
+			//																		// runnable
+			//			loaded = true;
+			//			runnable.run();
+			//		}
+			//	});
+			//}
 		});
 	}
 	

@@ -1,6 +1,7 @@
 package fr.velocity.music.client;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import fr.velocity.mod.handler.ConfigHandler;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IPlayingTrack;
@@ -22,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static fr.velocity.music.musicplayer.MusicPlayerManager.GetMaxVolumeFromTrackId;
 
 @SideOnly(Side.CLIENT)
 public class MusicPositionTrack {
@@ -86,7 +89,7 @@ public class MusicPositionTrack {
                     AtomicBoolean controlFlag = new AtomicBoolean(true);
                     trackControlFlags.put(TrackId, controlFlag);
 
-                    Thread thread = new Thread(() -> playWithPosition(manager, NewPlayer, position, volume, radius, Option, controlFlag));
+                    Thread thread = new Thread(() -> playWithPosition(manager, NewPlayer, position, volume, radius, Option, controlFlag, TrackId));
                     activeThreads.put(TrackId, thread);
                     thread.start();
                 };
@@ -121,12 +124,13 @@ public class MusicPositionTrack {
         }
     }
 
-    private static void playWithPosition(ITrackManager manager, IMusicPlayer player, BlockPos source, int maxVolume, int maxDistance, String option, AtomicBoolean controlFlag) {
+    private static void playWithPosition(ITrackManager manager, IMusicPlayer player, BlockPos source, int maxVolume, int maxDistance, String option, AtomicBoolean controlFlag, String TrackId) {
         Boolean HasFade = Boolean.TRUE;
         if (option.contains("--nofade")) {
             HasFade = Boolean.FALSE;
         }
         while (controlFlag.get() && manager.getCurrentTrack() != null) {
+            maxVolume = GetMaxVolumeFromTrackId(TrackId);
             EntityPlayer clientPlayer = net.minecraft.client.Minecraft.getMinecraft().player;
             if (clientPlayer != null) {
                 double distance = clientPlayer.getPosition().distanceSq(source);
@@ -139,7 +143,9 @@ public class MusicPositionTrack {
                     }
                 }
 
-                player.setVolume(volume);
+                int realvolume = (int) (ConfigHandler.VolumeGlobaux * volume);
+                player.setVolume(realvolume);
+
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {

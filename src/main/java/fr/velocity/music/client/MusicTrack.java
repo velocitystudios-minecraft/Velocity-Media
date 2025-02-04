@@ -1,6 +1,7 @@
 package fr.velocity.music.client;
 
 
+import fr.velocity.mod.handler.ConfigHandler;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IPlayingTrack;
@@ -59,7 +60,9 @@ public class MusicTrack {
 
                     manager.setTrackQueue(playlist);
                     manager.start();
-                    NewPlayer.setVolume(volume);
+
+                    int realvolume = (int) (ConfigHandler.VolumeGlobaux * volume);
+                    NewPlayer.setVolume(realvolume);
 
                     int StartTime = 0;
                     if (Option.contains("--position")) {

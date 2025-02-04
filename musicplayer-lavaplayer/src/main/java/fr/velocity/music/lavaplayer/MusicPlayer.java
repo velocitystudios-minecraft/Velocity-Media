@@ -114,7 +114,7 @@ public class MusicPlayer implements IMusicPlayer {
 	public int getVolume() {
 		return audioPlayer.getVolume();
 	}
-	
+
 	@Override
 	public void setOutputConsumer(IOutputConsumer consumer) {
 		outputConsumer = consumer;

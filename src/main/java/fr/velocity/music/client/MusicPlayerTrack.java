@@ -1,5 +1,6 @@
 package fr.velocity.music.client;
 
+import fr.velocity.mod.handler.ConfigHandler;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IPlayingTrack;
@@ -28,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static fr.velocity.Main.DebugMode;
+import static fr.velocity.music.musicplayer.MusicPlayerManager.GetMaxVolumeFromTrackId;
 
 @SideOnly(Side.CLIENT)
 public class MusicPlayerTrack {
@@ -143,6 +145,7 @@ public class MusicPlayerTrack {
         }
 
         while (controlFlag.get() && manager.getCurrentTrack() != null) {
+            maxVolume = GetMaxVolumeFromTrackId(IdTrack);
             EntityPlayer clientPlayer = Minecraft.getMinecraft().player;
             if (Option.contains("--useuuid")) {
                 NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));
@@ -162,7 +165,9 @@ public class MusicPlayerTrack {
                     }
                 }
 
-                player.setVolume(volume);
+                int realvolume = (int) (ConfigHandler.VolumeGlobaux * volume);
+                player.setVolume(realvolume);
+
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {

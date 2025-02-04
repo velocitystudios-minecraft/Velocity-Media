@@ -1,10 +1,8 @@
 package fr.velocity.mod.proxy;
 
+import fr.velocity.mod.handler.ConfigHandler;
+import fr.velocity.mod.handler.GuiEventHandler;
 import fr.velocity.music.client.*;
-import fr.velocity.music.command.PauseCommand;
-import fr.velocity.music.dependency.DependencyManager;
-import fr.velocity.music.init.MusicPlayerFiles;
-import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.video.block.entity.TVBlockEntity;
 import fr.velocity.video.client.gui.TVVideoScreen;
 import fr.velocity.video.client.gui.VideoScreen;
@@ -12,12 +10,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.relauncher.*;
-
-import javax.sound.midi.Track;
 
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
@@ -98,6 +96,8 @@ public class ClientProxy extends CommonProxy {
 	
 	@Override
 	public void init(FMLInitializationEvent event) {
+		ConfigHandler.init();
+		MinecraftForge.EVENT_BUS.register(new GuiEventHandler());
 		super.init(event);
 	}
 	

@@ -1,7 +1,8 @@
 package fr.velocity.music.musicplayer;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import fr.velocity.mod.handler.ConfigHandler;
 import fr.velocity.music.lavaplayer.api.queue.ITrackManager;
+import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import org.apache.logging.log4j.*;
 
 import com.google.gson.*;
@@ -10,7 +11,6 @@ import fr.velocity.music.dependency.DependencyManager;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-import javax.sound.midi.Track;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,38 +18,54 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MusicPlayerManager {
 	
 	private static final Logger logger = LogManager.getLogger();
-	
-	private static IMusicPlayer Globalplayer;
-	private static IMusicPlayer Globalplayer2;
 
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-	private static final Map<String, IMusicPlayer> playerCache = new ConcurrentHashMap<>();
+	private static final Map<String, CustomPlayer> playerCache = new ConcurrentHashMap<>();
 
 	public static void setup() {
-		generatePlayer1();
-		Globalplayer.startAudioOutput();
-		Globalplayer.setVolume(50);
+
+	}
+
+	public static void SetMaxVolumeFromTrackId(String TrackId, int maxvolume) {
+		if (playerCache.containsKey(TrackId)) {
+			playerCache.get(TrackId).setMaxVolume(maxvolume);
+		}
 	}
 
 	public static void ChangeVolume(String TrackId, int Volume) {
 		if (Objects.equals(TrackId, "ALL")) {
-			Globalplayer.setVolume(Volume);
-
-			for (Map.Entry<String, IMusicPlayer> entry : playerCache.entrySet()) {
-				entry.getValue().setVolume(Volume);
+			for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
+				entry.getValue().setMaxVolume(Volume);
+				int ModifiedVolume = (int) (Volume * ConfigHandler.VolumeGlobaux);
+				entry.getValue().getPlayer().setVolume(ModifiedVolume);
 			}
 		} else {
-			TestGenerate(TrackId).setVolume(Volume);
+			SetMaxVolumeFromTrackId(TrackId, Volume);
+			int ModifiedVolume = (int) (Volume * ConfigHandler.VolumeGlobaux);
+            Objects.requireNonNull(TestGenerate(TrackId)).setVolume(ModifiedVolume);
+		}
+	}
+
+
+
+	public static int GetMaxVolumeFromTrackId(String TrackId) {
+		if (playerCache.containsKey(TrackId)) {
+			return playerCache.get(TrackId).getMaxVolume();
+		} else {
+			return 0;
+		}
+	}
+
+	public static void UpdateVolume() {
+		for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
+			entry.getValue().getPlayer().setVolume((int) (entry.getValue().getMaxVolume() * ConfigHandler.VolumeGlobaux));
 		}
 	}
 
 	public static void Pause(String TrackId, Boolean PauseMode) {
 		if (Objects.equals(TrackId, "ALL")) {
-			final ITrackManager manager = Globalplayer.getTrackManager();
-			manager.setPaused(PauseMode);
-
-			for (Map.Entry<String, IMusicPlayer> entry : playerCache.entrySet()) {
-				final ITrackManager newmanager = entry.getValue().getTrackManager();
+			for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
+				final ITrackManager newmanager = entry.getValue().getPlayer().getTrackManager();
 				newmanager.setPaused(PauseMode);
 			}
 		} else {
@@ -60,11 +76,8 @@ public class MusicPlayerManager {
 
 	public static void StopAudio(String TrackId) {
 		if (Objects.equals(TrackId, "ALL")) {
-			final ITrackManager manager = Globalplayer.getTrackManager();
-			manager.stop();
-
-			for (Map.Entry<String, IMusicPlayer> entry : playerCache.entrySet()) {
-				final ITrackManager newmanager = entry.getValue().getTrackManager();
+			for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
+				final ITrackManager newmanager = entry.getValue().getPlayer().getTrackManager();
 				newmanager.stop();
 			}
 		} else {
@@ -73,44 +86,31 @@ public class MusicPlayerManager {
 		}
 	}
 
-	public static void generatePlayer1() {
-		try {
-			Class<?> clazz = Class.forName("fr.velocity.music.lavaplayer.MusicPlayer", true, DependencyManager.MUSICPLAYER_CLASSLOADER);
-			if (!IMusicPlayer.class.isAssignableFrom(clazz)) {
-				throw new IllegalAccessError("The class " + clazz + " does not implement IMusicPlayer! This should not happen?!");
-			}
-			Globalplayer = (IMusicPlayer) clazz.getConstructor().newInstance();
-			logger.info("Successfully created music player instance");
-		} catch (Exception ex) {
-			logger.fatal("Cannot create music player instance. This is a serious bug and the mod will not work. Report to the mod authors", ex);
-			FMLCommonHandler.instance().exitJava(0, false);
-		}
-	}
 
 
 	public static IMusicPlayer TestGenerate(String trackId) {
 		if (playerCache.containsKey(trackId)) {
-			return playerCache.get(trackId);
+			return playerCache.get(trackId).getPlayer();
 		} else {
 			try {
 				Class<?> clazz = Class.forName("fr.velocity.music.lavaplayer.MusicPlayer", true, DependencyManager.MUSICPLAYER_CLASSLOADER);
 				if (!IMusicPlayer.class.isAssignableFrom(clazz)) {
-					throw new IllegalAccessError("The class " + clazz + " does not implement IMusicPlayer! This should not happen?!");
+					throw new IllegalAccessError("La classe " + clazz + " n'implémente pas IMusicPlayer ! Cela ne devrait pas arriver ?");
 				}
-				IMusicPlayer NewPlayer = (IMusicPlayer) clazz.getConstructor().newInstance();
-				NewPlayer.startAudioOutput();
-				NewPlayer.setVolume(50);
-				playerCache.put(trackId, NewPlayer);
-				return NewPlayer;
+				IMusicPlayer newPlayer = (IMusicPlayer) clazz.getConstructor().newInstance();
+				newPlayer.startAudioOutput();
+				int initialVolume = 50;
+				newPlayer.setVolume(initialVolume);
+				CustomPlayer playerWithVolume = new CustomPlayer(newPlayer, initialVolume);
+				playerCache.put(trackId, playerWithVolume);
+				return newPlayer;
 			} catch (Exception ex) {
-				logger.fatal("Cannot create music player instance. This is a serious bug and the mod will not work. Report to the mod authors", ex);
+				logger.fatal("Impossible de créer une instance du lecteur de musique. C'est un bug sérieux et le mod ne fonctionnera pas. Signalez-le aux auteurs du mod", ex);
 				FMLCommonHandler.instance().exitJava(0, false);
 			}
 		}
-        return null;
-    }
-	
-	public static IMusicPlayer getPlayer() {
-		return Globalplayer;
+		return null;
 	}
+
+
 }
