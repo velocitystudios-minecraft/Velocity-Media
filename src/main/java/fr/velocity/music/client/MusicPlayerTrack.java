@@ -39,7 +39,7 @@ public class MusicPlayerTrack {
 
     public static void PlayerTrackmusic(String targetPlayer, int radius, String url, int volume, String TrackId, String Option) {
         Playlist playlist = new Playlist();
-        IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId);
+        IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume);
 
         NewPlayer.getTrackSearch().getTracks(url, result -> {
             if (result.hasError()) {
@@ -134,8 +134,31 @@ public class MusicPlayerTrack {
             Matcher matcher = pattern.matcher(Option);
             if (matcher.find()) {
                 StartTime = Integer.parseInt(matcher.group(1));
-                IPlayingTrack currentTrack = player.getTrackManager().getCurrentTrack();
-                currentTrack.setPosition(StartTime);
+                System.out.println("[Velocity Media] --position trouvé : " + StartTime);
+                IPlayingTrack currentTrack = manager.getCurrentTrack();
+                if(currentTrack!=null) {
+                    if(currentTrack.getDuration() < StartTime) {
+                        System.out.println("[Velocity Media] Duration indiqué excède la limite de " + currentTrack.getDuration());
+                    } else {
+                        while (1==1) {
+                            long CurrentPosition = manager.getCurrentTrack().getPosition();
+                            if (CurrentPosition > 0) {
+                                System.out.println("[Velocity Media] Position mis avec succès avec un temps max de " + currentTrack.getDuration());
+                                currentTrack.setPosition(StartTime);
+                                break;
+                            }
+                            try {
+                                Thread.sleep(2);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                } else {
+                    System.out.println("[Velocity Media] CurrentTrack actuellement invalide");
+                }
+            } else {
+                System.out.println("[Velocity Media] --position invalide");
             }
         }
 

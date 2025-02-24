@@ -10,6 +10,7 @@ import com.google.gson.*;
 import fr.velocity.music.dependency.DependencyManager;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.lwjgl.Sys;
 
 import java.util.Map;
 import java.util.Objects;
@@ -42,10 +43,19 @@ public class MusicPlayerManager {
 		} else {
 			SetMaxVolumeFromTrackId(TrackId, Volume);
 			int ModifiedVolume = (int) (Volume * ConfigHandler.VolumeGlobaux);
-            Objects.requireNonNull(TestGenerate(TrackId)).setVolume(ModifiedVolume);
+            Objects.requireNonNull(TestGenerate(TrackId, 0)).setVolume(ModifiedVolume);
 		}
 	}
 
+	public static void ChangePosition(String TrackId, long Position) {
+		if (Objects.equals(TrackId, "ALL")) {
+			for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
+				entry.getValue().getPlayer().getTrackManager().getCurrentTrack().setPosition(Position);
+			}
+		} else {
+			Objects.requireNonNull(TestGenerate(TrackId, 0)).getTrackManager().getCurrentTrack().setPosition(Position);
+		}
+	}
 
 
 	public static int GetMaxVolumeFromTrackId(String TrackId) {
@@ -58,7 +68,8 @@ public class MusicPlayerManager {
 
 	public static void UpdateVolume() {
 		for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
-			entry.getValue().getPlayer().setVolume((int) (entry.getValue().getMaxVolume() * ConfigHandler.VolumeGlobaux));
+			int NewVolume = (int) (entry.getValue().getMaxVolume() * ConfigHandler.VolumeGlobaux);
+			entry.getValue().getPlayer().setVolume(NewVolume);
 		}
 	}
 
@@ -69,7 +80,7 @@ public class MusicPlayerManager {
 				newmanager.setPaused(PauseMode);
 			}
 		} else {
-			final ITrackManager manager = TestGenerate(TrackId).getTrackManager();
+			final ITrackManager manager = TestGenerate(TrackId, 0).getTrackManager();
 			manager.setPaused(PauseMode);
 		}
 	}
@@ -81,14 +92,14 @@ public class MusicPlayerManager {
 				newmanager.stop();
 			}
 		} else {
-			final ITrackManager manager = TestGenerate(TrackId).getTrackManager();
+			final ITrackManager manager = TestGenerate(TrackId, 0).getTrackManager();
 			manager.stop();
 		}
 	}
 
 
 
-	public static IMusicPlayer TestGenerate(String trackId) {
+	public static IMusicPlayer TestGenerate(String trackId, int volume) {
 		if (playerCache.containsKey(trackId)) {
 			return playerCache.get(trackId).getPlayer();
 		} else {
@@ -99,9 +110,8 @@ public class MusicPlayerManager {
 				}
 				IMusicPlayer newPlayer = (IMusicPlayer) clazz.getConstructor().newInstance();
 				newPlayer.startAudioOutput();
-				int initialVolume = 50;
-				newPlayer.setVolume(initialVolume);
-				CustomPlayer playerWithVolume = new CustomPlayer(newPlayer, initialVolume);
+				newPlayer.setVolume(volume);
+				CustomPlayer playerWithVolume = new CustomPlayer(newPlayer, volume);
 				playerCache.put(trackId, playerWithVolume);
 				return newPlayer;
 			} catch (Exception ex) {

@@ -13,6 +13,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.Sys;
 
 import javax.sound.midi.Track;
 import java.util.Collections;
@@ -24,7 +25,7 @@ import java.util.regex.Pattern;
 public class MusicTrack {
     public static void Trackmusic(String url, int volume, String TrackId, String Option) {
         Playlist playlist = new Playlist();
-        IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId);
+        IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume);
         NewPlayer.getTrackSearch().getTracks(url, result -> {
             if (result.hasError()) {
                 System.out.println(new TextComponentString(result.getErrorMessage()));
@@ -64,14 +65,37 @@ public class MusicTrack {
                     int realvolume = (int) (ConfigHandler.VolumeGlobaux * volume);
                     NewPlayer.setVolume(realvolume);
 
-                    int StartTime = 0;
+                    long StartTime = 0;
                     if (Option.contains("--position")) {
                         Pattern pattern = Pattern.compile("--position(\\d+)");
                         Matcher matcher = pattern.matcher(Option);
                         if (matcher.find()) {
                             StartTime = Integer.parseInt(matcher.group(1));
+                            System.out.println("[Velocity Media] --position trouvé : " + StartTime);
                             IPlayingTrack currentTrack = NewPlayer.getTrackManager().getCurrentTrack();
-                            currentTrack.setPosition(StartTime);
+                            if(currentTrack!=null) {
+                                if(currentTrack.getDuration() < StartTime) {
+                                    System.out.println("[Velocity Media] Duration indiqué excède la limite de " + currentTrack.getDuration());
+                                } else {
+                                    while (1==1) {
+                                        long CurrentPosition = NewPlayer.getTrackManager().getCurrentTrack().getPosition();
+                                        if (CurrentPosition > 0) {
+                                            System.out.println("[Velocity Media] Position mis avec succès avec un temps max de " + currentTrack.getDuration());
+                                            currentTrack.setPosition(StartTime);
+                                            break;
+                                        }
+                                        try {
+                                            Thread.sleep(2);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            } else {
+                                System.out.println("[Velocity Media] CurrentTrack actuellement invalide");
+                            }
+                        } else {
+                            System.out.println("[Velocity Media] --position invalide");
                         }
                     }
                 };

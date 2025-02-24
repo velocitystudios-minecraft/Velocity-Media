@@ -56,6 +56,11 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
+	public void Positionmusic(String TrackId, long position) {
+		MusicPosition.Positionmusic(position, TrackId);
+	}
+
+	@Override
 	public void Pausemusic(String TrackId, String IsPaused) {
 		MusicPause.Pausemusic(TrackId, IsPaused);
 	}

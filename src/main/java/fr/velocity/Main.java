@@ -5,7 +5,6 @@ import fr.velocity.music.client.ClientManager;
 import fr.velocity.music.command.*;
 import fr.velocity.util.ServerListPersistence;
 import fr.velocity.video.block.entity.TVBlockEntity;
-import fr.velocity.video.block.entity.TVBlockEntity3x2;
 import fr.velocity.video.command.PlayVideoCommand;
 import fr.velocity.mod.proxy.CommonProxy;
 import fr.velocity.video.block.ModBlocks;
@@ -89,7 +88,6 @@ public class Main {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		GameRegistry.registerTileEntity(TVBlockEntity.class, new ResourceLocation(modid, "TVBlockEntity"));
-		GameRegistry.registerTileEntity(TVBlockEntity3x2.class, new ResourceLocation(modid, "TVBlockEntity3x2"));
 
 		if(event.getSide().isClient()) {
 			clientManager = new ClientManager();
@@ -121,6 +119,7 @@ public class Main {
 		event.registerServerCommand(new StopCommand());
 		event.registerServerCommand(new VolumeCommand());
 		event.registerServerCommand(new PauseCommand());
+		event.registerServerCommand(new PositionCommand());
 		event.registerServerCommand(new PlayVideoCommand());
 		event.registerServerCommand(new TrackCommand());
 		event.registerServerCommand(new PositionTrackCommand());

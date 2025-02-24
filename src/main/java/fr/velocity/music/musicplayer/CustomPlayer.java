@@ -4,7 +4,7 @@ import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 
 public class CustomPlayer {
     private final IMusicPlayer player;
-    private int MaxVolume;
+    private int MaxVolume = 0;
 
     public CustomPlayer(IMusicPlayer player, int volume) {
         this.player = player;
