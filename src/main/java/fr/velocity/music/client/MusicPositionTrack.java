@@ -1,6 +1,7 @@
 package fr.velocity.music.client;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import fr.velocity.mod.handler.ConfigHandler;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IPlayingTrack;
@@ -23,6 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static fr.velocity.music.musicplayer.MusicPlayerManager.GetMaxVolumeFromTrackId;
+
 @SideOnly(Side.CLIENT)
 public class MusicPositionTrack {
 
@@ -32,7 +35,7 @@ public class MusicPositionTrack {
     public static void positionTrackmusic(int x, int y, int z, int radius, String url, int volume, String TrackId, String Option) {
 
         Playlist playlist = new Playlist();
-        IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId);
+        IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume);
 
         NewPlayer.getTrackSearch().getTracks(url, result -> {
             if (result.hasError()) {
@@ -76,8 +79,31 @@ public class MusicPositionTrack {
                         Matcher matcher = pattern.matcher(Option);
                         if (matcher.find()) {
                             StartTime = Integer.parseInt(matcher.group(1));
+                            System.out.println("[Velocity Media] --position trouvé : " + StartTime);
                             IPlayingTrack currentTrack = NewPlayer.getTrackManager().getCurrentTrack();
-                            currentTrack.setPosition(StartTime);
+                            if(currentTrack!=null) {
+                                if(currentTrack.getDuration() < StartTime) {
+                                    System.out.println("[Velocity Media] Duration indiqué excède la limite de " + currentTrack.getDuration());
+                                } else {
+                                    while (1==1) {
+                                        long CurrentPosition = NewPlayer.getTrackManager().getCurrentTrack().getPosition();
+                                        if (CurrentPosition > 0) {
+                                            System.out.println("[Velocity Media] Position mis avec succès avec un temps max de " + currentTrack.getDuration());
+                                            currentTrack.setPosition(StartTime);
+                                            break;
+                                        }
+                                        try {
+                                            Thread.sleep(2);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            } else {
+                                System.out.println("[Velocity Media] CurrentTrack actuellement invalide");
+                            }
+                        } else {
+                            System.out.println("[Velocity Media] --position invalide");
                         }
                     }
 
@@ -86,7 +112,7 @@ public class MusicPositionTrack {
                     AtomicBoolean controlFlag = new AtomicBoolean(true);
                     trackControlFlags.put(TrackId, controlFlag);
 
-                    Thread thread = new Thread(() -> playWithPosition(manager, NewPlayer, position, volume, radius, Option, controlFlag));
+                    Thread thread = new Thread(() -> playWithPosition(manager, NewPlayer, position, volume, radius, Option, controlFlag, TrackId));
                     activeThreads.put(TrackId, thread);
                     thread.start();
                 };
@@ -121,12 +147,13 @@ public class MusicPositionTrack {
         }
     }
 
-    private static void playWithPosition(ITrackManager manager, IMusicPlayer player, BlockPos source, int maxVolume, int maxDistance, String option, AtomicBoolean controlFlag) {
+    private static void playWithPosition(ITrackManager manager, IMusicPlayer player, BlockPos source, int maxVolume, int maxDistance, String option, AtomicBoolean controlFlag, String TrackId) {
         Boolean HasFade = Boolean.TRUE;
         if (option.contains("--nofade")) {
             HasFade = Boolean.FALSE;
         }
         while (controlFlag.get() && manager.getCurrentTrack() != null) {
+            maxVolume = GetMaxVolumeFromTrackId(TrackId);
             EntityPlayer clientPlayer = net.minecraft.client.Minecraft.getMinecraft().player;
             if (clientPlayer != null) {
                 double distance = clientPlayer.getPosition().distanceSq(source);
@@ -139,7 +166,9 @@ public class MusicPositionTrack {
                     }
                 }
 
-                player.setVolume(volume);
+                int realvolume = (int) (ConfigHandler.VolumeGlobaux * volume);
+                player.setVolume(realvolume);
+
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {

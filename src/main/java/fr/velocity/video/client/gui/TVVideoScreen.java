@@ -14,6 +14,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,6 +51,12 @@ public class TVVideoScreen extends GuiScreen {
         this.be = be;
         this.url = url;
         this.volume = volume;
+    }
+
+    @Override
+    public void handleMouseInput() throws IOException {
+        super.handleMouseInput();
+        Mouse.setGrabbed(false);
     }
 
     @Override

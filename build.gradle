@@ -9,8 +9,8 @@ plugins {
 
 
 group = "fr.velocity"
-base.archivesName = 'velocitymedia'
-version = '2.2.0'
+base.archivesName = 'velocity'
+version = '2.1.9'
 
 
 
@@ -155,13 +155,20 @@ processResources {
 			file.text = groovy.json.JsonOutput.toJson(new groovy.json.JsonSlurper().parse(file))
 		}
 	}
+
+	inputs.property "version", '2.1.9'
+	inputs.property "mcversion", '1.12.2'
+
+	filesMatching("mcmod.info") {
+		expand "version": '2.1.9', "mcversion": '1.12.2'
+	}
 }
 
 tasks.register("prepareSources", Copy) {
 	from sourceSets.main.java
 	into file("${buildDir}/prepareSources")
 	filter (org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-		"VERSION": "2.2.0",
+		"VERSION": "2.1.9",
 		"MCVERSION": "1.12.2"
 	])
 	outputs.upToDateWhen { false }
@@ -174,11 +181,11 @@ tasks.named("compileJava").configure { task ->
 }
 
 processResources {
-	inputs.property "version", '2.2.0'
+	inputs.property "version", '2.1.9'
 	inputs.property "mcversion", '1.12.2'
 	
 	filesMatching("mcmod.info") {
-		expand "version": '2.2.0', "mcversion": '1.12.2'
+		expand "version": '2.1.9', "mcversion": '1.12.2'
 	}
 }
 

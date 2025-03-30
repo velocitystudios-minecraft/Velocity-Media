@@ -115,7 +115,7 @@ public class PositionTrackCommand extends CommandBase {
                 sender.sendMessage(new TextComponentString("§cImpossible de combiner --position et --save."));
                 return;
             }
-            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server");
+            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server", volume);
 
             String finalUrl = url;
             NewPlayer.getTrackSearch().getTracks(url, result -> {

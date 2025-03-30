@@ -1,5 +1,6 @@
 package fr.velocity.music.client;
 
+import fr.velocity.mod.handler.ConfigHandler;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IPlayingTrack;
@@ -28,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static fr.velocity.Main.DebugMode;
+import static fr.velocity.music.musicplayer.MusicPlayerManager.GetMaxVolumeFromTrackId;
 
 @SideOnly(Side.CLIENT)
 public class MusicPlayerTrack {
@@ -37,7 +39,7 @@ public class MusicPlayerTrack {
 
     public static void PlayerTrackmusic(String targetPlayer, int radius, String url, int volume, String TrackId, String Option) {
         Playlist playlist = new Playlist();
-        IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId);
+        IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume);
 
         NewPlayer.getTrackSearch().getTracks(url, result -> {
             if (result.hasError()) {
@@ -132,8 +134,31 @@ public class MusicPlayerTrack {
             Matcher matcher = pattern.matcher(Option);
             if (matcher.find()) {
                 StartTime = Integer.parseInt(matcher.group(1));
-                IPlayingTrack currentTrack = player.getTrackManager().getCurrentTrack();
-                currentTrack.setPosition(StartTime);
+                System.out.println("[Velocity Media] --position trouvé : " + StartTime);
+                IPlayingTrack currentTrack = manager.getCurrentTrack();
+                if(currentTrack!=null) {
+                    if(currentTrack.getDuration() < StartTime) {
+                        System.out.println("[Velocity Media] Duration indiqué excède la limite de " + currentTrack.getDuration());
+                    } else {
+                        while (1==1) {
+                            long CurrentPosition = manager.getCurrentTrack().getPosition();
+                            if (CurrentPosition > 0) {
+                                System.out.println("[Velocity Media] Position mis avec succès avec un temps max de " + currentTrack.getDuration());
+                                currentTrack.setPosition(StartTime);
+                                break;
+                            }
+                            try {
+                                Thread.sleep(2);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                } else {
+                    System.out.println("[Velocity Media] CurrentTrack actuellement invalide");
+                }
+            } else {
+                System.out.println("[Velocity Media] --position invalide");
             }
         }
 
@@ -143,6 +168,7 @@ public class MusicPlayerTrack {
         }
 
         while (controlFlag.get() && manager.getCurrentTrack() != null) {
+            maxVolume = GetMaxVolumeFromTrackId(IdTrack);
             EntityPlayer clientPlayer = Minecraft.getMinecraft().player;
             if (Option.contains("--useuuid")) {
                 NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));
@@ -162,7 +188,9 @@ public class MusicPlayerTrack {
                     }
                 }
 
-                player.setVolume(volume);
+                int realvolume = (int) (ConfigHandler.VolumeGlobaux * volume);
+                player.setVolume(realvolume);
+
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
