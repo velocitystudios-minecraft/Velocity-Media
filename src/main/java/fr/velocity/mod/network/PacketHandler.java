@@ -21,12 +21,13 @@ public class PacketHandler {
     public static void registerMessages() {
         if (PacketHandler.INSTANCE != null)
             return;
-
+        System.out.println("Register PacketHandler");
         INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(Main.modid);
         register();
     }
 
     private static void register() {
+        System.out.println("REGISTER PACKET");
         INSTANCE.registerMessage(OpenVideoManagerScreen.Handler.class, OpenVideoManagerScreen.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(SendVideoMessage.Handler.class, SendVideoMessage.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(PlaymusicMessage.Handler.class, PlaymusicMessage.class, nextID(), Side.CLIENT);

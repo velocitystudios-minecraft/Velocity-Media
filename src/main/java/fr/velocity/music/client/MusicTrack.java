@@ -25,87 +25,91 @@ import java.util.regex.Pattern;
 public class MusicTrack {
     public static void Trackmusic(String url, int volume, String TrackId, String Option) {
         Playlist playlist = new Playlist();
-        IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume);
-        NewPlayer.getTrackSearch().getTracks(url, result -> {
-            if (result.hasError()) {
-                System.out.println(new TextComponentString(result.getErrorMessage()));
-            } else {
-                final IAudioTrack track = result.getTrack();
 
-                if (Option.contains("--repeat")) {
-                    playlist.RepeatMode = "true";
+        Thread musicthread = new Thread(() -> {
+            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume);
+            NewPlayer.getTrackSearch().getTracks(url, result -> {
+                if (result.hasError()) {
+                    System.out.println(new TextComponentString(result.getErrorMessage()));
                 } else {
-                    playlist.RepeatMode = "false";
-                }
+                    final IAudioTrack track = result.getTrack();
 
-                final Runnable runnable = () -> {
-                    final ITrackManager manager = NewPlayer.getTrackManager();
+                    if (Option.contains("--repeat")) {
+                        playlist.RepeatMode = "true";
+                    } else {
+                        playlist.RepeatMode = "false";
+                    }
 
-                    playlist.add(track);
-                    Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
-                    playlist.setPlayable(pair.getLeft(), pair.getRight());
+                    final Runnable runnable = () -> {
+                        final ITrackManager manager = NewPlayer.getTrackManager();
 
-                    if (Option.contains("--noplayagain")) {
-                        if(NewPlayer.getTrackManager().getCurrentTrack() != null) {
-                            if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getTrackManager().getCurrentTrack().getInfo().getTitle())) {
+                        playlist.add(track);
+                        Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
+                        playlist.setPlayable(pair.getLeft(), pair.getRight());
+
+                        if (Option.contains("--noplayagain")) {
+                            if(NewPlayer.getTrackManager().getCurrentTrack() != null) {
+                                if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getTrackManager().getCurrentTrack().getInfo().getTitle())) {
+                                    return;
+                                }
+                            }
+                        }
+
+                        if (Option.contains("--onlyplaying")) {
+                            if(NewPlayer.getTrackManager().getCurrentTrack() == null) {
                                 return;
                             }
                         }
-                    }
 
-                    if (Option.contains("--onlyplaying")) {
-                        if(NewPlayer.getTrackManager().getCurrentTrack() == null) {
-                            return;
-                        }
-                    }
+                        manager.setTrackQueue(playlist);
+                        manager.start();
 
-                    manager.setTrackQueue(playlist);
-                    manager.start();
+                        int realvolume = (int) (ConfigHandler.VolumeGlobaux * volume);
+                        NewPlayer.setVolume(realvolume);
 
-                    int realvolume = (int) (ConfigHandler.VolumeGlobaux * volume);
-                    NewPlayer.setVolume(realvolume);
-
-                    long StartTime = 0;
-                    if (Option.contains("--position")) {
-                        Pattern pattern = Pattern.compile("--position(\\d+)");
-                        Matcher matcher = pattern.matcher(Option);
-                        if (matcher.find()) {
-                            StartTime = Integer.parseInt(matcher.group(1));
-                            System.out.println("[Velocity Media] --position trouvé : " + StartTime);
-                            IPlayingTrack currentTrack = NewPlayer.getTrackManager().getCurrentTrack();
-                            if(currentTrack!=null) {
-                                if(currentTrack.getDuration() < StartTime) {
-                                    System.out.println("[Velocity Media] Duration indiqué excède la limite de " + currentTrack.getDuration());
-                                } else {
-                                    while (1==1) {
-                                        long CurrentPosition = NewPlayer.getTrackManager().getCurrentTrack().getPosition();
-                                        if (CurrentPosition > 0) {
-                                            System.out.println("[Velocity Media] Position mis avec succès avec un temps max de " + currentTrack.getDuration());
-                                            currentTrack.setPosition(StartTime);
-                                            break;
-                                        }
-                                        try {
-                                            Thread.sleep(2);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                        long StartTime = 0;
+                        if (Option.contains("--position")) {
+                            Pattern pattern = Pattern.compile("--position(\\d+)");
+                            Matcher matcher = pattern.matcher(Option);
+                            if (matcher.find()) {
+                                StartTime = Integer.parseInt(matcher.group(1));
+                                System.out.println("[Velocity Media] --position trouvé : " + StartTime);
+                                IPlayingTrack currentTrack = NewPlayer.getTrackManager().getCurrentTrack();
+                                if(currentTrack!=null) {
+                                    if(currentTrack.getDuration() < StartTime) {
+                                        System.out.println("[Velocity Media] Duration indiqué excède la limite de " + currentTrack.getDuration());
+                                    } else {
+                                        while (1==1) {
+                                            long CurrentPosition = NewPlayer.getTrackManager().getCurrentTrack().getPosition();
+                                            if (CurrentPosition > 0) {
+                                                System.out.println("[Velocity Media] Position mis avec succès avec un temps max de " + currentTrack.getDuration());
+                                                currentTrack.setPosition(StartTime);
+                                                break;
+                                            }
+                                            try {
+                                                Thread.sleep(2);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
                                         }
                                     }
+                                } else {
+                                    System.out.println("[Velocity Media] CurrentTrack actuellement invalide");
                                 }
                             } else {
-                                System.out.println("[Velocity Media] CurrentTrack actuellement invalide");
+                                System.out.println("[Velocity Media] --position invalide");
                             }
-                        } else {
-                            System.out.println("[Velocity Media] --position invalide");
                         }
-                    }
-                };
+                    };
 
-                if (!playlist.isLoaded()) {
-                    playlist.load(runnable);
-                } else {
-                    runnable.run();
+                    if (!playlist.isLoaded()) {
+                        playlist.load(runnable);
+                    } else {
+                        runnable.run();
+                    }
                 }
-            }
+            });
         });
+        musicthread.start();
     }
 }

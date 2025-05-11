@@ -35,7 +35,7 @@ public class Main {
 
 
 	
-	public static final String modid = "velocity-media";
+	public static final String modid = "velocitymedia";
 	public static final String name = "Velocity Media";
 	public static final String version = "@VERSION@";
 	public static final String mcversion = "@MCVERSION@";

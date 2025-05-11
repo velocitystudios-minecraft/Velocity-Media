@@ -39,58 +39,63 @@ public class MusicPlayerTrack {
 
     public static void PlayerTrackmusic(String targetPlayer, int radius, String url, int volume, String TrackId, String Option) {
         Playlist playlist = new Playlist();
-        IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume);
 
-        NewPlayer.getTrackSearch().getTracks(url, result -> {
-            if (result.hasError()) {
-                System.out.println(new TextComponentString(result.getErrorMessage()));
-            } else {
-                final IAudioTrack track = result.getTrack();
+        Thread musicthread = new Thread(() -> {
+            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume);
 
-                if (Option.contains("--repeat")) {
-                    playlist.RepeatMode = "true";
+            NewPlayer.getTrackSearch().getTracks(url, result -> {
+                if (result.hasError()) {
+                    System.out.println(new TextComponentString(result.getErrorMessage()));
                 } else {
-                    playlist.RepeatMode = "false";
-                }
+                    final IAudioTrack track = result.getTrack();
 
-                final Runnable runnable = () -> {
-                    final ITrackManager manager = NewPlayer.getTrackManager();
-                    playlist.add(track);
+                    if (Option.contains("--repeat")) {
+                        playlist.RepeatMode = "true";
+                    } else {
+                        playlist.RepeatMode = "false";
+                    }
 
-                    Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
-                    playlist.setPlayable(pair.getLeft(), pair.getRight());
-                    manager.setTrackQueue(playlist);
+                    final Runnable runnable = () -> {
+                        final ITrackManager manager = NewPlayer.getTrackManager();
+                        playlist.add(track);
 
-                    if (Option.contains("--noplayagain")) {
-                        if(NewPlayer.getTrackManager().getCurrentTrack() != null) {
-                            if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getTrackManager().getCurrentTrack().getInfo().getTitle())) {
+                        Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
+                        playlist.setPlayable(pair.getLeft(), pair.getRight());
+                        manager.setTrackQueue(playlist);
+
+                        if (Option.contains("--noplayagain")) {
+                            if(NewPlayer.getTrackManager().getCurrentTrack() != null) {
+                                if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getTrackManager().getCurrentTrack().getInfo().getTitle())) {
+                                    return;
+                                }
+                            }
+                        }
+
+                        if (Option.contains("--onlyplaying")) {
+                            if(NewPlayer.getTrackManager().getCurrentTrack() == null) {
                                 return;
                             }
                         }
+
+                        stopThreadForTrackId(TrackId);
+                        AtomicBoolean controlFlag = new AtomicBoolean(true);
+                        trackControlFlags.put(TrackId, controlFlag);
+
+                        Thread thread = new Thread(() -> playAroundEntity(manager, NewPlayer, targetPlayer, volume, radius, Option, controlFlag, TrackId));
+                        activeThreads.put(TrackId, thread);
+                        thread.start();
+                    };
+
+                    if (!playlist.isLoaded()) {
+                        playlist.load(runnable);
+                    } else {
+                        runnable.run();
                     }
-
-                    if (Option.contains("--onlyplaying")) {
-                        if(NewPlayer.getTrackManager().getCurrentTrack() == null) {
-                            return;
-                        }
-                    }
-
-                    stopThreadForTrackId(TrackId);
-                    AtomicBoolean controlFlag = new AtomicBoolean(true);
-                    trackControlFlags.put(TrackId, controlFlag);
-
-                    Thread thread = new Thread(() -> playAroundEntity(manager, NewPlayer, targetPlayer, volume, radius, Option, controlFlag, TrackId));
-                    activeThreads.put(TrackId, thread);
-                    thread.start();
-                };
-
-                if (!playlist.isLoaded()) {
-                    playlist.load(runnable);
-                } else {
-                    runnable.run();
                 }
-            }
+            });
         });
+
+        musicthread.start();
     }
 
     public static void stopThreadForTrackId(String TrackId) {

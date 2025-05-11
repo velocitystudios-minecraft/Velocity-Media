@@ -22,6 +22,7 @@ import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 public class CommonProxy {
 	
 	public void preinit(FMLPreInitializationEvent event) {
+		System.out.println("PreInit client...");
 		Main.LOGGER = event.getModLog();
 		RegistryHandler.preInitRegistries(event);
 		PacketHandler.registerMessages();
