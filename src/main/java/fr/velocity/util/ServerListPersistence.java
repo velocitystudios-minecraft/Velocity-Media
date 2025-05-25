@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
 import java.util.*;
 
 import static net.minecraft.command.CommandBase.getEntityList;
@@ -37,6 +38,32 @@ public class ServerListPersistence {
         subList1.add(User);
 
         mainList.add(subList1);
+    }
+
+    public static void saveASave() {
+        File original = new File(FILE_PATH);
+        if (!original.exists()) {
+            System.out.println("Fichier d'origine introuvable : " + FILE_PATH);
+            return;
+        }
+
+        int counter = 1;
+        String baseName = "saved_data_backup";
+        String extension = ".json";
+        String backupPath;
+
+        do {
+            backupPath = baseName + (counter == 1 ? "" : "_" + counter) + extension;
+            counter++;
+        } while (new File(backupPath).exists());
+
+        try {
+            Files.copy(original.toPath(), new File(backupPath).toPath());
+            System.out.println("Sauvegarde créée : " + backupPath);
+        } catch (IOException e) {
+            System.out.println("Erreur lors de la création de la sauvegarde.");
+            e.printStackTrace();
+        }
     }
 
     public static void AddPlayerTrackSaved(long Duration, String url, int volume, String TrackId, String Option, String User, int Radius) {

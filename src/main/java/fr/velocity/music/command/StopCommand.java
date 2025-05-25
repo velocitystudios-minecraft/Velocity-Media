@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static fr.velocity.util.ServerListPersistence.RemoveTrackId;
+import static fr.velocity.util.ServerListPersistence.saveASave;
 
 public class StopCommand extends CommandBase {
 
@@ -50,6 +51,9 @@ public class StopCommand extends CommandBase {
         List<Entity> entity = getEntityList(server, sender, args[0]);
 
         if (Objects.equals(args[0], "@a")) {
+            if (Objects.equals(TrackId, "ALL")) {
+                saveASave();
+            }
             RemoveTrackId(TrackId);
         }
 

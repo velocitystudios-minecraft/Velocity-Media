@@ -2,9 +2,9 @@
   "parent": "block/cross",
   "credit": "Made with Blockbench",
   "textures": {
-    "0": "velocity-media:blocks/anvil_base",
-    "1": "velocity-media:blocks/concrete_black",
-    "particle": "velocity-media:blocks/anvil_base"
+    "0": "velocitymedia:blocks/anvil_base",
+    "1": "velocitymedia:blocks/concrete_black",
+    "particle": "velocitymedia:blocks/anvil_base"
   },
   "elements": [
     {

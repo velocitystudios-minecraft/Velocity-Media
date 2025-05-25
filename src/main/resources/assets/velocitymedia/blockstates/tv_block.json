@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "normal": {
+      "model": "velocitymedia:tv_block"
+    },
+    "facing=north": {
+      "model": "velocitymedia:tv_block",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "velocitymedia:tv_block",
+      "y": 270
+    },
+    "facing=south": {
+      "model": "velocitymedia:tv_block"
+    },
+    "facing=west": {
+      "model": "velocitymedia:tv_block",
+      "y": 90
+    }
+  }
+}

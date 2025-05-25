@@ -1,6 +1,6 @@
 [
 	{
-		"modid": "velocity-media",
+		"modid": "velocitymedia",
 		"name": "Velocity Média",
 		"version": "${version}",
 		"mcversion": "${mcversion}",
