@@ -18,7 +18,7 @@ public class ConfigHandler {
     }
 
     private static void loadConfig() {
-        VolumeGlobaux = config.getFloat("VolumeGlobaux", CATEGORY_VOLUME, VolumeGlobaux, 0.0F, 1.0F, "Volume Globaux");
+        VolumeGlobaux = config.getFloat("VolumeGlobaux", CATEGORY_VOLUME, VolumeGlobaux, 0.0F, 2.0F, "Volume Globaux");
         if (config.hasChanged()) {
             config.save();
         }

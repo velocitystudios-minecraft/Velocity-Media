@@ -1,8 +1,10 @@
 package fr.velocity;
 
 import fr.velocity.mod.handler.RegistryHandler;
+import fr.velocity.mod.item.ModItems;
 import fr.velocity.music.client.ClientManager;
 import fr.velocity.music.command.*;
+import fr.velocity.music.util.DebugRenderer;
 import fr.velocity.util.ServerListPersistence;
 import fr.velocity.video.block.entity.TVBlockEntity;
 import fr.velocity.video.command.PlayVideoCommand;
@@ -33,8 +35,6 @@ import static fr.velocity.util.ServerListPersistence.AskForSavedData;
 @Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = Main.mcversion, dependencies = Main.dependencies/*, updateJSON = Main.updateurl, clientSideOnly = true*/)
 public class Main {
 
-
-	
 	public static final String modid = "velocitymedia";
 	public static final String name = "Velocity Media";
 	public static final String version = "@VERSION@";
@@ -78,11 +78,12 @@ public class Main {
 	}
 
 	@EventHandler
-	public void preinit(FMLPreInitializationEvent event) {
+	public void preInit(FMLPreInitializationEvent event) {
 		RegistryHandler.preInitRegistries(event);
 		proxy.preinit(event);
 
 		MinecraftForge.EVENT_BUS.register(new ModEventSubscriber());
+		MinecraftForge.EVENT_BUS.register(ModItems.class);
 	}
 	
 	@EventHandler
@@ -91,6 +92,7 @@ public class Main {
 
 		if(event.getSide().isClient()) {
 			clientManager = new ClientManager();
+			MinecraftForge.EVENT_BUS.register(DebugRenderer.INSTANCE);
 		}
 
 		proxy.init(event);
@@ -101,7 +103,7 @@ public class Main {
 	}
 	
 	@EventHandler
-	public void postinit(FMLPostInitializationEvent event) {
+	public void postInit(FMLPostInitializationEvent event) {
 		if (FMLCommonHandler.instance().getSide().isClient()) {
 			if (!me.srrapero720.watermedia.api.WaterMediaAPI.vlc_isReady()) {
 				System.out.println("VLC n'es pas detecté");
@@ -115,7 +117,7 @@ public class Main {
 	}
 
 	@Mod.EventHandler
-	public void onServerStarting(FMLServerStartingEvent event) {
+	public void serverInit(FMLServerStartingEvent event) {
 		event.registerServerCommand(new StopCommand());
 		event.registerServerCommand(new VolumeCommand());
 		event.registerServerCommand(new PauseCommand());

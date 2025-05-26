@@ -127,7 +127,7 @@ public class PlayerTrackCommand extends CommandBase {
                     return;
                 }
             }
-            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server", volume);
+            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server", volume, "Server", 0, 0, 0, 0, Option, "None");
 
             String finalUrl = url;
             NewPlayer.getTrackSearch().getTracks(url, result -> {

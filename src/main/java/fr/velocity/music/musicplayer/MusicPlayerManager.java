@@ -2,7 +2,9 @@ package fr.velocity.music.musicplayer;
 
 import fr.velocity.mod.handler.ConfigHandler;
 import fr.velocity.music.lavaplayer.api.queue.ITrackManager;
+import fr.velocity.music.util.DebugRenderer;
 import jdk.nashorn.internal.runtime.regexp.joni.Config;
+import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.*;
 
 import com.google.gson.*;
@@ -21,7 +23,7 @@ public class MusicPlayerManager {
 	private static final Logger logger = LogManager.getLogger();
 
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-	private static final Map<String, CustomPlayer> playerCache = new ConcurrentHashMap<>();
+	public static final Map<String, CustomPlayer> playerCache = new ConcurrentHashMap<>();
 
 	public static void setup() {
 
@@ -43,7 +45,7 @@ public class MusicPlayerManager {
 		} else {
 			SetMaxVolumeFromTrackId(TrackId, Volume);
 			int ModifiedVolume = (int) (Volume * ConfigHandler.VolumeGlobaux);
-            Objects.requireNonNull(TestGenerate(TrackId, 0)).setVolume(ModifiedVolume);
+            Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None")).setVolume(ModifiedVolume);
 		}
 	}
 
@@ -53,7 +55,7 @@ public class MusicPlayerManager {
 				entry.getValue().getPlayer().getTrackManager().getCurrentTrack().setPosition(Position);
 			}
 		} else {
-			Objects.requireNonNull(TestGenerate(TrackId, 0)).getTrackManager().getCurrentTrack().setPosition(Position);
+			Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None")).getTrackManager().getCurrentTrack().setPosition(Position);
 		}
 	}
 
@@ -80,7 +82,7 @@ public class MusicPlayerManager {
 				newmanager.setPaused(PauseMode);
 			}
 		} else {
-			final ITrackManager manager = TestGenerate(TrackId, 0).getTrackManager();
+			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None").getTrackManager();
 			manager.setPaused(PauseMode);
 		}
 	}
@@ -92,15 +94,28 @@ public class MusicPlayerManager {
 				newmanager.stop();
 			}
 		} else {
-			final ITrackManager manager = TestGenerate(TrackId, 0).getTrackManager();
+			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None").getTrackManager();
 			manager.stop();
 		}
 	}
 
 
 
-	public static IMusicPlayer TestGenerate(String trackId, int volume) {
+	public static IMusicPlayer TestGenerate(String trackId, int volume, String mode, int X, int Y, int Z, int Radius, String Option, String Player) {
 		if (playerCache.containsKey(trackId)) {
+			if(Objects.equals(mode, "PositionTrack") || Objects.equals(mode, "PlayerTrack")) {
+				System.out.println("Debug d'un " + mode + "...");
+				DebugRenderer.INSTANCE.addZone(
+						new BlockPos(X, Y, Z),
+						Radius,
+						trackId,
+						mode,
+						Option,
+						Player
+				);
+			}
+
+
 			return playerCache.get(trackId).getPlayer();
 		} else {
 			try {
@@ -111,8 +126,21 @@ public class MusicPlayerManager {
 				IMusicPlayer newPlayer = (IMusicPlayer) clazz.getConstructor().newInstance();
 				newPlayer.startAudioOutput();
 				newPlayer.setVolume(volume);
-				CustomPlayer playerWithVolume = new CustomPlayer(newPlayer, volume);
+				CustomPlayer playerWithVolume = new CustomPlayer(newPlayer, trackId, volume, mode, X, Y, Z, Radius, Option, Player);
 				playerCache.put(trackId, playerWithVolume);
+
+				if(Objects.equals(mode, "PositionTrack") || Objects.equals(mode, "PlayerTrack")) {
+					System.out.println("Debug d'un " + mode + "...");
+					DebugRenderer.INSTANCE.addZone(
+							new BlockPos(X, Y, Z),
+							Radius,
+							trackId,
+							mode,
+							Option,
+							Player
+					);
+				}
+
 				return newPlayer;
 			} catch (Exception ex) {
 				logger.fatal("Impossible de créer une instance du lecteur de musique. C'est un bug sérieux et le mod ne fonctionnera pas. Signalez-le aux auteurs du mod", ex);

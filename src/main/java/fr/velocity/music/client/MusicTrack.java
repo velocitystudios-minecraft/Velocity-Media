@@ -27,7 +27,7 @@ public class MusicTrack {
         Playlist playlist = new Playlist();
 
         Thread musicthread = new Thread(() -> {
-            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume);
+            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume, "Track", 0, 0, 0, 0, Option, "None");
             NewPlayer.getTrackSearch().getTracks(url, result -> {
                 if (result.hasError()) {
                     System.out.println(new TextComponentString(result.getErrorMessage()));

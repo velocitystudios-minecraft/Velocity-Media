@@ -41,7 +41,7 @@ public class MusicPlayerTrack {
         Playlist playlist = new Playlist();
 
         Thread musicthread = new Thread(() -> {
-            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume);
+            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume, "PlayerTrack", 0, 0, 0, radius, Option, targetPlayer);
 
             NewPlayer.getTrackSearch().getTracks(url, result -> {
                 if (result.hasError()) {
