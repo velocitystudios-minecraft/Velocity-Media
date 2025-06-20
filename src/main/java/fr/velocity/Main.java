@@ -92,7 +92,8 @@ public class Main {
 
 		if(event.getSide().isClient()) {
 			clientManager = new ClientManager();
-			MinecraftForge.EVENT_BUS.register(DebugRenderer.INSTANCE);
+			MinecraftForge.EVENT_BUS.register(new DebugRenderer());
+			DebugRenderer.init();
 		}
 
 		proxy.init(event);
@@ -126,6 +127,7 @@ public class Main {
 		event.registerServerCommand(new TrackCommand());
 		event.registerServerCommand(new PositionTrackCommand());
 		event.registerServerCommand(new PlayerTrackCommand());
+		event.registerServerCommand(new RegionTrackCommand());
 
 		ServerListPersistence.loadData();
 	}

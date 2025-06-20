@@ -10,7 +10,7 @@ plugins {
 
 group = "fr.velocity"
 base.archivesName = 'velocity'
-version = '2.2.0'
+version = '2.2.1'
 
 
 
@@ -156,11 +156,11 @@ processResources {
 		}
 	}
 
-	inputs.property "version", '2.2.0'
+	inputs.property "version", '2.2.1'
 	inputs.property "mcversion", '1.12.2'
 
 	filesMatching("mcmod.info") {
-		expand "version": '2.2.0', "mcversion": '1.12.2'
+		expand "version": '2.2.1', "mcversion": '1.12.2'
 	}
 }
 
@@ -168,7 +168,7 @@ tasks.register("prepareSources", Copy) {
 	from sourceSets.main.java
 	into file("${buildDir}/prepareSources")
 	filter (org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-		"VERSION": "2.2.0",
+		"VERSION": "2.2.1",
 		"MCVERSION": "1.12.2"
 	])
 	outputs.upToDateWhen { false }
@@ -181,11 +181,11 @@ tasks.named("compileJava").configure { task ->
 }
 
 processResources {
-	inputs.property "version", '2.2.0'
+	inputs.property "version", '2.2.1'
 	inputs.property "mcversion", '1.12.2'
 	
 	filesMatching("mcmod.info") {
-		expand "version": '2.2.0', "mcversion": '1.12.2'
+		expand "version": '2.2.1', "mcversion": '1.12.2'
 	}
 }
 
@@ -197,6 +197,8 @@ repositories {
 
 dependencies {
 	minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
+
+	implementation 'org.yaml:snakeyaml:1.33'
 
 	library project(":musicplayer-lavaplayer-api")
 	shade "org.slf4j:slf4j-simple:2.0.16"

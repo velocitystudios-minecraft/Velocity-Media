@@ -3,6 +3,7 @@ package fr.velocity.music.util;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.musicplayer.CustomPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
+import jdk.nashorn.internal.ir.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,15 +17,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static fr.velocity.music.client.MusicPlayerTrack.getEntityByUUID;
 import static fr.velocity.music.musicplayer.MusicPlayerManager.playerCache;
 
 public class DebugRenderer {
 
-    public static final DebugRenderer INSTANCE = new DebugRenderer();
+    public static DebugRenderer INSTANCE;
 
-    private static final List<DebugZone> zones = new ArrayList<>();
+    private static final List<DebugZone> zones = new CopyOnWriteArrayList<>();
     private static boolean active = false;
 
     private static class DebugZone {
@@ -34,15 +36,30 @@ public class DebugRenderer {
         String mode;
         String Option;
         String Player;
+        String Mode;
+        BlockPos pos2;
+        String region;
+        String world;
+        String methode;
 
-        DebugZone(BlockPos pos, int radius, String name, String mode, String Option, String Player) {
+        DebugZone(BlockPos pos, int radius, String name, String mode, String Option, String Player, BlockPos pos2, String region, String world, String methode) {
             this.pos = pos;
             this.radius = radius;
             this.name = name;
             this.mode = mode;
             this.Option = Option;
             this.Player = Player;
+            this.pos2 = pos2;
+            this.world = world;
+            this.region = region;
+            this.methode = methode;
         }
+
+
+    }
+
+    public static void init() {
+        INSTANCE = new DebugRenderer();
     }
 
     public void enableDebug() {
@@ -54,21 +71,23 @@ public class DebugRenderer {
     }
 
     public void addZone(BlockPos pos, int radius, String name, String mode, String Option, String Player) {
-        Iterator<DebugZone> iterator = zones.iterator();
-        while (iterator.hasNext()) {
-            DebugZone zone = iterator.next();
-            if (Objects.equals(zone.name, name)) {
-                iterator.remove();
-                break;
-            }
-        }
+        zones.removeIf(zone ->
+                zone.name.equals(name));
+
+        zones.add(new DebugZone(pos, radius, name, mode, Option, Player, new BlockPos(0,0,0),"None","None","Sphere"));
         System.out.println("AJOUT D UN DEBUG ZONE " + name);
-        zones.add(new DebugZone(pos, radius, name, mode, Option, Player));
+    }
+
+    public void addRegionZone(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, String name, String mode, String Option, String Player) {
+        zones.removeIf(zone ->
+                zone.name.equals(name));
+
+        zones.add(new DebugZone(new BlockPos(x1, y1, z1), 0, name, mode, Option, Player, new BlockPos(x2,y2,z2), region, world, "Squar"));
+        System.out.println("AJOUT D UN DEBUG ZONE " + name);
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-
         if (!active) return;
         if (zones.isEmpty()) return;
 
@@ -79,7 +98,7 @@ public class DebugRenderer {
 
         GlStateManager.pushMatrix();
         GlStateManager.disableTexture2D();
-        GlStateManager.enableDepth(); // Important : pour ne pas voir à travers
+        GlStateManager.enableDepth();
         GlStateManager.disableLighting();
         GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
         GL11.glLineWidth(1.5F);
@@ -91,44 +110,69 @@ public class DebugRenderer {
             CustomPlayer GetSuppl = playerCache.get(zone.name);
             String ToShow = "No mode found";
 
-            double cx = zone.pos.getX() + 0.5 - camX;
-            double cy = zone.pos.getY() + 0.5 - camY;
-            double cz = zone.pos.getZ() + 0.5 - camZ;
+            double cx, cy, cz;
+
+
             if(Objects.equals(zone.mode, "PlayerTrack")) {
+                // Gestion du mode PlayerTrack (inchangé)
                 if(zone.Option.contains("--useuuid")) {
                     Entity entity = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(zone.Player));
-                    if(entity==null) {
-                        continue;
-                    }
+                    if(entity==null) continue;
                     cx = entity.posX + 0.5 - camX;
                     cy = entity.posY + 4 - camY;
                     cz = entity.posZ + 0.5 - camZ;
-
                     ToShow = "Entity link to : " + zone.Player;
                 } else {
                     Entity Player = Minecraft.getMinecraft().world.getPlayerEntityByName(zone.Player);
-                    if(Player==null) {
-                        continue;
-                    }
+                    if(Player==null) continue;
                     cx = Player.posX + 0.5 - camX;
                     cy = Player.posY + 4 - camY;
                     cz = Player.posZ + 0.5 - camZ;
-
                     ToShow = "Player link to : " + zone.Player;
                 }
-            }
 
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(cx, cy, cz);
+                drawWireSphere(zone.radius, 32, 32);
+                GlStateManager.popMatrix();
 
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(cx, cy, cz);
-            drawWireSphere(zone.radius, 32, 32);
-            GlStateManager.popMatrix();
+            } else if(Objects.equals(zone.mode, "RegionTrack") || Objects.equals(zone.mode, "Square")) {
+                String WorldName1 = Minecraft.getMinecraft().getIntegratedServer() == null ? Minecraft.getMinecraft().player.world.getWorldInfo().getWorldName() : Minecraft.getMinecraft().getIntegratedServer().getWorldName();
+                if(!WorldName1.equals(zone.world)) {
+                    System.out.println(Minecraft.getMinecraft().getIntegratedServer().getWorldName());
+                    System.out.println(zone.world);
+                    continue;
+                }
+                // Gestion du mode RegionTrack/Square
+                BlockPos pos1 = zone.pos;
+                BlockPos pos2 = zone.pos2;
 
-            drawName("§l" + zone.name, cx + 0.5, cy + 0.5, cz + 0.5, 0.09F);
-            if (Objects.equals(zone.mode, "PositionTrack")) {
+                // Calcul du centre de la zone pour le texte
+                cx = (pos1.getX() + pos2.getX()) / 2.0 + 0.5 - camX;
+                cy = (pos1.getY() + pos2.getY()) / 2.0 + 0.5 - camY;
+                cz = (pos1.getZ() + pos2.getZ()) / 2.0 + 0.5 - camZ;
+
+                ToShow = "Region from: " + pos1.getX() + "," + pos1.getY() + "," + pos1.getZ() +
+                        " to " + pos2.getX() + "," + pos2.getY() + "," + pos2.getZ();
+
+                // Dessin du cube/wireframe
+                drawWireframeCube(pos1, pos2, camX, camY, camZ);
+
+            } else {
+                // Mode PositionTrack par défaut
+                cx = zone.pos.getX() + 0.5 - camX;
+                cy = zone.pos.getY() + 0.5 - camY;
+                cz = zone.pos.getZ() + 0.5 - camZ;
                 ToShow = "Position link to : x: " + zone.pos.getX() + ", y: " + zone.pos.getY() + ", z: " + zone.pos.getZ();
+
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(cx, cy, cz);
+                drawWireSphere(zone.radius, 32, 32);
+                GlStateManager.popMatrix();
             }
 
+            // Affichage du texte (inchangé)
+            drawName("§l" + zone.name, cx + 0.5, cy + 0.5, cz + 0.5, 0.09F);
             drawName("§7" + ToShow, cx + 0.5, cy - 0.7, cz + 0.5, 0.05F);
 
             if (GetSuppl.getPlayer().getTrackManager().getCurrentTrack() != null) {
@@ -144,8 +188,12 @@ public class DebugRenderer {
                 String formattedCurrent = String.format("%d:%02d", Currentminutes, Currentseconds);
 
                 drawName(GetSuppl.getPlayer().getTrackManager().getCurrentTrack().getOriginalTrack().getInfo().getFixedTitle(), cx + 0.5, cy - 1.5, cz + 0.5, 0.04F);
-                drawName("Id: " + GetSuppl.getPlayer().getTrackManager().getCurrentTrack().getOriginalTrack().getInfo().getIdentifier() + " | C V: " + GetSuppl.getPlayer().getVolume(), cx + 0.5, cy - 2.3, cz + 0.5, 0.06F);
-                drawName("M V: " + GetSuppl.getMaxVolume() + " | Radius: " + GetSuppl.getRadius(), cx + 0.5, cy - 3, cz + 0.5, 0.06F);
+                drawName("C V: " + GetSuppl.getPlayer().getVolume() + " | Id: " + GetSuppl.getPlayer().getTrackManager().getCurrentTrack().getOriginalTrack().getInfo().getIdentifier(), cx + 0.5, cy - 2.3, cz + 0.5, 0.06F);
+                if(Objects.equals(GetSuppl.getMode(), "RegionTrack")) {
+                    drawName("M V: " + GetSuppl.getMaxVolume() + " | Region: " + zone.region + " | Monde: " + zone.world, cx + 0.5, cy - 3, cz + 0.5, 0.06F);
+                } else {
+                    drawName("M V: " + GetSuppl.getMaxVolume() + " | Radius: " + GetSuppl.getRadius(), cx + 0.5, cy - 3, cz + 0.5, 0.06F);
+                }
                 drawName(formattedCurrent + " / " + formattedMax, cx + 0.5, cy - 4, cz + 0.5, 0.05F);
             } else {
                 drawName("No Current Playing", cx + 0.5, cy - 2.3, cz + 0.5, 0.05F);
@@ -154,6 +202,49 @@ public class DebugRenderer {
 
         GlStateManager.enableTexture2D();
         GlStateManager.popMatrix();
+    }
+
+    // Nouvelle méthode pour dessiner un cube/wireframe
+    private void drawWireframeCube(BlockPos pos1, BlockPos pos2, double camX, double camY, double camZ) {
+        double minX = Math.min(pos1.getX(), pos2.getX()) - camX;
+        double minY = Math.min(pos1.getY(), pos2.getY()) - camY;
+        double minZ = Math.min(pos1.getZ(), pos2.getZ()) - camZ;
+        double maxX = Math.max(pos1.getX(), pos2.getX()) + 1 - camX;
+        double maxY = Math.max(pos1.getY(), pos2.getY()) + 1 - camY;
+        double maxZ = Math.max(pos1.getZ(), pos2.getZ()) + 1 - camZ;
+
+        GL11.glBegin(GL11.GL_LINE_STRIP);
+        // Bas
+        GL11.glVertex3d(minX, minY, minZ);
+        GL11.glVertex3d(maxX, minY, minZ);
+        GL11.glVertex3d(maxX, minY, maxZ);
+        GL11.glVertex3d(minX, minY, maxZ);
+        GL11.glVertex3d(minX, minY, minZ);
+        GL11.glEnd();
+
+        GL11.glBegin(GL11.GL_LINE_STRIP);
+        // Haut
+        GL11.glVertex3d(minX, maxY, minZ);
+        GL11.glVertex3d(maxX, maxY, minZ);
+        GL11.glVertex3d(maxX, maxY, maxZ);
+        GL11.glVertex3d(minX, maxY, maxZ);
+        GL11.glVertex3d(minX, maxY, minZ);
+        GL11.glEnd();
+
+        GL11.glBegin(GL11.GL_LINES);
+        // Côtés
+        GL11.glVertex3d(minX, minY, minZ);
+        GL11.glVertex3d(minX, maxY, minZ);
+
+        GL11.glVertex3d(maxX, minY, minZ);
+        GL11.glVertex3d(maxX, maxY, minZ);
+
+        GL11.glVertex3d(maxX, minY, maxZ);
+        GL11.glVertex3d(maxX, maxY, maxZ);
+
+        GL11.glVertex3d(minX, minY, maxZ);
+        GL11.glVertex3d(minX, maxY, maxZ);
+        GL11.glEnd();
     }
 
     private void drawWireSphere(float radius, int stacks, int slices) {
@@ -184,10 +275,8 @@ public class DebugRenderer {
 
         GlStateManager.pushMatrix();
 
-        // Position du texte
         GlStateManager.translate(x, y, z);
 
-        // Rotation pour qu'il fasse face au joueur
         GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(mc.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
 
@@ -200,7 +289,6 @@ public class DebugRenderer {
 
         int width = mc.fontRenderer.getStringWidth(text) / 2;
 
-        // Texte avec ombre (shadow), pas de fond
         mc.fontRenderer.drawStringWithShadow(text, -width, 0, 0xFFFFFF);
 
         GlStateManager.disableBlend();

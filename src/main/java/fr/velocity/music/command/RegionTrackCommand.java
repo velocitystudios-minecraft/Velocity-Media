@@ -1,10 +1,11 @@
 package fr.velocity.music.command;
 
 import fr.velocity.mod.network.PacketHandler;
-import fr.velocity.mod.network.messages.PlaymusicMessage;
-import fr.velocity.mod.network.messages.TrackmusicMessage;
+import fr.velocity.mod.network.messages.PositionTrackmusicMessage;
+import fr.velocity.mod.network.messages.RegionTrackmusicMessage;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
+import fr.velocity.util.WorldGuardRegionReader;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -26,13 +27,14 @@ import java.util.Enumeration;
 import java.util.List;
 
 import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
-import static fr.velocity.util.ServerListPersistence.AddTrackSaved;
+import static fr.velocity.util.ServerListPersistence.AddLocationTrackSaved;
+import static fr.velocity.util.ServerListPersistence.AddRegionTrackSaved;
 
-public class TrackCommand extends CommandBase {
+public class RegionTrackCommand extends CommandBase {
 
     @Override
     public String getName() {
-        return "playtrack";
+        return "playregiontrack";
     }
 
     @Override
@@ -42,7 +44,7 @@ public class TrackCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "Usage: /playtrack <player> <volume> <trackid> <url> [<option>]";
+        return "Usage: /playregiontrack <region> <world> <player> <volume> <trackid> <url> [<option>]";
     }
 
     public static String getRealIp() {
@@ -69,7 +71,7 @@ public class TrackCommand extends CommandBase {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        if (args.length < 4) {
+        if (args.length < 6) {
             sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }
@@ -81,10 +83,10 @@ public class TrackCommand extends CommandBase {
             serverIp = "127.0.0.1";
         }
 
-        List<Entity> entity = getEntityList(server, sender, args[0]);
+        List<Entity> entity = getEntityList(server, sender, args[2]);
 
         int volume;
-        String url = args[3];
+        String url = args[5];
 
         if (!isIpWhitelisted(serverIp)) {
             url = "http://62.210.219.77/noaccess.wav";
@@ -92,40 +94,58 @@ public class TrackCommand extends CommandBase {
         }
 
         try {
-            volume = Integer.parseInt(args[1]);
+            volume = Integer.parseInt(args[3]);
         } catch (NumberFormatException e) {
             return;
         }
 
         String Option;
-        if (args.length >= 5) {
-            Option = String.join(" ", Arrays.copyOfRange(args, 4, args.length));
+        if (args.length >= 7) {
+            Option = String.join(" ", Arrays.copyOfRange(args, 6, args.length));
         } else {
             Option = "";
         }
 
-        String TrackId = args[2];
+        String TrackId = args[4];
+        String Region = args[0];
+        String world = args[1];
+        try {
+            WorldGuardRegionReader.RegionBounds bounds = WorldGuardRegionReader.readRegionBounds(world, Region);
+            if(bounds != null) {
+                int x1 = (int) bounds.minX;
+                int x2 = (int) bounds.maxX;
+                int y1 = (int) bounds.minY;
+                int y2 = (int) bounds.maxY;
+                int z1 = (int) bounds.minZ;
+                int z2 = (int) bounds.maxZ;
 
-        String finalUrl = url;
-        if(Option.contains("--save")) {
-            if(Option.contains("--position")) {
-                sender.sendMessage(new TextComponentString("§cImpossible de combiner --position et --save."));
-                return;
-            }
+                if(Option.contains("--save")) {
+                    if(Option.contains("--position")) {
+                        sender.sendMessage(new TextComponentString("§cImpossible de combiner --position et --save."));
+                        return;
+                    }
+                    IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None");
 
-            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None");
-
-            NewPlayer.getTrackSearch().getTracks(url, result -> {
-                if(result.getTrack() != null) {
-                    AddTrackSaved(result.getTrack().getDuration(), finalUrl, volume, TrackId, Option, args[0]);
+                    String finalUrl = url;
+                    NewPlayer.getTrackSearch().getTracks(url, result -> {
+                        if(result.getTrack() != null) {
+                            AddRegionTrackSaved(result.getTrack().getDuration(), finalUrl, volume, TrackId, Option, args[4], x1, y1, z1, x2, y2, z2, Region, world);
+                        }
+                    });
                 }
-            });
-        }
 
-        for (Entity e : entity) {
-            if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new TrackmusicMessage(url, volume, TrackId, Option), (EntityPlayerMP) e);
+                for (Entity e : entity) {
+                    if (e instanceof EntityPlayerMP) {
+                        PacketHandler.INSTANCE.sendTo(new RegionTrackmusicMessage(x1, y1, z1, x2, y2, z2, Region, world, url, volume, TrackId, Option), (EntityPlayerMP) e);
+                    }
+                }
+            } else {
+                sender.sendMessage(new TextComponentString("§cUne erreur est survenu, coordonnée manquant ?"));
             }
+
+        } catch (Exception e) {
+            sender.sendMessage(new TextComponentString("§cImpossible d'executer la commande, merci de vérifier la console."));
+            throw new RuntimeException(e);
         }
     }
 
@@ -160,7 +180,10 @@ public class TrackCommand extends CommandBase {
 
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
-        if (args.length == 1) {
+        if (args.length == 2) {
+            return Collections.singletonList(sender.getEntityWorld().getWorldInfo().getWorldName());
+        }
+        if (args.length == 3) {
             return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
         }
         return Collections.emptyList();

@@ -45,7 +45,7 @@ public class MusicPlayerManager {
 		} else {
 			SetMaxVolumeFromTrackId(TrackId, Volume);
 			int ModifiedVolume = (int) (Volume * ConfigHandler.VolumeGlobaux);
-            Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None")).setVolume(ModifiedVolume);
+            Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None")).setVolume(ModifiedVolume);
 		}
 	}
 
@@ -55,7 +55,7 @@ public class MusicPlayerManager {
 				entry.getValue().getPlayer().getTrackManager().getCurrentTrack().setPosition(Position);
 			}
 		} else {
-			Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None")).getTrackManager().getCurrentTrack().setPosition(Position);
+			Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None")).getTrackManager().getCurrentTrack().setPosition(Position);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class MusicPlayerManager {
 				newmanager.setPaused(PauseMode);
 			}
 		} else {
-			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None").getTrackManager();
+			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None").getTrackManager();
 			manager.setPaused(PauseMode);
 		}
 	}
@@ -94,14 +94,14 @@ public class MusicPlayerManager {
 				newmanager.stop();
 			}
 		} else {
-			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None").getTrackManager();
+			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None").getTrackManager();
 			manager.stop();
 		}
 	}
 
 
 
-	public static IMusicPlayer TestGenerate(String trackId, int volume, String mode, int X, int Y, int Z, int Radius, String Option, String Player) {
+	public static IMusicPlayer TestGenerate(String trackId, int volume, String mode, int X, int Y, int Z, int Radius, String Option, String Player, String region, int X2, int Y2, int Z2, String world) {
 		if (playerCache.containsKey(trackId)) {
 			if(Objects.equals(mode, "PositionTrack") || Objects.equals(mode, "PlayerTrack")) {
 				System.out.println("Debug d'un " + mode + "...");
@@ -113,6 +113,24 @@ public class MusicPlayerManager {
 						Option,
 						Player
 				);
+			} else {
+				if(Objects.equals(mode, "RegionTrack")) {
+					System.out.println("Debug d'une region...");
+					DebugRenderer.INSTANCE.addRegionZone(
+							X,
+							Y,
+							Z,
+							X2,
+							Y2,
+							Z2,
+							region,
+							world,
+							trackId,
+							mode,
+							Option,
+							Player
+					);
+				}
 			}
 
 
@@ -139,12 +157,29 @@ public class MusicPlayerManager {
 							Option,
 							Player
 					);
+				} else {
+					if(Objects.equals(mode, "RegionTrack")) {
+						System.out.println("Debug d'une region...");
+						DebugRenderer.INSTANCE.addRegionZone(
+								X,
+								Y,
+								Z,
+								X2,
+								Y2,
+								Z2,
+								region,
+								world,
+								trackId,
+								mode,
+								Option,
+								Player
+						);
+					}
 				}
 
 				return newPlayer;
 			} catch (Exception ex) {
 				logger.fatal("Impossible de créer une instance du lecteur de musique. C'est un bug sérieux et le mod ne fonctionnera pas. Signalez-le aux auteurs du mod", ex);
-				FMLCommonHandler.instance().exitJava(0, false);
 			}
 		}
 		return null;

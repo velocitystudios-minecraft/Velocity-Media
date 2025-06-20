@@ -38,6 +38,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(PausemusicMessage.Handler.class, PausemusicMessage.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(VolumemusicMessage.Handler.class, VolumemusicMessage.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(PositionmusicMessage.Handler.class, PositionmusicMessage.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(RegionTrackmusicMessage.Handler.class, RegionTrackmusicMessage.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(FrameVideoMessage.Handler.class, FrameVideoMessage.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(UploadVideoUpdateMessage.Handler.class, UploadVideoUpdateMessage.class, nextID(), Side.SERVER);
     }

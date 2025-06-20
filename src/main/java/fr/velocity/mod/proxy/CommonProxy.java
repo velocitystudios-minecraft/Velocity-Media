@@ -58,6 +58,7 @@ public class CommonProxy {
 	public void Trackmusic(String url, int volume, String TrackId, String Option) {}
 	public void PlayerTrackmusic(String targetPlayer, int radius, String url, int volume, String TrackId, String RepeatMode) {}
 	public void PositionTrackmusic(int x, int y, int z, int radius, String url, int volume, String TrackId, String RepeatMode) {}
+	public void RegionTrackmusic(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, String url, int volume, String TrackId, String RepeatMode) {}
 	public void Stopmusic(String TrackId) {}
 	public void Volumemusic(String TrackId, int volume) {}
 	public void Positionmusic(String TrackId, long position) {}

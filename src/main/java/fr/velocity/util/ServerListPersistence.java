@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.PlayerTrackmusicMessage;
 import fr.velocity.mod.network.messages.PositionTrackmusicMessage;
+import fr.velocity.mod.network.messages.RegionTrackmusicMessage;
 import fr.velocity.mod.network.messages.TrackmusicMessage;
 import net.minecraft.command.CommandException;
 import net.minecraft.entity.Entity;
@@ -101,6 +102,31 @@ public class ServerListPersistence {
         subList1.add(y);
         subList1.add(z);
         subList1.add(radius);
+
+        mainList.add(subList1);
+    }
+
+    public static void AddRegionTrackSaved(long Duration, String url, int volume, String TrackId, String Option, String User, int x1, int y1, int z1, int x2, int y2, int z2, String region, String world) {
+        RemoveTrackId(TrackId);
+
+        List<Object> subList1 = new ArrayList<>();
+
+        subList1.add("RegionTrack");
+        subList1.add(System.currentTimeMillis());
+        subList1.add(Duration);
+        subList1.add(url);
+        subList1.add(volume);
+        subList1.add(TrackId);
+        subList1.add(Option);
+        subList1.add(User);
+        subList1.add(x1);
+        subList1.add(y1);
+        subList1.add(z1);
+        subList1.add(x2);
+        subList1.add(y2);
+        subList1.add(z2);
+        subList1.add(region);
+        subList1.add(world);
 
         mainList.add(subList1);
     }
@@ -268,6 +294,21 @@ public class ServerListPersistence {
                             } else {
                                 System.out.println("Lancer un son jouer sur probablement quelqu'un...");
                                 PacketHandler.INSTANCE.sendTo(new PlayerTrackmusicMessage(User, (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
+                            }
+                        } else {
+                            if(Objects.equals(TrackType, "LocationTrack")) {
+                                if(entitylist.contains(MPPlayer)) {
+                                    double X1 = GetDouble(subList.get(8));
+                                    double Y1 = GetDouble(subList.get(9));
+                                    double Z1 = GetDouble(subList.get(10));
+                                    double X2 = GetDouble(subList.get(11));
+                                    double Y2 = GetDouble(subList.get(12));
+                                    double Z2 = GetDouble(subList.get(13));
+                                    String region = (String) subList.get(14);
+                                    String world = (String) subList.get(15);
+
+                                    PacketHandler.INSTANCE.sendTo(new RegionTrackmusicMessage((int) X1, (int) Y1, (int) Z1, (int) X2, (int) Y2, (int) Z2, region, world, url, (int) volume, TrackId, option), MPPlayer);
+                                }
                             }
                         }
                     }
