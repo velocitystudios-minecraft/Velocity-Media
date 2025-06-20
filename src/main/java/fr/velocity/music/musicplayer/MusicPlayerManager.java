@@ -70,8 +70,10 @@ public class MusicPlayerManager {
 
 	public static void UpdateVolume() {
 		for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
-			int NewVolume = (int) (entry.getValue().getMaxVolume() * ConfigHandler.VolumeGlobaux);
-			entry.getValue().getPlayer().setVolume(NewVolume);
+			if (Objects.equals(entry.getValue().getMode(), "Track")) {
+				int NewVolume = (int) (entry.getValue().getMaxVolume() * ConfigHandler.VolumeGlobaux);
+				entry.getValue().getPlayer().setVolume(NewVolume);
+			}
 		}
 	}
 
