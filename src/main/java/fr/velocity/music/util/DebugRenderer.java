@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static fr.velocity.music.client.MusicPlayerTrack.getEntityByUUID;
 import static fr.velocity.music.musicplayer.MusicPlayerManager.playerCache;
 
 public class DebugRenderer {
@@ -103,15 +102,13 @@ public class DebugRenderer {
         GlStateManager.enableDepth();
         GlStateManager.disableLighting();
         GlStateManager.disableCull();
+        GL11.glLineWidth(1.5F);
 
         GL11.glTranslated(-camX, -camY, -camZ);
 
         Iterator<DebugZone> iterator = zones.iterator();
         while (iterator.hasNext()) {
             DebugZone zone = iterator.next();
-
-            GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
-            GL11.glLineWidth(1.5F);
 
             CustomPlayer GetSuppl = playerCache.get(zone.name);
             String ToShow = "No mode found";
@@ -131,8 +128,6 @@ public class DebugRenderer {
 
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(cx, cy, cz);
-                GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
-                GL11.glLineWidth(1.5F);
                 drawWireSphere(zone.radius, 32, 32);
                 GlStateManager.popMatrix();
 
@@ -153,9 +148,7 @@ public class DebugRenderer {
                         " to " + pos2.getX() + "," + pos2.getY() + "," + pos2.getZ();
 
                 // Dessin du cube/wireframe
-                GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
-                GL11.glLineWidth(1.5F);
-                drawWireframeCube(zone.pos, zone.pos2, camX, camY, camZ);
+                drawWireframeCube(pos1, pos2, 0, 0, 0);
 
             } else {
                 // Mode PositionTrack par défaut
@@ -164,12 +157,7 @@ public class DebugRenderer {
                 cz = zone.pos.getZ() + 0.5;
                 ToShow = "Position link to : x: " + zone.pos.getX() + ", y: " + zone.pos.getY() + ", z: " + zone.pos.getZ();
 
-                GlStateManager.pushMatrix();
-                GlStateManager.translate(cx, cy, cz);
-                GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
-                GL11.glLineWidth(1.5F);
                 drawWireSphere(zone.radius, 32, 32);
-                GlStateManager.popMatrix();
             }
 
             // Affichage du texte (inchangé)
@@ -256,6 +244,11 @@ public class DebugRenderer {
     }
 
     private void drawWireSphere(float radius, int stacks, int slices) {
+        GlStateManager.pushMatrix();
+        GlStateManager.disableTexture2D();
+        GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
+        GL11.glLineWidth(1.5F);
+
         for (int i = 0; i <= stacks; ++i) {
             double lat0 = Math.PI * (-0.5 + (double)(i - 1) / stacks);
             double z0 = Math.sin(lat0);
@@ -276,10 +269,19 @@ public class DebugRenderer {
             }
             GL11.glEnd();
         }
+
+        GlStateManager.popMatrix();
     }
 
     private void drawName(String text, double x, double y, double z, float scale) {
         Minecraft mc = Minecraft.getMinecraft();
+
+        float maxDistance = 40.0F;
+        double distance = mc.player.getDistance(x, y, z);
+
+        if(distance > maxDistance) {
+            return; //TODO: Zoom ?
+        }
 
         GlStateManager.pushMatrix();
 
@@ -307,6 +309,7 @@ public class DebugRenderer {
 
         mc.fontRenderer.drawStringWithShadow(text, -width, 0, 0xFFFFFF);
 
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         RenderHelper.enableStandardItemLighting();
         GlStateManager.enableLighting();
         GlStateManager.enableColorMaterial();
