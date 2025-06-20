@@ -1,22 +1,22 @@
 package fr.velocity.music.util;
 
-import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.musicplayer.CustomPlayer;
-import fr.velocity.music.musicplayer.MusicPlayerManager;
-import jdk.nashorn.internal.ir.Block;
+import fr.velocity.util.DrawUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static fr.velocity.music.client.MusicPlayerTrack.getEntityByUUID;
@@ -103,6 +103,8 @@ public class DebugRenderer {
         GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
         GL11.glLineWidth(1.5F);
 
+        GL11.glTranslated(-camX, -camY, -camZ);
+
         Iterator<DebugZone> iterator = zones.iterator();
         while (iterator.hasNext()) {
             DebugZone zone = iterator.next();
@@ -112,24 +114,16 @@ public class DebugRenderer {
 
             double cx, cy, cz;
 
-
             if(Objects.equals(zone.mode, "PlayerTrack")) {
                 // Gestion du mode PlayerTrack (inchangé)
-                if(zone.Option.contains("--useuuid")) {
-                    Entity entity = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(zone.Player));
-                    if(entity==null) continue;
-                    cx = entity.posX + 0.5 - camX;
-                    cy = entity.posY + 4 - camY;
-                    cz = entity.posZ + 0.5 - camZ;
-                    ToShow = "Entity link to : " + zone.Player;
-                } else {
-                    Entity Player = Minecraft.getMinecraft().world.getPlayerEntityByName(zone.Player);
-                    if(Player==null) continue;
-                    cx = Player.posX + 0.5 - camX;
-                    cy = Player.posY + 4 - camY;
-                    cz = Player.posZ + 0.5 - camZ;
-                    ToShow = "Player link to : " + zone.Player;
-                }
+                Entity entity = zone.Option.contains("--useuuid")
+                    ? Minecraft.getMinecraft().world.getPlayerEntityByUUID(UUID.fromString(zone.Player))
+                    : Minecraft.getMinecraft().world.getPlayerEntityByName(zone.Player);
+                if(entity==null) continue;
+                cx = DrawUtil.lerp(entity.lastTickPosX, entity.posX, event.getPartialTicks());
+                cy = DrawUtil.lerp(entity.lastTickPosY, entity.posY, event.getPartialTicks()) + 4;
+                cz = DrawUtil.lerp(entity.lastTickPosZ, entity.posZ, event.getPartialTicks());
+                ToShow = "Player link to : " + zone.Player;
 
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(cx, cy, cz);
@@ -137,32 +131,34 @@ public class DebugRenderer {
                 GlStateManager.popMatrix();
 
             } else if(Objects.equals(zone.mode, "RegionTrack") || Objects.equals(zone.mode, "Square")) {
-                String WorldName1 = Minecraft.getMinecraft().getIntegratedServer() == null ? Minecraft.getMinecraft().player.world.getWorldInfo().getWorldName() : Minecraft.getMinecraft().getIntegratedServer().getWorldName();
-                if(!WorldName1.equals(zone.world)) {
-                    System.out.println(Minecraft.getMinecraft().getIntegratedServer().getWorldName());
-                    System.out.println(zone.world);
-                    continue;
+                if(zone.mode.equalsIgnoreCase("RegionTrack")) {
+                    String WorldName1 = Minecraft.getMinecraft().getIntegratedServer() == null ? Minecraft.getMinecraft().player.world.getWorldInfo().getWorldName() : Minecraft.getMinecraft().getIntegratedServer().getWorldName();
+                    if (!WorldName1.equals(zone.world)) {
+                        System.out.println(Minecraft.getMinecraft().getIntegratedServer().getWorldName());
+                        System.out.println(zone.world);
+                        continue;
+                    }
                 }
                 // Gestion du mode RegionTrack/Square
                 BlockPos pos1 = zone.pos;
                 BlockPos pos2 = zone.pos2;
 
                 // Calcul du centre de la zone pour le texte
-                cx = (pos1.getX() + pos2.getX()) / 2.0 + 0.5 - camX;
-                cy = (pos1.getY() + pos2.getY()) / 2.0 + 0.5 - camY;
-                cz = (pos1.getZ() + pos2.getZ()) / 2.0 + 0.5 - camZ;
+                cx = (pos1.getX() + pos2.getX()) / 2.0 + 0.5;
+                cy = (pos1.getY() + pos2.getY()) / 2.0 + 0.5;
+                cz = (pos1.getZ() + pos2.getZ()) / 2.0 + 0.5;
 
                 ToShow = "Region from: " + pos1.getX() + "," + pos1.getY() + "," + pos1.getZ() +
                         " to " + pos2.getX() + "," + pos2.getY() + "," + pos2.getZ();
 
                 // Dessin du cube/wireframe
-                drawWireframeCube(pos1, pos2, camX, camY, camZ);
+                drawWireframeCube(pos1, pos2, 0, 0, 0);
 
             } else {
                 // Mode PositionTrack par défaut
-                cx = zone.pos.getX() + 0.5 - camX;
-                cy = zone.pos.getY() + 0.5 - camY;
-                cz = zone.pos.getZ() + 0.5 - camZ;
+                cx = zone.pos.getX() + 0.5;
+                cy = zone.pos.getY() + 0.5;
+                cz = zone.pos.getZ() + 0.5;
                 ToShow = "Position link to : x: " + zone.pos.getX() + ", y: " + zone.pos.getY() + ", z: " + zone.pos.getZ();
 
                 GlStateManager.pushMatrix();
@@ -172,8 +168,8 @@ public class DebugRenderer {
             }
 
             // Affichage du texte (inchangé)
-            drawName("§l" + zone.name, cx + 0.5, cy + 0.5, cz + 0.5, 0.09F);
-            drawName("§7" + ToShow, cx + 0.5, cy - 0.7, cz + 0.5, 0.05F);
+            drawName(zone.name, cx + 0.5, cy + 0.5, cz + 0.5, 0.09F);
+            drawName(TextFormatting.GRAY + ToShow, cx + 0.5, cy - 0.7, cz + 0.5, 0.05F);
 
             if (GetSuppl.getPlayer().getTrackManager().getCurrentTrack() != null) {
                 long MaxTime = GetSuppl.getPlayer().getTrackManager().getCurrentTrack().getOriginalTrack().getDuration();
@@ -275,24 +271,36 @@ public class DebugRenderer {
 
         GlStateManager.pushMatrix();
 
+        GlStateManager.enableTexture2D();
+        mc.entityRenderer.enableLightmap();
+        GlStateManager.depthFunc(519);
+        GlStateManager.disableLighting();
+        GlStateManager.disableColorMaterial();
+        GlStateManager.disableDepth();
+        RenderHelper.disableStandardItemLighting();
+
         GlStateManager.translate(x, y, z);
 
         GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(mc.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
-
         GlStateManager.scale(-scale, -scale, scale);
 
-        GlStateManager.disableLighting();
-        GlStateManager.enableBlend();
-        GlStateManager.enableTexture2D();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        int i = 15728880;
+        int j = i % 65536;
+        int k = i / 65536;
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         int width = mc.fontRenderer.getStringWidth(text) / 2;
 
         mc.fontRenderer.drawStringWithShadow(text, -width, 0, 0xFFFFFF);
 
-        GlStateManager.disableBlend();
+        RenderHelper.enableStandardItemLighting();
         GlStateManager.enableLighting();
+        GlStateManager.enableColorMaterial();
+        GlStateManager.depthFunc(515);
+        GlStateManager.enableDepth();
+        mc.entityRenderer.disableLightmap();
         GlStateManager.disableTexture2D();
         GlStateManager.popMatrix();
     }
