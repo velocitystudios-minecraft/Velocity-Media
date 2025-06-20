@@ -157,7 +157,10 @@ public class DebugRenderer {
                 cz = zone.pos.getZ() + 0.5;
                 ToShow = "Position link to : x: " + zone.pos.getX() + ", y: " + zone.pos.getY() + ", z: " + zone.pos.getZ();
 
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(cx, cy, cz);
                 drawWireSphere(zone.radius, 32, 32);
+                GlStateManager.popMatrix();
             }
 
             // Affichage du texte (inchangé)
