@@ -248,7 +248,6 @@ public class DebugRenderer {
 
     private void drawWireSphere(float radius, int stacks, int slices) {
         GlStateManager.pushMatrix();
-        GlStateManager.disableTexture2D();
         GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
         GL11.glLineWidth(1.5F);
 
