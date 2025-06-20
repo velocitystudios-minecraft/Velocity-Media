@@ -26,19 +26,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static fr.velocity.music.musicplayer.MusicPlayerManager.GetMaxVolumeFromTrackId;
+import static fr.velocity.music.musicplayer.MusicPlayerManager.getMaxVolumeFromTrackId;
 
 @SideOnly(Side.CLIENT)
-public class MusicPlayerTrack {
+public class PlayerTrackManager {
 
     private static final Map<String, Thread> activeThreads = new ConcurrentHashMap<>();
     private static final Map<String, AtomicBoolean> trackControlFlags = new ConcurrentHashMap<>();
 
-    public static void PlayerTrackmusic(String targetPlayer, int radius, String url, int volume, String TrackId, String Option) {
+    public static void playerTrackMusic(String targetPlayer, int radius, String url, int volume, String TrackId, String Option) {
         Playlist playlist = new Playlist();
 
         Thread musicthread = new Thread(() -> {
-            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume, "PlayerTrack", 0, 0, 0, radius, Option, targetPlayer, "None", 0, 0, 0, "None", 0);
+            IMusicPlayer NewPlayer = MusicPlayerManager.testGenerate(TrackId, volume, "PlayerTrack", 0, 0, 0, radius, Option, targetPlayer, "None", 0, 0, 0, "None", 0);
 
             NewPlayer.getTrackSearch().getTracks(url, result -> {
                 if (result.hasError()) {
@@ -170,7 +170,7 @@ public class MusicPlayerTrack {
         }
 
         while (controlFlag.get() && manager.getCurrentTrack() != null) {
-            maxVolume = GetMaxVolumeFromTrackId(IdTrack);
+            maxVolume = getMaxVolumeFromTrackId(IdTrack);
             EntityPlayer clientPlayer = Minecraft.getMinecraft().player;
             if (Option.contains("--useuuid")) {
                 NewtargetPlayer = getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(targetPlayer));

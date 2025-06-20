@@ -31,7 +31,7 @@ public class GuiCustomSlider extends GuiButton {
                 this.displayString = "Volume Globaux : " + (int)(sliderValue * 100) + "%";
                 ConfigHandler.VolumeGlobaux = this.sliderValue;
                 ConfigHandler.saveConfig();
-                MusicPlayerManager.UpdateVolume();
+                MusicPlayerManager.updateVolume();
             }
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -50,7 +50,7 @@ public class GuiCustomSlider extends GuiButton {
             this.dragging = true;
             ConfigHandler.VolumeGlobaux = this.sliderValue;
             ConfigHandler.saveConfig();
-            MusicPlayerManager.UpdateVolume();
+            MusicPlayerManager.updateVolume();
             return true;
         } else {
             return false;

@@ -8,15 +8,15 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class FrameVideoMessage implements IMessage {
+public class S2CMessageFrameVideo implements IMessage {
 
     private BlockPos pos;
     private boolean playing;
     private int tick;
 
-    public FrameVideoMessage() {}
+    public S2CMessageFrameVideo() {}
 
-    public FrameVideoMessage(BlockPos pos, boolean playing, int tick) {
+    public S2CMessageFrameVideo(BlockPos pos, boolean playing, int tick) {
         this.pos = pos;
         this.playing = playing;
         this.tick = tick;
@@ -36,15 +36,15 @@ public class FrameVideoMessage implements IMessage {
         this.tick = buffer.readInt();
     }
 
-    public static class Handler implements IMessageHandler<FrameVideoMessage, IMessage> {
+    public static class Handler implements IMessageHandler<S2CMessageFrameVideo, IMessage> {
 
         @Override
-        public IMessage onMessage(FrameVideoMessage message, MessageContext ctx) {
+        public IMessage onMessage(S2CMessageFrameVideo message, MessageContext ctx) {
             FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
             return null;
         }
 
-        private void handle(FrameVideoMessage message, MessageContext ctx)
+        private void handle(S2CMessageFrameVideo message, MessageContext ctx)
         {
             Main.proxy.manageVideo(message.pos, message.playing, message.tick);
         }

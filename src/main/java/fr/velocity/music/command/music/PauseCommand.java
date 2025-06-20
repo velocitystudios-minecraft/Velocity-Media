@@ -1,10 +1,12 @@
-package fr.velocity.music.command;
+package fr.velocity.music.command.music;
 
 import fr.velocity.mod.network.PacketHandler;
-import fr.velocity.mod.network.messages.PausemusicMessage;
+import fr.velocity.mod.network.messages.S2CMessagePauseMusic;
+import fr.velocity.music.command.ISubCommand;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -14,11 +16,11 @@ import net.minecraft.util.text.TextComponentString;
 import java.util.Collections;
 import java.util.List;
 
-public class PauseCommand extends CommandBase {
+public class PauseCommand implements ISubCommand {
 
     @Override
     public String getName() {
-        return "pausemusic";
+        return "pause";
     }
 
     @Override
@@ -28,43 +30,44 @@ public class PauseCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "Usage: /pausemusic <player> <pause> [<trackid>]";
+        return "/music " + getName() + " <player> <pause> [<trackid>]";
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        if (args.length < 2) {  // Ensure there are at least 2 arguments
-            sender.sendMessage(new TextComponentString(getUsage(sender)));
-            return;
+        if (args.length < 2) {
+            throw new WrongUsageException(getUsage(sender));
         }
 
-        String TrackId = "ALL";
+        String trackId = "ALL";
         if (args.length > 2) {
-            TrackId = args[2];
+            trackId = args[2];
         }
 
-        List<Entity> entity = getEntityList(server, sender, args[0]);
+        List<Entity> entity = CommandBase.getEntityList(server, sender, args[0]);
         String targetName = args[0];
-        String pause = args[1];
-
-        if (!pause.equalsIgnoreCase("true") && !pause.equalsIgnoreCase("false")) {
-            sender.sendMessage(new TextComponentString("Error: The second argument must be 'true' or 'false'."));
-            return;
+        boolean pause;
+        try {
+            pause = Boolean.parseBoolean(args[1]);
+        } catch (Exception e) {
+            throw new CommandException("Error: The second argument must be 'true' or 'false'.");
         }
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new PausemusicMessage(TrackId, pause), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new S2CMessagePauseMusic(trackId, pause), (EntityPlayerMP) e);
             }
         }
     }
 
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
+        System.out.println(args.length);
+        System.out.println("Tab completions for PauseCommand called with args: " + String.join(", ", args));
         if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+            return CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
         } else if (args.length == 2) {
-            return getListOfStringsMatchingLastWord(args, "true", "false");
+            return CommandBase.getListOfStringsMatchingLastWord(args, "true", "false");
         }
         return Collections.emptyList();
     }

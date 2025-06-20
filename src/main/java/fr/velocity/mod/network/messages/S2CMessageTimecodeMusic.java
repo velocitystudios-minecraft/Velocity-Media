@@ -9,46 +9,42 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.nio.charset.StandardCharsets;
 
-public class PausemusicMessage implements IMessage
+public class S2CMessageTimecodeMusic implements IMessage
 {
-
-	private String IsPaused;
+	private long position;
 	private String TrackId;
 
-	public PausemusicMessage() {}
+	public S2CMessageTimecodeMusic() {}
 
-	public PausemusicMessage(String TrackId, String IsPaused) {
-		this.IsPaused = IsPaused;
+	public S2CMessageTimecodeMusic(String TrackId, long position) {
 		this.TrackId = TrackId;
+		this.position = position;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buffer) {
-		int l = buffer.readInt();
-		this.IsPaused = String.valueOf(buffer.readCharSequence(l, StandardCharsets.UTF_8));
-		int l2 = buffer.readInt();
-		this.TrackId = String.valueOf(buffer.readCharSequence(l2, StandardCharsets.UTF_8));
+		this.TrackId = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
+		this.position = buffer.readLong();
 	}
 
 	@Override
 	public void toBytes(ByteBuf buffer) {
-		buffer.writeInt(IsPaused.length());
-		buffer.writeCharSequence(IsPaused, StandardCharsets.UTF_8);
 		buffer.writeInt(TrackId.length());
 		buffer.writeCharSequence(TrackId, StandardCharsets.UTF_8);
+		buffer.writeLong(position);
 	}
 
-	public static class Handler implements IMessageHandler<PausemusicMessage, IMessage> {
+	public static class Handler implements IMessageHandler<S2CMessageTimecodeMusic, IMessage> {
 
 		@Override
-		public IMessage onMessage(PausemusicMessage message, MessageContext ctx) {
+		public IMessage onMessage(S2CMessageTimecodeMusic message, MessageContext ctx) {
 			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
 			return null;
 		}
 
-		private void handle(PausemusicMessage message, MessageContext ctx)
+		private void handle(S2CMessageTimecodeMusic message, MessageContext ctx)
 		{
-			Main.proxy.Pausemusic(message.TrackId, message.IsPaused);
+			Main.proxy.changeTimecodeMusic(message.TrackId, message.position);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package fr.velocity.video.command;
 
 import fr.velocity.mod.network.PacketHandler;
-import fr.velocity.mod.network.messages.SendVideoMessage;
+import fr.velocity.mod.network.messages.S2CMessageSendVideo;
 import fr.velocity.util.WhitelistUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -101,7 +101,7 @@ public class PlayVideoCommand extends CommandBase {
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new SendVideoMessage(url, volume, controlBlocked, TimePosition, VideoSpeed), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new S2CMessageSendVideo(url, volume, controlBlocked, TimePosition, VideoSpeed), (EntityPlayerMP) e);
             }
         }
     }

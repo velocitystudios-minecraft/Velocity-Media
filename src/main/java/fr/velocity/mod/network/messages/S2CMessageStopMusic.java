@@ -9,13 +9,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.nio.charset.StandardCharsets;
 
-public class StopmusicMessage implements IMessage
+public class S2CMessageStopMusic implements IMessage
 {
 	private String TrackId;
 
-	public StopmusicMessage() {}
+	public S2CMessageStopMusic() {}
 
-	public StopmusicMessage(String TrackId) {
+	public S2CMessageStopMusic(String TrackId) {
 		this.TrackId = TrackId;
 	}
 
@@ -30,17 +30,17 @@ public class StopmusicMessage implements IMessage
 		buffer.writeCharSequence(TrackId, StandardCharsets.UTF_8);
 	}
 
-	public static class Handler implements IMessageHandler<StopmusicMessage, IMessage> {
+	public static class Handler implements IMessageHandler<S2CMessageStopMusic, IMessage> {
 
 		@Override
-		public IMessage onMessage(StopmusicMessage message, MessageContext ctx) {
+		public IMessage onMessage(S2CMessageStopMusic message, MessageContext ctx) {
 			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
 			return null;
 		}
 
-		private void handle(StopmusicMessage message, MessageContext ctx)
+		private void handle(S2CMessageStopMusic message, MessageContext ctx)
 		{
-			Main.proxy.Stopmusic(message.TrackId);
+			Main.proxy.stopMusic(message.TrackId);
 		}
 	}
 }

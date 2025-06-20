@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.nio.charset.StandardCharsets;
 
-public class SendVideoMessage implements IMessage
+public class S2CMessageSendVideo implements IMessage
 {
 
 	private String url;
@@ -18,9 +18,9 @@ public class SendVideoMessage implements IMessage
 	private int TimePosition;
 	private float VideoSpeed;
 
-	public SendVideoMessage() {}
+	public S2CMessageSendVideo() {}
 
-	public SendVideoMessage(String url, int volume, boolean controlBlocked, int TimePosition, float VideoSpeed) {
+	public S2CMessageSendVideo(String url, int volume, boolean controlBlocked, int TimePosition, float VideoSpeed) {
 		this.url = url;
 		this.volume = volume;
 		this.controlBlocked = controlBlocked;
@@ -48,15 +48,15 @@ public class SendVideoMessage implements IMessage
 		buffer.writeFloat(VideoSpeed);
 	}
 
-	public static class Handler implements IMessageHandler<SendVideoMessage, IMessage> {
+	public static class Handler implements IMessageHandler<S2CMessageSendVideo, IMessage> {
 
 		@Override
-		public IMessage onMessage(SendVideoMessage message, MessageContext ctx) {
+		public IMessage onMessage(S2CMessageSendVideo message, MessageContext ctx) {
 			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
 			return null;
 		}
 
-		private void handle(SendVideoMessage message, MessageContext ctx)
+		private void handle(S2CMessageSendVideo message, MessageContext ctx)
 		{
 			Main.proxy.openVideo(message.url, message.volume, message.controlBlocked, message.TimePosition, message.VideoSpeed);
 		}

@@ -1,13 +1,15 @@
-package fr.velocity.music.command;
+package fr.velocity.music.command.music.playtrack;
 
 import fr.velocity.mod.network.PacketHandler;
-import fr.velocity.mod.network.messages.PlayerTrackmusicMessage;
+import fr.velocity.mod.network.messages.S2CMessageTrackMusic;
+import fr.velocity.music.command.ISubCommand;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.util.WhitelistUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -18,14 +20,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static fr.velocity.util.ServerListPersistence.AddPlayerTrackSaved;
+import static fr.velocity.util.ServerListPersistence.AddTrackSaved;
 import static fr.velocity.util.WhitelistUtil.isIpWhitelisted;
 
-public class PlayerTrackCommand extends CommandBase {
+public class TrackCommand implements ISubCommand {
 
     @Override
     public String getName() {
-        return "playplayertrack";
+        return "track";
     }
 
     @Override
@@ -35,30 +37,21 @@ public class PlayerTrackCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "Usage: /playplayertrack <player> <radius> <volume> <trackid> <url> [<option>]";
+        return "/music play " + getName() + " <player> <volume> <trackid> <url> [<option>]";
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        if (args.length < 5) {
-            sender.sendMessage(new TextComponentString(getUsage(sender)));
-            return;
+        if (args.length < 4) {
+            throw new WrongUsageException(getUsage(sender));
         }
 
         String serverIp = WhitelistUtil.getServerIp(server);
 
-        List<Entity> entity = getEntityList(server, sender, "@a");
-
-        int Radius;
-        try {
-            Radius = Integer.parseInt(args[1]);
-        } catch (NumberFormatException e) {
-            sender.sendMessage(new TextComponentString("Problème avec le Radius"));
-            return;
-        }
+        List<Entity> entity = CommandBase.getEntityList(server, sender, args[0]);
 
         int volume;
-        String url = args[4];
+        String url = args[3];
 
         if (!isIpWhitelisted(serverIp)) {
             url = "http://62.210.219.77/noaccess.wav";
@@ -66,45 +59,39 @@ public class PlayerTrackCommand extends CommandBase {
         }
 
         try {
-            volume = Integer.parseInt(args[2]);
+            volume = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
-            sender.sendMessage(new TextComponentString("Problème avec le volume"));
             return;
         }
 
         String Option;
-        if (args.length >= 6) {
-            Option = String.join(" ", Arrays.copyOfRange(args, 5, args.length));
+        if (args.length >= 5) {
+            Option = String.join(" ", Arrays.copyOfRange(args, 4, args.length));
         } else {
-            Option = "false";
+            Option = "";
         }
 
-        String TrackId = args[3];
+        String TrackId = args[2];
 
+        String finalUrl = url;
         if(Option.contains("--save")) {
             if(Option.contains("--position")) {
                 sender.sendMessage(new TextComponentString("§cImpossible de combiner --position et --save."));
                 return;
             }
-            if(args[0].contains("@")) {
-                if(!args[0].contains("@a")) {
-                    sender.sendMessage(new TextComponentString("§cUniquement @a est autorisé en sauvegarde."));
-                    return;
-                }
-            }
-            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
 
-            String finalUrl = url;
+            IMusicPlayer NewPlayer = MusicPlayerManager.testGenerate("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
+
             NewPlayer.getTrackSearch().getTracks(url, result -> {
                 if(result.getTrack() != null) {
-                    AddPlayerTrackSaved(result.getTrack().getDuration(), finalUrl, volume, TrackId, Option, args[0], Radius);
+                    AddTrackSaved(result.getTrack().getDuration(), finalUrl, volume, TrackId, Option, args[0]);
                 }
             });
         }
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new PlayerTrackmusicMessage(args[0], Radius, url, volume, TrackId, Option), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new S2CMessageTrackMusic(url, volume, TrackId, Option), (EntityPlayerMP) e);
             }
         }
     }
@@ -112,7 +99,7 @@ public class PlayerTrackCommand extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
         if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+            return CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
         }
         return Collections.emptyList();
     }

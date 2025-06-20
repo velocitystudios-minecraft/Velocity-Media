@@ -1,13 +1,15 @@
-package fr.velocity.music.command;
+package fr.velocity.music.command.music.playtrack;
 
 import fr.velocity.mod.network.PacketHandler;
-import fr.velocity.mod.network.messages.PositionTrackmusicMessage;
+import fr.velocity.mod.network.messages.S2CMessagePositionTrackMusic;
+import fr.velocity.music.command.ISubCommand;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.util.WhitelistUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -21,11 +23,11 @@ import java.util.List;
 import static fr.velocity.util.ServerListPersistence.AddLocationTrackSaved;
 import static fr.velocity.util.WhitelistUtil.isIpWhitelisted;
 
-public class PositionTrackCommand extends CommandBase {
+public class PositionTrackCommand implements ISubCommand {
 
     @Override
     public String getName() {
-        return "playpositiontrack";
+        return "positiontrack";
     }
 
     @Override
@@ -35,19 +37,18 @@ public class PositionTrackCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "Usage: /playpositiontrack <x> <y> <z> <radius> <player> <volume> <trackid> <url> [<option>]";
+        return "/music play " + getName() + " <x> <y> <z> <radius> <player> <volume> <trackid> <url> [<option>]";
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 8) {
-            sender.sendMessage(new TextComponentString(getUsage(sender)));
-            return;
+            throw new WrongUsageException(getUsage(sender));
         }
 
         String serverIp = WhitelistUtil.getServerIp(server);
 
-        List<Entity> entity = getEntityList(server, sender, args[4]);
+        List<Entity> entity = CommandBase.getEntityList(server, sender, args[4]);
 
         int volume;
         String url = args[7];
@@ -72,17 +73,17 @@ public class PositionTrackCommand extends CommandBase {
 
         String TrackId = args[6];
 
-        int x = parseInt(args[0]);
-        int y = parseInt(args[1]);
-        int z = parseInt(args[2]);
-        int radius = parseInt(args[3]);
+        int x = Integer.parseInt(args[0]);
+        int y = Integer.parseInt(args[1]);
+        int z = Integer.parseInt(args[2]);
+        int radius = Integer.parseInt(args[3]);
 
         if(Option.contains("--save")) {
             if(Option.contains("--position")) {
                 sender.sendMessage(new TextComponentString("§cImpossible de combiner --position et --save."));
                 return;
             }
-            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
+            IMusicPlayer NewPlayer = MusicPlayerManager.testGenerate("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
 
             String finalUrl = url;
             NewPlayer.getTrackSearch().getTracks(url, result -> {
@@ -94,7 +95,7 @@ public class PositionTrackCommand extends CommandBase {
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new PositionTrackmusicMessage(x, y, z, radius, url, volume, TrackId, Option), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new S2CMessagePositionTrackMusic(x, y, z, radius, url, volume, TrackId, Option), (EntityPlayerMP) e);
             }
         }
     }
@@ -102,14 +103,14 @@ public class PositionTrackCommand extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
         if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, String.valueOf(sender.getPosition().getX()));
+            return CommandBase.getListOfStringsMatchingLastWord(args, String.valueOf(sender.getPosition().getX()));
         } else if (args.length == 2) {
-            return getListOfStringsMatchingLastWord(args, String.valueOf(sender.getPosition().getY()));
+            return CommandBase.getListOfStringsMatchingLastWord(args, String.valueOf(sender.getPosition().getY()));
         } else if (args.length == 3) {
-            return getListOfStringsMatchingLastWord(args, String.valueOf(sender.getPosition().getZ()));
+            return CommandBase.getListOfStringsMatchingLastWord(args, String.valueOf(sender.getPosition().getZ()));
         }
         if (args.length == 5) {
-            return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+            return CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
         }
         return Collections.emptyList();
     }

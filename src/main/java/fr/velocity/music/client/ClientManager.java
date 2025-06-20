@@ -15,7 +15,7 @@ public class ClientManager {
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
         if (event.getWorld().isRemote) {
-            MusicPlayerManager.StopAudio("ALL");
+            MusicPlayerManager.stopAudio("ALL");
             zones.clear();
         }
     }

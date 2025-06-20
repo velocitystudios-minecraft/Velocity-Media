@@ -1,8 +1,8 @@
 package fr.velocity.video.block.entity;
 
 import fr.velocity.mod.network.PacketHandler;
-import fr.velocity.mod.network.messages.FrameVideoMessage;
-import fr.velocity.mod.network.messages.OpenVideoManagerScreen;
+import fr.velocity.mod.network.messages.S2CMessageFrameVideo;
+import fr.velocity.mod.network.messages.S2CMessageOpenVideoManagerScreen;
 import fr.velocity.video.block.custom.TVBlock;
 import fr.velocity.video.util.cache.TextureCache;
 import fr.velocity.video.util.displayers.IDisplay;
@@ -83,7 +83,7 @@ public class TVBlockEntity extends TileEntity implements ITickable {
 
     public void openVideoManagerGUI(BlockPos blockPos, EntityPlayerMP player) {
         setBeingUsed(player.getUniqueID());
-        PacketHandler.INSTANCE.sendTo(new OpenVideoManagerScreen(blockPos, url, tick, (int) (volume * 100), loop), player);
+        PacketHandler.INSTANCE.sendTo(new S2CMessageOpenVideoManagerScreen(blockPos, url, tick, (int) (volume * 100), loop), player);
     }
 
     public void setBeingUsed(UUID player) {
@@ -180,7 +180,7 @@ public class TVBlockEntity extends TileEntity implements ITickable {
     }
 
     public void notifyPlayer() {
-        PacketHandler.INSTANCE.sendToAllAround(new FrameVideoMessage(getPos(), playing, tick), new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 50));
+        PacketHandler.INSTANCE.sendToAllAround(new S2CMessageFrameVideo(getPos(), playing, tick), new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 50));
     }
 
     @Override

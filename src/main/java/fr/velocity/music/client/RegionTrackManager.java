@@ -8,8 +8,8 @@ import fr.velocity.music.lavaplayer.api.queue.ITrackManager;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.music.musicplayer.playlist.LoadedTracks;
 import fr.velocity.music.musicplayer.playlist.Playlist;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -22,20 +22,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static fr.velocity.music.musicplayer.MusicPlayerManager.GetMaxVolumeFromTrackId;
+import static fr.velocity.music.musicplayer.MusicPlayerManager.getMaxVolumeFromTrackId;
 
 @SideOnly(Side.CLIENT)
-public class MusicPositionTrack {
+public class RegionTrackManager {
 
     private static final Map<String, Thread> activeThreads = new ConcurrentHashMap<>();
     private static final Map<String, AtomicBoolean> trackControlFlags = new ConcurrentHashMap<>();
 
-    public static void positionTrackmusic(int x, int y, int z, int radius, String url, int volume, String TrackId, String Option) {
+    public static void regionTrackMusic(int x1, int y1, int z1, int x2, int y2, int z2, String regionname, String world, int DimensionId, String url, int volume, String TrackId, String Option) {
 
         Playlist playlist = new Playlist();
 
         Thread musicthread = new Thread(() -> {
-            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume, "PositionTrack", x, y, z, radius, Option, Option, "None", 0, 0, 0, "None", 0);
+            IMusicPlayer NewPlayer = MusicPlayerManager.testGenerate(TrackId, volume, "RegionTrack", x1, y1, z1, 0, Option, "None", regionname, x2, y2, z2, world, DimensionId);
 
             NewPlayer.getTrackSearch().getTracks(url, result -> {
                 if (result.hasError()) {
@@ -107,12 +107,11 @@ public class MusicPositionTrack {
                             }
                         }
 
-                        BlockPos position = new BlockPos(x, y, z);
                         stopThreadForTrackId(TrackId);
                         AtomicBoolean controlFlag = new AtomicBoolean(true);
                         trackControlFlags.put(TrackId, controlFlag);
 
-                        Thread thread = new Thread(() -> playWithPosition(manager, NewPlayer, position, volume, radius, Option, controlFlag, TrackId));
+                        Thread thread = new Thread(() -> playWithRegion(manager, NewPlayer, regionname, world, DimensionId, x1, y1, z1, x2, y2, z2, volume, Option, controlFlag, TrackId));
                         activeThreads.put(TrackId, thread);
                         thread.start();
                     };
@@ -150,21 +149,29 @@ public class MusicPositionTrack {
         }
     }
 
-    private static void playWithPosition(ITrackManager manager, IMusicPlayer player, BlockPos source, int maxVolume, int maxDistance, String option, AtomicBoolean controlFlag, String TrackId) {
-        Boolean HasFade = Boolean.TRUE;
-        if (option.contains("--nofade")) {
-            HasFade = Boolean.FALSE;
-        }
+    public static boolean isInsideRegion(double x, double y, double z,
+                                         double x1, double y1, double z1,
+                                         double x2, double y2, double z2) {
+        double minX = Math.min(x1, x2);
+        double maxX = Math.max(x1, x2);
+        double minY = Math.min(y1, y2);
+        double maxY = Math.max(y1, y2);
+        double minZ = Math.min(z1, z2);
+        double maxZ = Math.max(z1, z2);
+
+        return (x >= minX && x <= maxX) &&
+                (y >= minY && y <= maxY) &&
+                (z >= minZ && z <= maxZ);
+    }
+
+    private static void playWithRegion(ITrackManager manager, IMusicPlayer player, String regionname, String world, int DimensionId, int x1, int y1, int z1, int x2, int y2, int z2, int maxVolume, String option, AtomicBoolean controlFlag, String TrackId) {
         while (controlFlag.get() && manager.getCurrentTrack() != null) {
-            maxVolume = GetMaxVolumeFromTrackId(TrackId);
+            maxVolume = getMaxVolumeFromTrackId(TrackId);
             EntityPlayer clientPlayer = net.minecraft.client.Minecraft.getMinecraft().player;
             if (clientPlayer != null) {
-                double distance = clientPlayer.getPosition().distanceSq(source);
-                double distanceLinear = Math.sqrt(distance);
                 int volume = 0;
-                if (distanceLinear < maxDistance) {
-                    volume = (int) (maxVolume - (distanceLinear / maxDistance * maxVolume));
-                    if (HasFade == Boolean.FALSE) {
+                if(Minecraft.getMinecraft().player.dimension == DimensionId) {
+                    if (isInsideRegion(clientPlayer.getPosition().getX(), clientPlayer.getPosition().getY(), clientPlayer.getPosition().getZ(), x1, y1, z1, x2, y2, z2)) {
                         volume = maxVolume;
                     }
                 }

@@ -40,7 +40,7 @@ public class CommonProxy {
 		MusicPlayerManager.setup();
 	}
 	
-	public void postinit(FMLPostInitializationEvent event) {
+	public void postInit(FMLPostInitializationEvent event) {
 		if (FMLCommonHandler.instance().getSide().isClient()) {
 			MissingModsException exception = new MissingModsException(Main.modid, Main.name);
 			exception.addMissingMod(new DefaultArtifactVersion("[2.0,2.1)"), null, true);
@@ -56,13 +56,13 @@ public class CommonProxy {
 	public void openVideo(String url, int volume, boolean controlBlocked, int TimePosition, float VideoSpeed) {}
 	public void openVideoGUI(BlockPos pos, String url, int tick, int volume, boolean loop) {}
 	public void manageVideo(BlockPos pos, boolean playing, int tick) {}
-	public void Playmusic(String url, int volume, String RepeatMode) {}
-	public void Trackmusic(String url, int volume, String TrackId, String Option) {}
-	public void PlayerTrackmusic(String targetPlayer, int radius, String url, int volume, String TrackId, String RepeatMode) {}
-	public void PositionTrackmusic(int x, int y, int z, int radius, String url, int volume, String TrackId, String RepeatMode) {}
-	public void RegionTrackmusic(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, int DimensionId, String url, int volume, String TrackId, String RepeatMode) {}
-	public void Stopmusic(String TrackId) {}
-	public void Volumemusic(String TrackId, int volume) {}
-	public void Positionmusic(String TrackId, long position) {}
-	public void Pausemusic(String TrackId, String IsPaused) {}
+	public void playMusic(String url, int volume, String RepeatMode) {}
+	public void trackMusic(String url, int volume, String TrackId, String Option) {}
+	public void playerTrackMusic(String targetPlayer, int radius, String url, int volume, String TrackId, String RepeatMode) {}
+	public void positionTrackMusic(int x, int y, int z, int radius, String url, int volume, String TrackId, String RepeatMode) {}
+	public void regionTrackMusic(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, int DimensionId, String url, int volume, String TrackId, String RepeatMode) {}
+	public void stopMusic(String TrackId) {}
+	public void volumeMusic(String TrackId, int volume) {}
+	public void changeTimecodeMusic(String TrackId, long position) {}
+	public void pauseMusic(String TrackId, boolean IsPaused) {}
 }

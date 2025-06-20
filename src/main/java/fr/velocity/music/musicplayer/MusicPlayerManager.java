@@ -26,38 +26,38 @@ public class MusicPlayerManager {
 
 	}
 
-	public static void SetMaxVolumeFromTrackId(String TrackId, int maxvolume) {
+	public static void setMaxVolumeFromTrackId(String TrackId, int maxvolume) {
 		if (playerCache.containsKey(TrackId)) {
 			playerCache.get(TrackId).setMaxVolume(maxvolume);
 		}
 	}
 
-	public static void ChangeVolume(String TrackId, int Volume) {
-		if (Objects.equals(TrackId, "ALL")) {
+	public static void changeVolume(String TrackId, int Volume) {
+		if (TrackId.equalsIgnoreCase("ALL")) {
 			for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
 				entry.getValue().setMaxVolume(Volume);
 				int ModifiedVolume = (int) (Volume * ConfigHandler.VolumeGlobaux);
 				entry.getValue().getPlayer().setVolume(ModifiedVolume);
 			}
 		} else {
-			SetMaxVolumeFromTrackId(TrackId, Volume);
+			setMaxVolumeFromTrackId(TrackId, Volume);
 			int ModifiedVolume = (int) (Volume * ConfigHandler.VolumeGlobaux);
-            Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0)).setVolume(ModifiedVolume);
+            Objects.requireNonNull(testGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0)).setVolume(ModifiedVolume);
 		}
 	}
 
-	public static void ChangePosition(String TrackId, long Position) {
-		if (Objects.equals(TrackId, "ALL")) {
+	public static void changeTimecodeMusic(String TrackId, long Position) {
+		if (TrackId.equalsIgnoreCase("ALL")) {
 			for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
 				entry.getValue().getPlayer().getTrackManager().getCurrentTrack().setPosition(Position);
 			}
 		} else {
-			Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0)).getTrackManager().getCurrentTrack().setPosition(Position);
+			Objects.requireNonNull(testGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0)).getTrackManager().getCurrentTrack().setPosition(Position);
 		}
 	}
 
 
-	public static int GetMaxVolumeFromTrackId(String TrackId) {
+	public static int getMaxVolumeFromTrackId(String TrackId) {
 		if (playerCache.containsKey(TrackId)) {
 			return playerCache.get(TrackId).getMaxVolume();
 		} else {
@@ -65,42 +65,40 @@ public class MusicPlayerManager {
 		}
 	}
 
-	public static void UpdateVolume() {
+	public static void updateVolume() {
 		for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
-			if (Objects.equals(entry.getValue().getMode(), "Track")) {
+			if (entry.getValue().getMode().equalsIgnoreCase("Track")) {
 				int NewVolume = (int) (entry.getValue().getMaxVolume() * ConfigHandler.VolumeGlobaux);
 				entry.getValue().getPlayer().setVolume(NewVolume);
 			}
 		}
 	}
 
-	public static void Pause(String TrackId, Boolean PauseMode) {
-		if (Objects.equals(TrackId, "ALL")) {
+	public static void pauseMusic(String TrackId, Boolean PauseMode) {
+		if (TrackId.equalsIgnoreCase("ALL")) {
 			for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
 				final ITrackManager newmanager = entry.getValue().getPlayer().getTrackManager();
 				newmanager.setPaused(PauseMode);
 			}
 		} else {
-			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0).getTrackManager();
+			final ITrackManager manager = testGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0).getTrackManager();
 			manager.setPaused(PauseMode);
 		}
 	}
 
-	public static void StopAudio(String TrackId) {
-		if (Objects.equals(TrackId, "ALL")) {
+	public static void stopAudio(String TrackId) {
+		if (TrackId.equalsIgnoreCase("ALL")) {
 			for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
 				final ITrackManager newmanager = entry.getValue().getPlayer().getTrackManager();
 				newmanager.stop();
 			}
 		} else {
-			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0).getTrackManager();
+			final ITrackManager manager = testGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0).getTrackManager();
 			manager.stop();
 		}
 	}
 
-
-
-	public static IMusicPlayer TestGenerate(String trackId, int volume, String mode, int X, int Y, int Z, int Radius, String Option, String Player, String region, int X2, int Y2, int Z2, String world, int DimensionId) {
+	public static IMusicPlayer testGenerate(String trackId, int volume, String mode, int X, int Y, int Z, int Radius, String Option, String Player, String region, int X2, int Y2, int Z2, String world, int DimensionId) {
 		if (playerCache.containsKey(trackId)) {
 			if(Objects.equals(mode, "PositionTrack") || Objects.equals(mode, "PlayerTrack")) {
 				System.out.println("Debug d'un " + mode + "...");

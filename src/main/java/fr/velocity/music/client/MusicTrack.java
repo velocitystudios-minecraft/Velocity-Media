@@ -20,11 +20,11 @@ import java.util.regex.Pattern;
 
 @SideOnly(Side.CLIENT)
 public class MusicTrack {
-    public static void Trackmusic(String url, int volume, String TrackId, String Option) {
+    public static void trackMusic(String url, int volume, String TrackId, String Option) {
         Playlist playlist = new Playlist();
 
         Thread musicthread = new Thread(() -> {
-            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume, "Track", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
+            IMusicPlayer NewPlayer = MusicPlayerManager.testGenerate(TrackId, volume, "Track", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
             NewPlayer.getTrackSearch().getTracks(url, result -> {
                 if (result.hasError()) {
                     System.out.println(new TextComponentString(result.getErrorMessage()));

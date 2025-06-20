@@ -3,6 +3,7 @@ package fr.velocity.mod.proxy;
 import fr.velocity.mod.handler.ConfigHandler;
 import fr.velocity.mod.handler.GuiEventHandler;
 import fr.velocity.music.client.*;
+import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.video.block.entity.TVBlockEntity;
 import fr.velocity.video.client.gui.TVVideoScreen;
 import fr.velocity.video.client.gui.VideoScreen;
@@ -33,43 +34,43 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void Trackmusic(String url, int volume, String TrackId, String RepeatMode) {
-		MusicTrack.Trackmusic(url, volume, TrackId, RepeatMode);
+	public void trackMusic(String url, int volume, String TrackId, String RepeatMode) {
+		MusicTrack.trackMusic(url, volume, TrackId, RepeatMode);
 	}
 
 	@Override
-	public void PlayerTrackmusic(String targetPlayer, int radius, String url, int volume, String TrackId, String RepeatMode) {
-		MusicPlayerTrack.PlayerTrackmusic(targetPlayer, radius, url, volume, TrackId, RepeatMode);
+	public void playerTrackMusic(String targetPlayer, int radius, String url, int volume, String TrackId, String RepeatMode) {
+		PlayerTrackManager.playerTrackMusic(targetPlayer, radius, url, volume, TrackId, RepeatMode);
 	}
 
 	@Override
-	public void PositionTrackmusic(int x, int y, int z, int radius, String url, int volume, String TrackId, String RepeatMode) {
-		MusicPositionTrack.positionTrackmusic(x, y, z, radius, url, volume, TrackId, RepeatMode);
+	public void positionTrackMusic(int x, int y, int z, int radius, String url, int volume, String TrackId, String RepeatMode) {
+		PositionTrackManager.positionTrackMusic(x, y, z, radius, url, volume, TrackId, RepeatMode);
 	}
 
 	@Override
-	public void RegionTrackmusic(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, int DimensionId, String url, int volume, String TrackId, String RepeatMode) {
-		MusicRegionTrack.regionTrackmusic(x1, y1, z1, x2, y2, z2, region, world, DimensionId, url, volume, TrackId, RepeatMode);
+	public void regionTrackMusic(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, int DimensionId, String url, int volume, String TrackId, String RepeatMode) {
+		RegionTrackManager.regionTrackMusic(x1, y1, z1, x2, y2, z2, region, world, DimensionId, url, volume, TrackId, RepeatMode);
 	}
 
 	@Override
-	public void Stopmusic(String TrackId) {
-		MusicStop.Stopmusic(TrackId);
+	public void volumeMusic(String trackId, int volume) {
+		MusicPlayerManager.changeVolume(trackId, volume);
 	}
 
 	@Override
-	public void Volumemusic(String TrackId, int volume) {
-		MusicVolume.Volumemusic(TrackId, volume);
+	public void changeTimecodeMusic(String trackId, long position) {
+		MusicPlayerManager.changeTimecodeMusic(trackId, position);
 	}
 
 	@Override
-	public void Positionmusic(String TrackId, long position) {
-		MusicPosition.Positionmusic(position, TrackId);
+	public void pauseMusic(String trackId, boolean isPaused) {
+        MusicPlayerManager.pauseMusic(trackId, isPaused);
 	}
 
 	@Override
-	public void Pausemusic(String TrackId, String IsPaused) {
-		MusicPause.Pausemusic(TrackId, IsPaused);
+	public void stopMusic(String trackId) {
+		MusicPlayerManager.stopAudio(trackId);
 	}
 
 	@Override
@@ -114,7 +115,7 @@ public class ClientProxy extends CommonProxy {
 	}
 	
 	@Override
-	public void postinit(FMLPostInitializationEvent event) {
-		super.postinit(event);
+	public void postInit(FMLPostInitializationEvent event) {
+		super.postInit(event);
 	}
 }

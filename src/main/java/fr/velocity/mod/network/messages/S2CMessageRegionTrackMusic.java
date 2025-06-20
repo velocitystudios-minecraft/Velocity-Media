@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.nio.charset.StandardCharsets;
 
-public class RegionTrackmusicMessage implements IMessage
+public class S2CMessageRegionTrackMusic implements IMessage
 {
 
 	private int x1;
@@ -26,9 +26,9 @@ public class RegionTrackmusicMessage implements IMessage
 	private String TrackId;
 	private int DimensionId;
 
-	public RegionTrackmusicMessage() {}
+	public S2CMessageRegionTrackMusic() {}
 
-	public RegionTrackmusicMessage(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, int DimensionId, String url, int volume, String TrackId, String Option) {
+	public S2CMessageRegionTrackMusic(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, int DimensionId, String url, int volume, String TrackId, String Option) {
 		this.x1 = x1;
 		this.y1 = y1;
 		this.z1 = z1;
@@ -83,17 +83,17 @@ public class RegionTrackmusicMessage implements IMessage
 		buffer.writeCharSequence(Option, StandardCharsets.UTF_8);
 	}
 
-	public static class Handler implements IMessageHandler<RegionTrackmusicMessage, IMessage> {
+	public static class Handler implements IMessageHandler<S2CMessageRegionTrackMusic, IMessage> {
 
 		@Override
-		public IMessage onMessage(RegionTrackmusicMessage message, MessageContext ctx) {
+		public IMessage onMessage(S2CMessageRegionTrackMusic message, MessageContext ctx) {
 			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
 			return null;
 		}
 
-		private void handle(RegionTrackmusicMessage message, MessageContext ctx)
+		private void handle(S2CMessageRegionTrackMusic message, MessageContext ctx)
 		{
-			Main.proxy.RegionTrackmusic(message.x1, message.y1, message.z1, message.x2, message.y2, message.z2, message.region, message.world, message.DimensionId, message.url, message.volume, message.TrackId, message.Option);
+			Main.proxy.regionTrackMusic(message.x1, message.y1, message.z1, message.x2, message.y2, message.z2, message.region, message.world, message.DimensionId, message.url, message.volume, message.TrackId, message.Option);
 		}
 	}
 }

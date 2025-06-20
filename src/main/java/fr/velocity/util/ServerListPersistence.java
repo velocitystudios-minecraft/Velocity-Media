@@ -3,10 +3,10 @@ package fr.velocity.util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import fr.velocity.mod.network.PacketHandler;
-import fr.velocity.mod.network.messages.PlayerTrackmusicMessage;
-import fr.velocity.mod.network.messages.PositionTrackmusicMessage;
-import fr.velocity.mod.network.messages.RegionTrackmusicMessage;
-import fr.velocity.mod.network.messages.TrackmusicMessage;
+import fr.velocity.mod.network.messages.S2CMessagePlayerTrackMusic;
+import fr.velocity.mod.network.messages.S2CMessagePositionTrackMusic;
+import fr.velocity.mod.network.messages.S2CMessageRegionTrackMusic;
+import fr.velocity.mod.network.messages.S2CMessageTrackMusic;
 import net.minecraft.command.CommandException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -259,7 +259,7 @@ public class ServerListPersistence {
                 // Jouer les fameux sons
                 if(Objects.equals(TrackType, "Track")) {
                     if(entitylist.contains(MPPlayer)) {
-                        PacketHandler.INSTANCE.sendTo(new TrackmusicMessage(url, (int) volume, TrackId, option), MPPlayer);
+                        PacketHandler.INSTANCE.sendTo(new S2CMessageTrackMusic(url, (int) volume, TrackId, option), MPPlayer);
                     }
                 } else {
                     if(Objects.equals(TrackType, "LocationTrack")) {
@@ -269,7 +269,7 @@ public class ServerListPersistence {
                             double Z = GetDouble(subList.get(10));
                             double Radius = GetDouble(subList.get(11));
 
-                            PacketHandler.INSTANCE.sendTo(new PositionTrackmusicMessage((int) X, (int) Y, (int) Z, (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
+                            PacketHandler.INSTANCE.sendTo(new S2CMessagePositionTrackMusic((int) X, (int) Y, (int) Z, (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
                         }
                     } else {
                         if(Objects.equals(TrackType, "PlayerTrack")) {
@@ -280,7 +280,7 @@ public class ServerListPersistence {
                                 List<Entity> allplayer = getEntityList(MPPlayer.getServer(), MPPlayer, "@a");
                                 for (Entity e : allplayer) {
                                     if (e instanceof EntityPlayerMP) {
-                                        PacketHandler.INSTANCE.sendTo(new PlayerTrackmusicMessage(User, (int) Radius, url, (int) volume, TrackId, option), (EntityPlayerMP) e);
+                                        PacketHandler.INSTANCE.sendTo(new S2CMessagePlayerTrackMusic(User, (int) Radius, url, (int) volume, TrackId, option), (EntityPlayerMP) e);
                                     }
                                 }
                             }
@@ -289,12 +289,12 @@ public class ServerListPersistence {
                                 List<Entity> allplayer = getEntityList(MPPlayer.getServer(), MPPlayer, "@a");
                                 for (Entity e : allplayer) {
                                     if (e instanceof EntityPlayerMP) {
-                                        PacketHandler.INSTANCE.sendTo(new PlayerTrackmusicMessage(e.getName(), (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
+                                        PacketHandler.INSTANCE.sendTo(new S2CMessagePlayerTrackMusic(e.getName(), (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
                                     }
                                 }
                             } else {
                                 System.out.println("Lancer un son jouer sur probablement quelqu'un...");
-                                PacketHandler.INSTANCE.sendTo(new PlayerTrackmusicMessage(User, (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
+                                PacketHandler.INSTANCE.sendTo(new S2CMessagePlayerTrackMusic(User, (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
                             }
                         } else {
                             if(Objects.equals(TrackType, "LocationTrack")) {
@@ -309,7 +309,7 @@ public class ServerListPersistence {
                                     String world = (String) subList.get(15);
                                     double DimensionId = GetDouble(subList.get(16));
 
-                                    PacketHandler.INSTANCE.sendTo(new RegionTrackmusicMessage((int) X1, (int) Y1, (int) Z1, (int) X2, (int) Y2, (int) Z2, region, world, (int) DimensionId, url, (int) volume, TrackId, option), MPPlayer);
+                                    PacketHandler.INSTANCE.sendTo(new S2CMessageRegionTrackMusic((int) X1, (int) Y1, (int) Z1, (int) X2, (int) Y2, (int) Z2, region, world, (int) DimensionId, url, (int) volume, TrackId, option), MPPlayer);
                                 }
                             }
                         }

@@ -2,7 +2,7 @@ package fr.velocity.video.client.gui;
 
 import fr.velocity.Main;
 import fr.velocity.mod.network.PacketHandler;
-import fr.velocity.mod.network.messages.UploadVideoUpdateMessage;
+import fr.velocity.mod.network.messages.C2SMessageUploadVideoUpdate;
 import fr.velocity.video.block.entity.TVBlockEntity;
 import fr.velocity.video.client.gui.components.CustomGuiSlider;
 import net.minecraft.client.Minecraft;
@@ -105,7 +105,7 @@ public class TVVideoScreen extends GuiScreen {
     public void onGuiClosed() {
         super.onGuiClosed();
         if (!changed)
-            PacketHandler.INSTANCE.sendToServer(new UploadVideoUpdateMessage(be.getPos(), url, -1, true, true, false));
+            PacketHandler.INSTANCE.sendToServer(new C2SMessageUploadVideoUpdate(be.getPos(), url, -1, true, true, false));
         Keyboard.enableRepeatEvents(false);
     }
 
@@ -123,13 +123,13 @@ public class TVVideoScreen extends GuiScreen {
         super.actionPerformed(button);
 
         if (button == playButton) {
-            PacketHandler.INSTANCE.sendToServer(new UploadVideoUpdateMessage(be.getPos(), url, volume, true, true, false));
+            PacketHandler.INSTANCE.sendToServer(new C2SMessageUploadVideoUpdate(be.getPos(), url, volume, true, true, false));
         }
         if (button == pauseButton) {
-            PacketHandler.INSTANCE.sendToServer(new UploadVideoUpdateMessage(be.getPos(), url, volume, true, false, false));
+            PacketHandler.INSTANCE.sendToServer(new C2SMessageUploadVideoUpdate(be.getPos(), url, volume, true, false, false));
         }
         if (button == stopButton) {
-            PacketHandler.INSTANCE.sendToServer(new UploadVideoUpdateMessage(be.getPos(), url, volume, true, false, true));
+            PacketHandler.INSTANCE.sendToServer(new C2SMessageUploadVideoUpdate(be.getPos(), url, volume, true, false, true));
         }
         if (button == saveButton) {
             int tempVolume = (int) volumeSlider.getValue();
@@ -142,7 +142,7 @@ public class TVVideoScreen extends GuiScreen {
             ((TVBlockEntity) be).setVolume(tempVolume);
 
             changed = true;
-            PacketHandler.INSTANCE.sendToServer(new UploadVideoUpdateMessage(be.getPos(), tempUrl, tempVolume, true, true, false));
+            PacketHandler.INSTANCE.sendToServer(new C2SMessageUploadVideoUpdate(be.getPos(), tempUrl, tempVolume, true, true, false));
         }
     }
 

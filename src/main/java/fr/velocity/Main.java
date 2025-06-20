@@ -115,21 +115,13 @@ public class Main {
 				System.out.println("VLC est actif");
 			}
 		}
-		proxy.postinit(event);
+		proxy.postInit(event);
 	}
 
 	@Mod.EventHandler
 	public void serverInit(FMLServerStartingEvent event) {
-		event.registerServerCommand(new StopCommand());
-		event.registerServerCommand(new VolumeCommand());
-		event.registerServerCommand(new PauseCommand());
-		event.registerServerCommand(new PositionCommand());
+		event.registerServerCommand(new MusicCommand());
 		event.registerServerCommand(new PlayVideoCommand());
-		event.registerServerCommand(new TrackCommand());
-		event.registerServerCommand(new PositionTrackCommand());
-		event.registerServerCommand(new PlayerTrackCommand());
-		event.registerServerCommand(new RegionTrackCommand());
-
 		ServerListPersistence.loadData();
 	}
 

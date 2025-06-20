@@ -28,18 +28,30 @@ public class PacketHandler {
 
     private static void register() {
         System.out.println("REGISTER PACKET");
-        INSTANCE.registerMessage(OpenVideoManagerScreen.Handler.class, OpenVideoManagerScreen.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(SendVideoMessage.Handler.class, SendVideoMessage.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(PlaymusicMessage.Handler.class, PlaymusicMessage.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(PlayerTrackmusicMessage.Handler.class, PlayerTrackmusicMessage.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(TrackmusicMessage.Handler.class, TrackmusicMessage.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(PositionTrackmusicMessage.Handler.class, PositionTrackmusicMessage.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(StopmusicMessage.Handler.class, StopmusicMessage.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(PausemusicMessage.Handler.class, PausemusicMessage.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(VolumemusicMessage.Handler.class, VolumemusicMessage.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(PositionmusicMessage.Handler.class, PositionmusicMessage.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(RegionTrackmusicMessage.Handler.class, RegionTrackmusicMessage.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(FrameVideoMessage.Handler.class, FrameVideoMessage.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(UploadVideoUpdateMessage.Handler.class, UploadVideoUpdateMessage.class, nextID(), Side.SERVER);
+
+        /**
+         * Server to Client Messages
+         * * These messages are sent from the server to the client.
+         */
+
+        INSTANCE.registerMessage(S2CMessageOpenVideoManagerScreen.Handler.class, S2CMessageOpenVideoManagerScreen.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessageSendVideo.Handler.class, S2CMessageSendVideo.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessagePlayMusic.Handler.class, S2CMessagePlayMusic.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessagePlayerTrackMusic.Handler.class, S2CMessagePlayerTrackMusic.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessageTrackMusic.Handler.class, S2CMessageTrackMusic.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessagePositionTrackMusic.Handler.class, S2CMessagePositionTrackMusic.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessageStopMusic.Handler.class, S2CMessageStopMusic.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessagePauseMusic.Handler.class, S2CMessagePauseMusic.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessageVolumeMusic.Handler.class, S2CMessageVolumeMusic.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessageTimecodeMusic.Handler.class, S2CMessageTimecodeMusic.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessageRegionTrackMusic.Handler.class, S2CMessageRegionTrackMusic.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessageFrameVideo.Handler.class, S2CMessageFrameVideo.class, nextID(), Side.CLIENT);
+
+        /**
+         * Client to Server Messages
+         * * These messages are sent from the client to the server.
+         */
+
+        INSTANCE.registerMessage(C2SMessageUploadVideoUpdate.Handler.class, C2SMessageUploadVideoUpdate.class, nextID(), Side.SERVER);
     }
 }

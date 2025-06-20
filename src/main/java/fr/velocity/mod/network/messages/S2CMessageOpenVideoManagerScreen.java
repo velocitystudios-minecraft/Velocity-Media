@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.nio.charset.StandardCharsets;
 
-public class OpenVideoManagerScreen implements IMessage {
+public class S2CMessageOpenVideoManagerScreen implements IMessage {
 
     private BlockPos blockPos;
     private String url;
@@ -17,9 +17,9 @@ public class OpenVideoManagerScreen implements IMessage {
     private int volume;
     private boolean loop;
 
-    public OpenVideoManagerScreen() {}
+    public S2CMessageOpenVideoManagerScreen() {}
 
-    public OpenVideoManagerScreen(BlockPos blockPos, String url, int tick, int volume, boolean loop) {
+    public S2CMessageOpenVideoManagerScreen(BlockPos blockPos, String url, int tick, int volume, boolean loop) {
         this.blockPos = blockPos;
         this.url = url;
         this.tick = tick;
@@ -51,10 +51,10 @@ public class OpenVideoManagerScreen implements IMessage {
         buffer.writeBoolean(loop);
     }
 
-    public static class Handler implements IMessageHandler<OpenVideoManagerScreen, IMessage> {
+    public static class Handler implements IMessageHandler<S2CMessageOpenVideoManagerScreen, IMessage> {
 
         @Override
-        public IMessage onMessage(OpenVideoManagerScreen message, MessageContext ctx) {
+        public IMessage onMessage(S2CMessageOpenVideoManagerScreen message, MessageContext ctx) {
             Main.proxy.openVideoGUI(message.blockPos, message.url, message.tick, message.volume, message.loop);
             return null;
         }

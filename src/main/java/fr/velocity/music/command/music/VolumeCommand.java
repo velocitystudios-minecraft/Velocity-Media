@@ -1,24 +1,25 @@
-package fr.velocity.music.command;
+package fr.velocity.music.command.music;
 
 import fr.velocity.mod.network.PacketHandler;
-import fr.velocity.mod.network.messages.PositionmusicMessage;
+import fr.velocity.mod.network.messages.S2CMessageVolumeMusic;
+import fr.velocity.music.command.ISubCommand;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 
 import java.util.Collections;
 import java.util.List;
 
-public class PositionCommand extends CommandBase {
+public class VolumeCommand implements ISubCommand {
 
     @Override
     public String getName() {
-        return "positionmusic";
+        return "volume";
     }
 
     @Override
@@ -28,34 +29,33 @@ public class PositionCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "Usage: /positionmusic <player> <position milliseconds> [<trackid>]";
+        return "/music " + getName() + " <player> <volume> [<trackid>]";
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 2) {
-            sender.sendMessage(new TextComponentString(getUsage(sender)));
-            return;
+            throw new WrongUsageException(getUsage(sender));
         }
 
-        List<Entity> entity = getEntityList(server, sender, args[0]);
+        List<Entity> entity = CommandBase.getEntityList(server, sender, args[0]);
 
-        long position;
+        int volume;
 
         try {
-            position = Integer.parseInt(args[1]);
+            volume = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
-            return;
+            throw new CommandException("Le volume doit être un nombre valide.");
         }
 
-        String TrackId = "ALL";
+        String trackId = "ALL";
         if (args.length > 2) {
-            TrackId = args[2];
+            trackId = args[2];
         }
 
         for (Entity e : entity) {
             if (e instanceof EntityPlayerMP) {
-                PacketHandler.INSTANCE.sendTo(new PositionmusicMessage(TrackId, position), (EntityPlayerMP) e);
+                PacketHandler.INSTANCE.sendTo(new S2CMessageVolumeMusic(trackId, volume), (EntityPlayerMP) e);
             }
         }
     }
@@ -63,7 +63,7 @@ public class PositionCommand extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
         if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+            return CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
         }
         return Collections.emptyList();
     }

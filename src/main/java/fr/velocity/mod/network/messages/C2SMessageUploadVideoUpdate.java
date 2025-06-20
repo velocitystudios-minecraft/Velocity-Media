@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import static fr.velocity.util.WhitelistUtil.isIpWhitelisted;
 
-public class UploadVideoUpdateMessage implements IMessage {
+public class C2SMessageUploadVideoUpdate implements IMessage {
 
     private BlockPos blockPos;
     private String url;
@@ -25,9 +25,9 @@ public class UploadVideoUpdateMessage implements IMessage {
     private boolean isPlaying;
     private boolean reset;
 
-    public UploadVideoUpdateMessage() {}
+    public C2SMessageUploadVideoUpdate() {}
 
-    public UploadVideoUpdateMessage(BlockPos blockPos, String url, int volume, boolean loop, boolean isPlaying, boolean reset) {
+    public C2SMessageUploadVideoUpdate(BlockPos blockPos, String url, int volume, boolean loop, boolean isPlaying, boolean reset) {
         this.blockPos = blockPos;
         this.url = url;
         this.volume = volume;
@@ -63,15 +63,15 @@ public class UploadVideoUpdateMessage implements IMessage {
         this.reset = buffer.readBoolean();
     }
 
-    public static class Handler implements IMessageHandler<UploadVideoUpdateMessage, IMessage> {
+    public static class Handler implements IMessageHandler<C2SMessageUploadVideoUpdate, IMessage> {
 
         @Override
-        public IMessage onMessage(UploadVideoUpdateMessage message, MessageContext ctx) {
+        public IMessage onMessage(C2SMessageUploadVideoUpdate message, MessageContext ctx) {
             FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
             return null;
         }
 
-        private void handle(UploadVideoUpdateMessage message, MessageContext ctx)
+        private void handle(C2SMessageUploadVideoUpdate message, MessageContext ctx)
         {
 
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();

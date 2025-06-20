@@ -9,26 +9,29 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.nio.charset.StandardCharsets;
 
-public class PlaymusicMessage implements IMessage
+public class S2CMessageTrackMusic implements IMessage
 {
 
 	private String url;
 	private int volume;
-	private String RepeatMode;
+	private String Option;
+	private String TrackId;
 
-	public PlaymusicMessage() {}
+	public S2CMessageTrackMusic() {}
 
-	public PlaymusicMessage(String url, int volume, String RepeatMode) {
+	public S2CMessageTrackMusic(String url, int volume, String TrackId, String Option) {
 		this.url = url;
 		this.volume = volume;
-		this.RepeatMode = RepeatMode;
+		this.TrackId = TrackId;
+		this.Option = Option;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buffer) {
 		this.url = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
 		this.volume = buffer.readInt();
-		this.RepeatMode = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
+		this.TrackId = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
+		this.Option = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
 	}
 
 	@Override
@@ -36,21 +39,23 @@ public class PlaymusicMessage implements IMessage
 		buffer.writeInt(url.length());
 		buffer.writeCharSequence(url, StandardCharsets.UTF_8);
 		buffer.writeInt(volume);
-		buffer.writeInt(RepeatMode.length());
-		buffer.writeCharSequence(RepeatMode, StandardCharsets.UTF_8);
+		buffer.writeInt(TrackId.length());
+		buffer.writeCharSequence(TrackId, StandardCharsets.UTF_8);
+		buffer.writeInt(Option.length());
+		buffer.writeCharSequence(Option, StandardCharsets.UTF_8);
 	}
 
-	public static class Handler implements IMessageHandler<PlaymusicMessage, IMessage> {
+	public static class Handler implements IMessageHandler<S2CMessageTrackMusic, IMessage> {
 
 		@Override
-		public IMessage onMessage(PlaymusicMessage message, MessageContext ctx) {
+		public IMessage onMessage(S2CMessageTrackMusic message, MessageContext ctx) {
 			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
 			return null;
 		}
 
-		private void handle(PlaymusicMessage message, MessageContext ctx)
+		private void handle(S2CMessageTrackMusic message, MessageContext ctx)
 		{
-			Main.proxy.Playmusic(message.url, message.volume, message.RepeatMode);
+			Main.proxy.trackMusic(message.url, message.volume, message.TrackId, message.Option);
 		}
 	}
 }

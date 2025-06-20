@@ -9,14 +9,14 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.nio.charset.StandardCharsets;
 
-public class VolumemusicMessage implements IMessage
+public class S2CMessageVolumeMusic implements IMessage
 {
 	private int volume;
 	private String TrackId;
 
-	public VolumemusicMessage() {}
+	public S2CMessageVolumeMusic() {}
 
-	public VolumemusicMessage(String TrackId, int volume) {
+	public S2CMessageVolumeMusic(String TrackId, int volume) {
 		this.TrackId = TrackId;
 		this.volume = volume;
 	}
@@ -34,17 +34,17 @@ public class VolumemusicMessage implements IMessage
 		buffer.writeInt(volume);
 	}
 
-	public static class Handler implements IMessageHandler<VolumemusicMessage, IMessage> {
+	public static class Handler implements IMessageHandler<S2CMessageVolumeMusic, IMessage> {
 
 		@Override
-		public IMessage onMessage(VolumemusicMessage message, MessageContext ctx) {
+		public IMessage onMessage(S2CMessageVolumeMusic message, MessageContext ctx) {
 			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
 			return null;
 		}
 
-		private void handle(VolumemusicMessage message, MessageContext ctx)
+		private void handle(S2CMessageVolumeMusic message, MessageContext ctx)
 		{
-			Main.proxy.Volumemusic(message.TrackId, message.volume);
+			Main.proxy.volumeMusic(message.TrackId, message.volume);
 		}
 	}
 }

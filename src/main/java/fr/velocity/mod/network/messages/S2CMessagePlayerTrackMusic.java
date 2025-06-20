@@ -9,17 +9,21 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.nio.charset.StandardCharsets;
 
-public class TrackmusicMessage implements IMessage
+public class S2CMessagePlayerTrackMusic implements IMessage
 {
 
+	private int radius;
 	private String url;
 	private int volume;
 	private String Option;
 	private String TrackId;
+	private String targetPlayer;
 
-	public TrackmusicMessage() {}
+	public S2CMessagePlayerTrackMusic() {}
 
-	public TrackmusicMessage(String url, int volume, String TrackId, String Option) {
+	public S2CMessagePlayerTrackMusic(String targetPlayer, int radius, String url, int volume, String TrackId, String Option) {
+		this.targetPlayer = targetPlayer;
+		this.radius = radius;
 		this.url = url;
 		this.volume = volume;
 		this.TrackId = TrackId;
@@ -28,6 +32,8 @@ public class TrackmusicMessage implements IMessage
 
 	@Override
 	public void fromBytes(ByteBuf buffer) {
+		this.targetPlayer = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
+		this.radius = buffer.readInt();
 		this.url = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
 		this.volume = buffer.readInt();
 		this.TrackId = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
@@ -36,6 +42,9 @@ public class TrackmusicMessage implements IMessage
 
 	@Override
 	public void toBytes(ByteBuf buffer) {
+		buffer.writeInt(targetPlayer.length());
+		buffer.writeCharSequence(targetPlayer, StandardCharsets.UTF_8);
+		buffer.writeInt(radius);
 		buffer.writeInt(url.length());
 		buffer.writeCharSequence(url, StandardCharsets.UTF_8);
 		buffer.writeInt(volume);
@@ -45,17 +54,17 @@ public class TrackmusicMessage implements IMessage
 		buffer.writeCharSequence(Option, StandardCharsets.UTF_8);
 	}
 
-	public static class Handler implements IMessageHandler<TrackmusicMessage, IMessage> {
+	public static class Handler implements IMessageHandler<S2CMessagePlayerTrackMusic, IMessage> {
 
 		@Override
-		public IMessage onMessage(TrackmusicMessage message, MessageContext ctx) {
+		public IMessage onMessage(S2CMessagePlayerTrackMusic message, MessageContext ctx) {
 			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
 			return null;
 		}
 
-		private void handle(TrackmusicMessage message, MessageContext ctx)
+		private void handle(S2CMessagePlayerTrackMusic message, MessageContext ctx)
 		{
-			Main.proxy.Trackmusic(message.url, message.volume, message.TrackId, message.Option);
+			Main.proxy.playerTrackMusic(message.targetPlayer, message.radius, message.url, message.volume, message.TrackId, message.Option);
 		}
 	}
 }
