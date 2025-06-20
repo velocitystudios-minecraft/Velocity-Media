@@ -198,7 +198,7 @@ repositories {
 dependencies {
 	minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 
-	implementation 'org.yaml:snakeyaml:1.33'
+	shade 'org.yaml:snakeyaml:1.33'
 
 	library project(":musicplayer-lavaplayer-api")
 	shade "org.slf4j:slf4j-simple:2.0.16"
