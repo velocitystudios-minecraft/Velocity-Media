@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
@@ -87,6 +88,15 @@ public class DebugRenderer {
         System.out.println("AJOUT D UN DEBUG ZONE " + name);
     }
 
+    public static Entity getEntityByUUID(World world, UUID uuid) {
+        for (Entity entity : world.loadedEntityList) {
+            if (entity.getUniqueID().equals(uuid)) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if (!active) return;
@@ -118,13 +128,13 @@ public class DebugRenderer {
             if(Objects.equals(zone.mode, "PlayerTrack")) {
                 // Gestion du mode PlayerTrack (inchangé)
                 Entity entity = zone.Option.contains("--useuuid")
-                    ? Minecraft.getMinecraft().world.getPlayerEntityByUUID(UUID.fromString(zone.Player))
+                    ? getEntityByUUID(Minecraft.getMinecraft().world, UUID.fromString(zone.Player))
                     : Minecraft.getMinecraft().world.getPlayerEntityByName(zone.Player);
                 if(entity==null) continue;
                 cx = DrawUtil.lerp(entity.lastTickPosX, entity.posX, event.getPartialTicks());
                 cy = DrawUtil.lerp(entity.lastTickPosY, entity.posY, event.getPartialTicks()) + 4;
                 cz = DrawUtil.lerp(entity.lastTickPosZ, entity.posZ, event.getPartialTicks());
-                ToShow = "Player link to : " + zone.Player;
+                ToShow = "Sound link to : " + zone.Player;
 
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(cx, cy, cz);
