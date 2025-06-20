@@ -72,7 +72,7 @@ public class WhitelistUtil {
     }
 
     public static String getServerIp(MinecraftServer server) {
-        return server.isDedicatedServer() ? getRealIp() : "127.0.0.1"; //wtf ?
+        return server.isDedicatedServer() ? getRealIp() : "127.0.0.1"; //wtf ???
     }
 
 
