@@ -2,11 +2,11 @@ package fr.velocity.mod.proxy;
 
 import fr.velocity.Main;
 import fr.velocity.mod.handler.RegistryHandler;
+import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.music.dependency.DependencyManager;
 import fr.velocity.music.init.MusicPlayerFiles;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.video.block.entity.TVBlockEntity;
-import fr.velocity.mod.network.PacketHandler;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -15,7 +15,9 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.MissingModsException;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 

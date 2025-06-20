@@ -2,7 +2,6 @@ package fr.velocity.music.command;
 
 import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.PositionmusicMessage;
-import fr.velocity.mod.network.messages.VolumemusicMessage;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

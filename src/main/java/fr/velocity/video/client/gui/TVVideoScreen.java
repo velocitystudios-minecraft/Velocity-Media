@@ -1,10 +1,10 @@
 package fr.velocity.video.client.gui;
 
 import fr.velocity.Main;
-import fr.velocity.video.block.entity.TVBlockEntity;
-import fr.velocity.video.client.gui.components.CustomGuiSlider;
 import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.UploadVideoUpdateMessage;
+import fr.velocity.video.block.entity.TVBlockEntity;
+import fr.velocity.video.client.gui.components.CustomGuiSlider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -16,13 +16,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
 
 public class TVVideoScreen extends GuiScreen {
 

@@ -2,14 +2,12 @@ package fr.velocity.music.command;
 
 import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.PositionTrackmusicMessage;
-import fr.velocity.mod.network.messages.TrackmusicMessage;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -21,11 +19,13 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
 import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
 import static fr.velocity.util.ServerListPersistence.AddLocationTrackSaved;
-import static fr.velocity.util.ServerListPersistence.AddTrackSaved;
 
 public class PositionTrackCommand extends CommandBase {
 

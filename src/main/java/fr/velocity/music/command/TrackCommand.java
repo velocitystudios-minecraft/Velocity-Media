@@ -1,7 +1,6 @@
 package fr.velocity.music.command;
 
 import fr.velocity.mod.network.PacketHandler;
-import fr.velocity.mod.network.messages.PlaymusicMessage;
 import fr.velocity.mod.network.messages.TrackmusicMessage;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;

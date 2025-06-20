@@ -1,12 +1,13 @@
 package fr.velocity.music.init;
 
-import java.nio.file.*;
-
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.apache.logging.log4j.*;
-
-import net.harawata.appdirs.AppDirsFactory;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class MusicPlayerFiles {
 	

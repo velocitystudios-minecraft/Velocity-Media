@@ -1,6 +1,7 @@
 package fr.velocity.mod.handler;
 
 import net.minecraftforge.common.config.Configuration;
+
 import java.io.File;
 
 public class ConfigHandler {

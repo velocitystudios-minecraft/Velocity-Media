@@ -1,17 +1,8 @@
 package fr.velocity.util.gui;
 
-import fr.velocity.music.lavaplayer.api.queue.ITrackManager;
-import fr.velocity.music.musicplayer.CustomPlayer;
 import fr.velocity.music.util.DebugRenderer;
-import fr.velocity.util.gui.GuiCustomSlider;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.Map;
-import java.util.Objects;
-
-import static fr.velocity.music.musicplayer.MusicPlayerManager.playerCache;
 
 public class GuiCustomOptions extends GuiScreen {
     private GuiScreen parentScreen;

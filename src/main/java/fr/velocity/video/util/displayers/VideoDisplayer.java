@@ -5,7 +5,6 @@ import fr.velocity.video.util.cache.TextureCache;
 import fr.velocity.video.util.math.Vec3d;
 import fr.velocity.video.util.math.Vector3d;
 import me.lib720.watermod.safety.TryCore;
-import me.srrapero720.watermedia.api.WaterMediaAPI;
 import me.srrapero720.watermedia.api.player.SyncVideoPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

@@ -1,12 +1,13 @@
 package fr.velocity.video.block.custom;
 
 import fr.velocity.Main;
+import fr.velocity.mod.item.ModItems;
 import fr.velocity.video.block.ModBlocks;
 import fr.velocity.video.block.entity.TVBlockEntity;
-import fr.velocity.mod.item.ModItems;
 import fr.velocity.video.util.math.AlignedBox;
 import fr.velocity.video.util.math.Facing;
-import net.minecraft.block.*;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;

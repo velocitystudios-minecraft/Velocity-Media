@@ -1,7 +1,7 @@
 package fr.velocity.mod.network;
 
-import fr.velocity.mod.network.messages.*;
 import fr.velocity.Main;
+import fr.velocity.mod.network.messages.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;

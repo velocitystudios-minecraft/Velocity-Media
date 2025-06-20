@@ -1,8 +1,8 @@
 package fr.velocity.music.util;
 
-import java.util.Collection;
-
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Collection;
 
 /**
  * This class holds an object. This class is immutable. To get the object use {@link #get()}. This method use the
