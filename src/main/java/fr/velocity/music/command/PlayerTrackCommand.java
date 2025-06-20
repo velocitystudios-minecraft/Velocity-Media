@@ -4,6 +4,7 @@ import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.PlayerTrackmusicMessage;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
+import fr.velocity.util.WhitelistUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -13,19 +14,12 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
-import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
 import static fr.velocity.util.ServerListPersistence.AddPlayerTrackSaved;
+import static fr.velocity.util.WhitelistUtil.isIpWhitelisted;
 
 public class PlayerTrackCommand extends CommandBase {
 
@@ -44,28 +38,6 @@ public class PlayerTrackCommand extends CommandBase {
         return "Usage: /playplayertrack <player> <radius> <volume> <trackid> <url> [<option>]";
     }
 
-    public static String getRealIp() {
-        try {
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = interfaces.nextElement();
-                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                    continue;
-                }
-                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
-                while (addresses.hasMoreElements()) {
-                    InetAddress address = addresses.nextElement();
-                    if (address.isSiteLocalAddress()) {
-                        return address.getHostAddress();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "127.0.0.1";
-    }
-
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 5) {
@@ -73,12 +45,7 @@ public class PlayerTrackCommand extends CommandBase {
             return;
         }
 
-        String serverIp;
-        if (server.isDedicatedServer()) {
-            serverIp = getRealIp();
-        } else {
-            serverIp = "127.0.0.1";
-        }
+        String serverIp = WhitelistUtil.getServerIp(server);
 
         List<Entity> entity = getEntityList(server, sender, "@a");
 
@@ -140,35 +107,6 @@ public class PlayerTrackCommand extends CommandBase {
                 PacketHandler.INSTANCE.sendTo(new PlayerTrackmusicMessage(args[0], Radius, url, volume, TrackId, Option), (EntityPlayerMP) e);
             }
         }
-    }
-
-    private boolean isIpWhitelisted(String serverIp) {
-        try {
-            URL url = new URL(WHITELIST_URL);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine).append("\n");
-            }
-            in.close();
-            connection.disconnect();
-
-            String[] whitelistedIps = content.toString().split("\n");
-
-            for (String ip : whitelistedIps) {
-                if (ip.trim().equals(serverIp)) {
-                    return true;
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
     @Override

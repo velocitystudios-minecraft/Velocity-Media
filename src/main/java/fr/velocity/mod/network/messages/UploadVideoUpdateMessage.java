@@ -1,5 +1,6 @@
 package fr.velocity.mod.network.messages;
 
+import fr.velocity.util.WhitelistUtil;
 import fr.velocity.video.block.entity.TVBlockEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -10,17 +11,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
 import java.util.UUID;
 
-import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
+import static fr.velocity.util.WhitelistUtil.isIpWhitelisted;
 
 public class UploadVideoUpdateMessage implements IMessage {
 
@@ -30,35 +24,6 @@ public class UploadVideoUpdateMessage implements IMessage {
     private boolean loop;
     private boolean isPlaying;
     private boolean reset;
-
-    private static boolean isIpWhitelisted(String serverIp) {
-        try {
-            URL url = new URL(WHITELIST_URL);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine).append("\n");
-            }
-            in.close();
-            connection.disconnect();
-
-            String[] whitelistedIps = content.toString().split("\n");
-
-            for (String ip : whitelistedIps) {
-                if (ip.trim().equals(serverIp)) {
-                    return true;
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
     public UploadVideoUpdateMessage() {}
 
@@ -106,39 +71,12 @@ public class UploadVideoUpdateMessage implements IMessage {
             return null;
         }
 
-        public static String getRealIp() {
-            try {
-                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-                while (interfaces.hasMoreElements()) {
-                    NetworkInterface networkInterface = interfaces.nextElement();
-                    if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                        continue;
-                    }
-                    Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
-                    while (addresses.hasMoreElements()) {
-                        InetAddress address = addresses.nextElement();
-                        if (address.isSiteLocalAddress()) {
-                            return address.getHostAddress();
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return "127.0.0.1";
-        }
-
         private void handle(UploadVideoUpdateMessage message, MessageContext ctx)
         {
 
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 
-            String serverIp;
-            if (server.isDedicatedServer()) {
-                serverIp = getRealIp();
-            } else {
-                serverIp = "127.0.0.1";
-            }
+            String serverIp = WhitelistUtil.getServerIp(server);
 
             EntityPlayerMP player = ctx.getServerHandler().player;
             if (player == null) return;
