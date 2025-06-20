@@ -31,12 +31,12 @@ public class MusicRegionTrack {
     private static final Map<String, Thread> activeThreads = new ConcurrentHashMap<>();
     private static final Map<String, AtomicBoolean> trackControlFlags = new ConcurrentHashMap<>();
 
-    public static void regionTrackmusic(int x1, int y1, int z1, int x2, int y2, int z2, String regionname, String world, String url, int volume, String TrackId, String Option) {
+    public static void regionTrackmusic(int x1, int y1, int z1, int x2, int y2, int z2, String regionname, String world, int DimensionId, String url, int volume, String TrackId, String Option) {
 
         Playlist playlist = new Playlist();
 
         Thread musicthread = new Thread(() -> {
-            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume, "RegionTrack", x1, y1, z1, 0, Option, "None", regionname, x2, y2, z2, world);
+            IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate(TrackId, volume, "RegionTrack", x1, y1, z1, 0, Option, "None", regionname, x2, y2, z2, world, DimensionId);
 
             NewPlayer.getTrackSearch().getTracks(url, result -> {
                 if (result.hasError()) {
@@ -112,7 +112,7 @@ public class MusicRegionTrack {
                         AtomicBoolean controlFlag = new AtomicBoolean(true);
                         trackControlFlags.put(TrackId, controlFlag);
 
-                        Thread thread = new Thread(() -> playWithRegion(manager, NewPlayer, regionname, world, x1, y1, z1, x2, y2, z2, volume, Option, controlFlag, TrackId));
+                        Thread thread = new Thread(() -> playWithRegion(manager, NewPlayer, regionname, world, DimensionId, x1, y1, z1, x2, y2, z2, volume, Option, controlFlag, TrackId));
                         activeThreads.put(TrackId, thread);
                         thread.start();
                     };
@@ -165,15 +165,13 @@ public class MusicRegionTrack {
                 (z >= minZ && z <= maxZ);
     }
 
-    private static void playWithRegion(ITrackManager manager, IMusicPlayer player, String regionname, String world, int x1, int y1, int z1, int x2, int y2, int z2, int maxVolume, String option, AtomicBoolean controlFlag, String TrackId) {
+    private static void playWithRegion(ITrackManager manager, IMusicPlayer player, String regionname, String world, int DimensionId, int x1, int y1, int z1, int x2, int y2, int z2, int maxVolume, String option, AtomicBoolean controlFlag, String TrackId) {
         while (controlFlag.get() && manager.getCurrentTrack() != null) {
             maxVolume = GetMaxVolumeFromTrackId(TrackId);
             EntityPlayer clientPlayer = net.minecraft.client.Minecraft.getMinecraft().player;
             if (clientPlayer != null) {
                 int volume = 0;
-                String WorldName1 = Minecraft.getMinecraft().getIntegratedServer() == null ? Minecraft.getMinecraft().player.world.getWorldInfo().getWorldName() : Minecraft.getMinecraft().getIntegratedServer().getWorldName();
-                if(WorldName1.equals(world)) {
-
+                if(Minecraft.getMinecraft().player.dimension == DimensionId) {
                     if (isInsideRegion(clientPlayer.getPosition().getX(), clientPlayer.getPosition().getY(), clientPlayer.getPosition().getZ(), x1, y1, z1, x2, y2, z2)) {
                         volume = maxVolume;
                     }

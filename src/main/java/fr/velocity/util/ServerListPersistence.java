@@ -106,7 +106,7 @@ public class ServerListPersistence {
         mainList.add(subList1);
     }
 
-    public static void AddRegionTrackSaved(long Duration, String url, int volume, String TrackId, String Option, String User, int x1, int y1, int z1, int x2, int y2, int z2, String region, String world) {
+    public static void AddRegionTrackSaved(long Duration, String url, int volume, String TrackId, String Option, String User, int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, int DimensionId) {
         RemoveTrackId(TrackId);
 
         List<Object> subList1 = new ArrayList<>();
@@ -127,6 +127,7 @@ public class ServerListPersistence {
         subList1.add(z2);
         subList1.add(region);
         subList1.add(world);
+        subList1.add(DimensionId);
 
         mainList.add(subList1);
     }
@@ -306,8 +307,9 @@ public class ServerListPersistence {
                                     double Z2 = GetDouble(subList.get(13));
                                     String region = (String) subList.get(14);
                                     String world = (String) subList.get(15);
+                                    double DimensionId = GetDouble(subList.get(16));
 
-                                    PacketHandler.INSTANCE.sendTo(new RegionTrackmusicMessage((int) X1, (int) Y1, (int) Z1, (int) X2, (int) Y2, (int) Z2, region, world, url, (int) volume, TrackId, option), MPPlayer);
+                                    PacketHandler.INSTANCE.sendTo(new RegionTrackmusicMessage((int) X1, (int) Y1, (int) Z1, (int) X2, (int) Y2, (int) Z2, region, world, (int) DimensionId, url, (int) volume, TrackId, option), MPPlayer);
                                 }
                             }
                         }

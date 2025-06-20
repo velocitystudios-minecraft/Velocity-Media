@@ -24,10 +24,11 @@ public class RegionTrackmusicMessage implements IMessage
 	private int volume;
 	private String Option;
 	private String TrackId;
+	private int DimensionId;
 
 	public RegionTrackmusicMessage() {}
 
-	public RegionTrackmusicMessage(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, String url, int volume, String TrackId, String Option) {
+	public RegionTrackmusicMessage(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, int DimensionId, String url, int volume, String TrackId, String Option) {
 		this.x1 = x1;
 		this.y1 = y1;
 		this.z1 = z1;
@@ -40,6 +41,7 @@ public class RegionTrackmusicMessage implements IMessage
 		this.volume = volume;
 		this.TrackId = TrackId;
 		this.Option = Option;
+		this.DimensionId = DimensionId;
 	}
 
 	@Override
@@ -52,6 +54,7 @@ public class RegionTrackmusicMessage implements IMessage
 		this.z2 = buffer.readInt();
 		this.region = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
 		this.world = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
+		this.DimensionId = buffer.readInt();
 		this.url = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
 		this.volume = buffer.readInt();
 		this.TrackId = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
@@ -70,6 +73,7 @@ public class RegionTrackmusicMessage implements IMessage
 		buffer.writeCharSequence(region, StandardCharsets.UTF_8);
 		buffer.writeInt(world.length());
 		buffer.writeCharSequence(world, StandardCharsets.UTF_8);
+		buffer.writeInt(DimensionId);
 		buffer.writeInt(url.length());
 		buffer.writeCharSequence(url, StandardCharsets.UTF_8);
 		buffer.writeInt(volume);
@@ -89,7 +93,7 @@ public class RegionTrackmusicMessage implements IMessage
 
 		private void handle(RegionTrackmusicMessage message, MessageContext ctx)
 		{
-			Main.proxy.RegionTrackmusic(message.x1, message.y1, message.z1, message.x2, message.y2, message.z2, message.region, message.world, message.url, message.volume, message.TrackId, message.Option);
+			Main.proxy.RegionTrackmusic(message.x1, message.y1, message.z1, message.x2, message.y2, message.z2, message.region, message.world, message.DimensionId, message.url, message.volume, message.TrackId, message.Option);
 		}
 	}
 }

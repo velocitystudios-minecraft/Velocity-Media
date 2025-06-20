@@ -45,7 +45,7 @@ public class MusicPlayerManager {
 		} else {
 			SetMaxVolumeFromTrackId(TrackId, Volume);
 			int ModifiedVolume = (int) (Volume * ConfigHandler.VolumeGlobaux);
-            Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None")).setVolume(ModifiedVolume);
+            Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0)).setVolume(ModifiedVolume);
 		}
 	}
 
@@ -55,7 +55,7 @@ public class MusicPlayerManager {
 				entry.getValue().getPlayer().getTrackManager().getCurrentTrack().setPosition(Position);
 			}
 		} else {
-			Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None")).getTrackManager().getCurrentTrack().setPosition(Position);
+			Objects.requireNonNull(TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0)).getTrackManager().getCurrentTrack().setPosition(Position);
 		}
 	}
 
@@ -84,7 +84,7 @@ public class MusicPlayerManager {
 				newmanager.setPaused(PauseMode);
 			}
 		} else {
-			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None").getTrackManager();
+			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0).getTrackManager();
 			manager.setPaused(PauseMode);
 		}
 	}
@@ -96,14 +96,14 @@ public class MusicPlayerManager {
 				newmanager.stop();
 			}
 		} else {
-			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None").getTrackManager();
+			final ITrackManager manager = TestGenerate(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0).getTrackManager();
 			manager.stop();
 		}
 	}
 
 
 
-	public static IMusicPlayer TestGenerate(String trackId, int volume, String mode, int X, int Y, int Z, int Radius, String Option, String Player, String region, int X2, int Y2, int Z2, String world) {
+	public static IMusicPlayer TestGenerate(String trackId, int volume, String mode, int X, int Y, int Z, int Radius, String Option, String Player, String region, int X2, int Y2, int Z2, String world, int DimensionId) {
 		if (playerCache.containsKey(trackId)) {
 			if(Objects.equals(mode, "PositionTrack") || Objects.equals(mode, "PlayerTrack")) {
 				System.out.println("Debug d'un " + mode + "...");
@@ -130,7 +130,8 @@ public class MusicPlayerManager {
 							trackId,
 							mode,
 							Option,
-							Player
+							Player,
+							DimensionId
 					);
 				}
 			}
@@ -174,7 +175,8 @@ public class MusicPlayerManager {
 								trackId,
 								mode,
 								Option,
-								Player
+								Player,
+								DimensionId
 						);
 					}
 				}

@@ -5,6 +5,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import static fr.velocity.music.util.DebugRenderer.zones;
+
 public class ClientManager {
     public ClientManager() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -14,6 +16,7 @@ public class ClientManager {
     public void onWorldUnload(WorldEvent.Unload event) {
         if (event.getWorld().isRemote) {
             MusicPlayerManager.StopAudio("ALL");
+            zones.clear();
         }
     }
 }

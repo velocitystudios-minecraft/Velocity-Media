@@ -26,7 +26,7 @@ public class DebugRenderer {
 
     public static DebugRenderer INSTANCE;
 
-    private static final List<DebugZone> zones = new CopyOnWriteArrayList<>();
+    public static final List<DebugZone> zones = new CopyOnWriteArrayList<>();
     private static boolean active = false;
 
     private static class DebugZone {
@@ -41,8 +41,9 @@ public class DebugRenderer {
         String region;
         String world;
         String methode;
+        int DimensionId;
 
-        DebugZone(BlockPos pos, int radius, String name, String mode, String Option, String Player, BlockPos pos2, String region, String world, String methode) {
+        DebugZone(BlockPos pos, int radius, String name, String mode, String Option, String Player, BlockPos pos2, String region, String world, String methode, int DimensionId) {
             this.pos = pos;
             this.radius = radius;
             this.name = name;
@@ -53,6 +54,7 @@ public class DebugRenderer {
             this.world = world;
             this.region = region;
             this.methode = methode;
+            this.DimensionId = DimensionId;
         }
 
 
@@ -74,15 +76,15 @@ public class DebugRenderer {
         zones.removeIf(zone ->
                 zone.name.equals(name));
 
-        zones.add(new DebugZone(pos, radius, name, mode, Option, Player, new BlockPos(0,0,0),"None","None","Sphere"));
+        zones.add(new DebugZone(pos, radius, name, mode, Option, Player, new BlockPos(0,0,0),"None","None","Sphere", 0));
         System.out.println("AJOUT D UN DEBUG ZONE " + name);
     }
 
-    public void addRegionZone(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, String name, String mode, String Option, String Player) {
+    public void addRegionZone(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, String name, String mode, String Option, String Player, int DimensionId) {
         zones.removeIf(zone ->
                 zone.name.equals(name));
 
-        zones.add(new DebugZone(new BlockPos(x1, y1, z1), 0, name, mode, Option, Player, new BlockPos(x2,y2,z2), region, world, "Squar"));
+        zones.add(new DebugZone(new BlockPos(x1, y1, z1), 0, name, mode, Option, Player, new BlockPos(x2,y2,z2), region, world, "Squar", DimensionId));
         System.out.println("AJOUT D UN DEBUG ZONE " + name);
     }
 
@@ -100,12 +102,14 @@ public class DebugRenderer {
         GlStateManager.disableTexture2D();
         GlStateManager.enableDepth();
         GlStateManager.disableLighting();
-        GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
-        GL11.glLineWidth(1.5F);
+        GlStateManager.disableCull();
 
         Iterator<DebugZone> iterator = zones.iterator();
         while (iterator.hasNext()) {
             DebugZone zone = iterator.next();
+
+            GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
+            GL11.glLineWidth(1.5F);
 
             CustomPlayer GetSuppl = playerCache.get(zone.name);
             String ToShow = "No mode found";
@@ -133,14 +137,13 @@ public class DebugRenderer {
 
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(cx, cy, cz);
+                GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
+                GL11.glLineWidth(1.5F);
                 drawWireSphere(zone.radius, 32, 32);
                 GlStateManager.popMatrix();
 
             } else if(Objects.equals(zone.mode, "RegionTrack") || Objects.equals(zone.mode, "Square")) {
-                String WorldName1 = Minecraft.getMinecraft().getIntegratedServer() == null ? Minecraft.getMinecraft().player.world.getWorldInfo().getWorldName() : Minecraft.getMinecraft().getIntegratedServer().getWorldName();
-                if(!WorldName1.equals(zone.world)) {
-                    System.out.println(Minecraft.getMinecraft().getIntegratedServer().getWorldName());
-                    System.out.println(zone.world);
+                if(!(Minecraft.getMinecraft().player.dimension == zone.DimensionId)) {
                     continue;
                 }
                 // Gestion du mode RegionTrack/Square
@@ -156,7 +159,9 @@ public class DebugRenderer {
                         " to " + pos2.getX() + "," + pos2.getY() + "," + pos2.getZ();
 
                 // Dessin du cube/wireframe
-                drawWireframeCube(pos1, pos2, camX, camY, camZ);
+                GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
+                GL11.glLineWidth(1.5F);
+                drawWireframeCube(zone.pos, zone.pos2, camX, camY, camZ);
 
             } else {
                 // Mode PositionTrack par défaut
@@ -167,6 +172,8 @@ public class DebugRenderer {
 
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(cx, cy, cz);
+                GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
+                GL11.glLineWidth(1.5F);
                 drawWireSphere(zone.radius, 32, 32);
                 GlStateManager.popMatrix();
             }
@@ -206,6 +213,11 @@ public class DebugRenderer {
 
     // Nouvelle méthode pour dessiner un cube/wireframe
     private void drawWireframeCube(BlockPos pos1, BlockPos pos2, double camX, double camY, double camZ) {
+        GlStateManager.pushMatrix();
+        GlStateManager.disableTexture2D();
+        GlStateManager.color(1.0F, 0.3F, 0.3F, 0.6F);
+        GL11.glLineWidth(1.5F);
+
         double minX = Math.min(pos1.getX(), pos2.getX()) - camX;
         double minY = Math.min(pos1.getY(), pos2.getY()) - camY;
         double minZ = Math.min(pos1.getZ(), pos2.getZ()) - camZ;
@@ -245,6 +257,8 @@ public class DebugRenderer {
         GL11.glVertex3d(minX, minY, maxZ);
         GL11.glVertex3d(minX, maxY, maxZ);
         GL11.glEnd();
+
+        GlStateManager.popMatrix();
     }
 
     private void drawWireSphere(float radius, int stacks, int slices) {

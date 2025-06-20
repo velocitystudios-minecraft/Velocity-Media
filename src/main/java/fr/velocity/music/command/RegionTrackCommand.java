@@ -14,6 +14,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -118,25 +120,35 @@ public class RegionTrackCommand extends CommandBase {
                 int y2 = (int) bounds.maxY;
                 int z1 = (int) bounds.minZ;
                 int z2 = (int) bounds.maxZ;
+                int DimensionId = 1;
+
+                for (WorldServer worlds : FMLCommonHandler.instance().getMinecraftServerInstance().worlds) {
+                    if (worlds.getWorldInfo().getWorldName().equalsIgnoreCase(world)) {
+                        DimensionId = worlds.provider.getDimension();
+                        System.out.println("Dimension ID: " + DimensionId);
+                        break;
+                    }
+                }
 
                 if(Option.contains("--save")) {
                     if(Option.contains("--position")) {
                         sender.sendMessage(new TextComponentString("§cImpossible de combiner --position et --save."));
                         return;
                     }
-                    IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None");
+                    IMusicPlayer NewPlayer = MusicPlayerManager.TestGenerate("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
 
                     String finalUrl = url;
+                    int finalDimensionId = DimensionId;
                     NewPlayer.getTrackSearch().getTracks(url, result -> {
                         if(result.getTrack() != null) {
-                            AddRegionTrackSaved(result.getTrack().getDuration(), finalUrl, volume, TrackId, Option, args[4], x1, y1, z1, x2, y2, z2, Region, world);
+                            AddRegionTrackSaved(result.getTrack().getDuration(), finalUrl, volume, TrackId, Option, args[4], x1, y1, z1, x2, y2, z2, Region, world, finalDimensionId);
                         }
                     });
                 }
 
                 for (Entity e : entity) {
                     if (e instanceof EntityPlayerMP) {
-                        PacketHandler.INSTANCE.sendTo(new RegionTrackmusicMessage(x1, y1, z1, x2, y2, z2, Region, world, url, volume, TrackId, Option), (EntityPlayerMP) e);
+                        PacketHandler.INSTANCE.sendTo(new RegionTrackmusicMessage(x1, y1, z1, x2, y2, z2, Region, world, DimensionId, url, volume, TrackId, Option), (EntityPlayerMP) e);
                     }
                 }
             } else {
