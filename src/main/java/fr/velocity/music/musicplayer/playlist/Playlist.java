@@ -1,19 +1,17 @@
 package fr.velocity.music.musicplayer.playlist;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
-
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrackList;
-import org.apache.commons.lang3.tuple.Pair;
-
-import fr.velocity.music.lavaplayer.api.audio.*;
 import fr.velocity.music.lavaplayer.api.queue.ITrackQueue;
 import fr.velocity.music.lavaplayer.api.search.ITrackSearch;
-import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.music.util.WrappedObject;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.function.Function;
+import java.util.function.IntPredicate;
 
 /**
  * This class represents a playlist. This list can be serialized or deserialized. After a serialization the tracks must

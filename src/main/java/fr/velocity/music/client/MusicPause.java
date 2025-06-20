@@ -1,11 +1,9 @@
 package fr.velocity.music.client;
 
-import fr.velocity.music.lavaplayer.api.queue.ITrackManager;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.sound.midi.Track;
 import java.util.Objects;
 
 @SideOnly(Side.CLIENT)

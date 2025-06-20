@@ -1,7 +1,6 @@
 package fr.velocity.music.command;
 
 import fr.velocity.mod.network.PacketHandler;
-import fr.velocity.mod.network.messages.PositionTrackmusicMessage;
 import fr.velocity.mod.network.messages.RegionTrackmusicMessage;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
@@ -27,7 +26,6 @@ import java.util.Enumeration;
 import java.util.List;
 
 import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
-import static fr.velocity.util.ServerListPersistence.AddLocationTrackSaved;
 import static fr.velocity.util.ServerListPersistence.AddRegionTrackSaved;
 
 public class RegionTrackCommand extends CommandBase {

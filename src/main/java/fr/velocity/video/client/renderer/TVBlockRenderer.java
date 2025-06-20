@@ -2,7 +2,6 @@ package fr.velocity.video.client.renderer;
 
 import fr.velocity.video.block.entity.TVBlockEntity;
 import fr.velocity.video.util.displayers.IDisplay;
-import fr.velocity.video.util.math.*;
 import me.srrapero720.watermedia.api.image.ImageAPI;
 import me.srrapero720.watermedia.api.image.ImageRenderer;
 import net.minecraft.client.Minecraft;

@@ -1,18 +1,15 @@
 package fr.velocity.music.musicplayer;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import fr.velocity.mod.handler.ConfigHandler;
-import fr.velocity.music.lavaplayer.api.queue.ITrackManager;
-import fr.velocity.music.util.DebugRenderer;
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
-import net.minecraft.util.math.BlockPos;
-import org.apache.logging.log4j.*;
-
-import com.google.gson.*;
-
 import fr.velocity.music.dependency.DependencyManager;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.lwjgl.Sys;
+import fr.velocity.music.lavaplayer.api.queue.ITrackManager;
+import fr.velocity.music.util.DebugRenderer;
+import net.minecraft.util.math.BlockPos;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 import java.util.Objects;

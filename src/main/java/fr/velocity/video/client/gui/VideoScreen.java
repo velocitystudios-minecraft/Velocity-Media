@@ -2,9 +2,7 @@ package fr.velocity.video.client.gui;
 
 import fr.velocity.Main;
 import fr.velocity.video.util.MemoryTracker;
-import javafx.scene.input.KeyCode;
 import me.lib720.caprica.vlcj.player.base.State;
-import me.srrapero720.watermedia.api.image.ImageAPI;
 import me.srrapero720.watermedia.api.image.ImageRenderer;
 import me.srrapero720.watermedia.api.player.SyncVideoPlayer;
 import net.minecraft.client.Minecraft;
@@ -18,12 +16,10 @@ import net.minecraft.util.Timer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.IOException;
-import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
@@ -72,7 +68,6 @@ public class VideoScreen extends GuiScreen {
         player.setVolume((int) (Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER) * volume));
         player.setSpeed(VideoSpeed);
         player.start(url);
-
         tickTimer = new Timer(20);
 
         started = true;

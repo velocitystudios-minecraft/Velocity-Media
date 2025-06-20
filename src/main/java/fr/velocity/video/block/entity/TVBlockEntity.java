@@ -1,9 +1,9 @@
 package fr.velocity.video.block.entity;
 
-import fr.velocity.video.block.custom.TVBlock;
 import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.FrameVideoMessage;
 import fr.velocity.mod.network.messages.OpenVideoManagerScreen;
+import fr.velocity.video.block.custom.TVBlock;
 import fr.velocity.video.util.cache.TextureCache;
 import fr.velocity.video.util.displayers.IDisplay;
 import fr.velocity.video.util.math.AlignedBox;

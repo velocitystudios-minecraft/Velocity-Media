@@ -1,10 +1,10 @@
 package fr.velocity.music.musicplayer.playlist;
 
-import java.util.*;
-
 import com.google.common.collect.Iterators;
 
-import fr.velocity.music.musicplayer.MusicPlayerManager;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Playlists implements Iterable<Playlist> {
 

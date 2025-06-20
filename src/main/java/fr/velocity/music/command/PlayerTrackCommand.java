@@ -2,7 +2,6 @@ package fr.velocity.music.command;
 
 import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.PlayerTrackmusicMessage;
-import fr.velocity.mod.network.messages.TrackmusicMessage;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
 import net.minecraft.command.CommandBase;
@@ -26,7 +25,6 @@ import java.util.Enumeration;
 import java.util.List;
 
 import static fr.velocity.mod.proxy.CommonProxy.WHITELIST_URL;
-import static fr.velocity.util.ServerListPersistence.AddLocationTrackSaved;
 import static fr.velocity.util.ServerListPersistence.AddPlayerTrackSaved;
 
 public class PlayerTrackCommand extends CommandBase {

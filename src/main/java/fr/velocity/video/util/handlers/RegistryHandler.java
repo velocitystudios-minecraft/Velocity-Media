@@ -1,11 +1,11 @@
 package fr.velocity.video.util.handlers;
 
 import fr.velocity.Main;
+import fr.velocity.mod.item.ModItems;
 import fr.velocity.video.block.ModBlocks;
 import fr.velocity.video.block.entity.TVBlockEntity;
 import fr.velocity.video.client.renderer.TVBlockRenderer;
 import fr.velocity.video.command.PlayVideoCommand;
-import fr.velocity.mod.item.ModItems;
 import fr.velocity.video.util.IHasModel;
 import fr.velocity.video.util.cache.TextureCache;
 import fr.velocity.video.util.displayers.VideoDisplayer;

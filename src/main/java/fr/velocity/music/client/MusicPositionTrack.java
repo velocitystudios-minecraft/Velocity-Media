@@ -1,6 +1,5 @@
 package fr.velocity.music.client;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import fr.velocity.mod.handler.ConfigHandler;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
@@ -16,7 +15,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.swing.text.html.Option;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;

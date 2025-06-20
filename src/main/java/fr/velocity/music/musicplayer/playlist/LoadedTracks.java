@@ -1,12 +1,11 @@
 package fr.velocity.music.musicplayer.playlist;
 
-import java.util.List;
-
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrackList;
-import fr.velocity.music.lavaplayer.api.audio.*;
 import fr.velocity.music.lavaplayer.api.search.ISearchResult;
 import fr.velocity.music.util.WrappedObject;
+
+import java.util.List;
 
 public class LoadedTracks {
 	

@@ -18,8 +18,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.sound.midi.Track;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -28,7 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static fr.velocity.Main.DebugMode;
 import static fr.velocity.music.musicplayer.MusicPlayerManager.GetMaxVolumeFromTrackId;
 
 @SideOnly(Side.CLIENT)
