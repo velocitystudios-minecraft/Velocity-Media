@@ -18,7 +18,7 @@ import java.util.List;
 public class VolumeCommand implements ISubCommand {
 
     @Override
-    public String getName() {
+    public String getSubName() {
         return "volume";
     }
 
@@ -29,7 +29,7 @@ public class VolumeCommand implements ISubCommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/music " + getName() + " <player> <volume> [<trackid>]";
+        return "/music " + getSubName() + " <player> <volume> [<trackid>]";
     }
 
     @Override

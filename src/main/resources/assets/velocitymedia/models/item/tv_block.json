@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "velocity-media:blocks/tv_block"
+    "layer0": "velocitymedia:blocks/tv_block"
   }
 }

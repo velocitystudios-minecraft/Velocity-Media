@@ -29,7 +29,7 @@ import static fr.velocity.util.WhitelistUtil.isIpWhitelisted;
 public class RegionTrackCommand implements ISubCommand {
 
     @Override
-    public String getName() {
+    public String getSubName() {
         return "regiontrack";
     }
 
@@ -40,7 +40,7 @@ public class RegionTrackCommand implements ISubCommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/music play " + getName() + " <region> <world> <player> <volume> <trackid> <url> [<option>]";
+        return "/music play " + getSubName() + " <region> <world> <player> <volume> <trackid> <url> [<option>]";
     }
 
     @Override

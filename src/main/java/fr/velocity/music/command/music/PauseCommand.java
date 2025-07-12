@@ -11,7 +11,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.List;
 public class PauseCommand implements ISubCommand {
 
     @Override
-    public String getName() {
+    public String getSubName() {
         return "pause";
     }
 
@@ -30,7 +29,7 @@ public class PauseCommand implements ISubCommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/music " + getName() + " <player> <pause> [<trackid>]";
+        return "/music " + getSubName() + " <player> <pause> [<trackid>]";
     }
 
     @Override

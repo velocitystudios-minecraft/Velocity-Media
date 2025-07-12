@@ -23,6 +23,11 @@ public class PlayCommand extends AdvancedCommandBase implements ISubCommand {
     }
 
     @Override
+    public String getSubName() {
+        return getName();
+    }
+
+    @Override
     public int getRequiredPermissionLevel() {
         return 2;
     }

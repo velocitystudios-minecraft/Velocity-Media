@@ -26,7 +26,7 @@ import static fr.velocity.util.WhitelistUtil.isIpWhitelisted;
 public class PositionTrackCommand implements ISubCommand {
 
     @Override
-    public String getName() {
+    public String getSubName() {
         return "positiontrack";
     }
 
@@ -37,7 +37,7 @@ public class PositionTrackCommand implements ISubCommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/music play " + getName() + " <x> <y> <z> <radius> <player> <volume> <trackid> <url> [<option>]";
+        return "/music play " + getSubName() + " <x> <y> <z> <radius> <player> <volume> <trackid> <url> [<option>]";
     }
 
     @Override

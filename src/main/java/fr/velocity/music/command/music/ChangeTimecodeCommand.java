@@ -17,7 +17,7 @@ import java.util.List;
 public class ChangeTimecodeCommand implements ISubCommand {
 
     @Override
-    public String getName() {
+    public String getSubName() {
         return "timecode";
     }
 
@@ -28,7 +28,7 @@ public class ChangeTimecodeCommand implements ISubCommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/music " + getName() + " <player> <position in milliseconds> [<trackid>]";
+        return "/music " + getSubName() + " <player> <position in milliseconds> [<trackid>]";
     }
 
     @Override

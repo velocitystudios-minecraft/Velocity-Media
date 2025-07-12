@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ISubCommand {
 
-    String getName();
+    String getSubName();
 
     String getUsage(ICommandSender sender);
 

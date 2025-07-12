@@ -14,7 +14,6 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static fr.velocity.util.ServerListPersistence.RemoveTrackId;
 import static fr.velocity.util.ServerListPersistence.saveASave;
@@ -22,7 +21,7 @@ import static fr.velocity.util.ServerListPersistence.saveASave;
 public class StopCommand implements ISubCommand {
 
     @Override
-    public String getName() {
+    public String getSubName() {
         return "stop";
     }
 
@@ -33,7 +32,7 @@ public class StopCommand implements ISubCommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/music " + getName() + " <player> [<trackid>]";
+        return "/music " + getSubName() + " <player> [<trackid>]";
     }
 
     @Override
