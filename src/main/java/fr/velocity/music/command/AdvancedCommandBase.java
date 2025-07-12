@@ -39,8 +39,8 @@ public abstract class AdvancedCommandBase extends CommandBase {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length > 0 && subCommands.containsKey(args[0])) {
             ISubCommand command = subCommands.get(args[0]);
-            if(sender.canUseCommand(command.getRequiredPermissionLevel(), command.getSubName())) {
-                command.execute(server, sender, Arrays.copyOfRange(args, 1, args.length));
+            if(sender.canUseCommand(command.getSubRequiredPermissionLevel(), command.getSubName())) {
+                command.subExecute(server, sender, Arrays.copyOfRange(args, 1, args.length));
             }
         }
         else {
@@ -50,12 +50,12 @@ public abstract class AdvancedCommandBase extends CommandBase {
 
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
-        List<String> r = new ArrayList<String>();
+        List<String> r = new ArrayList<>();
         if (args.length == 1) {
             r.addAll(subCommands.keySet());
         }
         else if(args.length > 1 && subCommands.containsKey(args[0])) {
-            r.addAll(subCommands.get(args[0]).getTabCompletions(server, sender, Arrays.copyOfRange(args, 1, args.length), targetPos));
+            r.addAll(subCommands.get(args[0]).getSubTabCompletions(server, sender, Arrays.copyOfRange(args, 1, args.length), targetPos));
         }
         return getListOfStringsMatchingLastWord(args, r);
     }

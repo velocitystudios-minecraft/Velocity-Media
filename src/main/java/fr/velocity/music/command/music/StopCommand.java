@@ -26,7 +26,7 @@ public class StopCommand implements ISubCommand {
     }
 
     @Override
-    public int getRequiredPermissionLevel() {
+    public int getSubRequiredPermissionLevel() {
         return 2;
     }
 
@@ -36,7 +36,7 @@ public class StopCommand implements ISubCommand {
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+    public void subExecute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 1) {
             throw new WrongUsageException(getUsage(sender));
         }
@@ -63,7 +63,7 @@ public class StopCommand implements ISubCommand {
     }
 
     @Override
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
+    public List<String> getSubTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
         if (args.length == 1) {
             return CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
         }

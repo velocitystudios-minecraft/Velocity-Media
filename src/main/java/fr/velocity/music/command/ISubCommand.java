@@ -15,11 +15,11 @@ public interface ISubCommand {
 
     String getUsage(ICommandSender sender);
 
-    int getRequiredPermissionLevel();
+    int getSubRequiredPermissionLevel();
 
-    void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException;
+    void subExecute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException;
 
-    default List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+    default List<String> getSubTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         return Collections.emptyList();
     }
 

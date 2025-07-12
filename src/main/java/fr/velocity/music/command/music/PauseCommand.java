@@ -23,7 +23,7 @@ public class PauseCommand implements ISubCommand {
     }
 
     @Override
-    public int getRequiredPermissionLevel() {
+    public int getSubRequiredPermissionLevel() {
         return 2;
     }
 
@@ -33,7 +33,7 @@ public class PauseCommand implements ISubCommand {
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+    public void subExecute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 2) {
             throw new WrongUsageException(getUsage(sender));
         }
@@ -60,7 +60,7 @@ public class PauseCommand implements ISubCommand {
     }
 
     @Override
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
+    public List<String> getSubTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
         System.out.println(args.length);
         System.out.println("Tab completions for PauseCommand called with args: " + String.join(", ", args));
         if (args.length == 1) {
