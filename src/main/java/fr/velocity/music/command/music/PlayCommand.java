@@ -9,6 +9,10 @@ import fr.velocity.music.command.music.playtrack.TrackCommand;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class PlayCommand extends AdvancedCommandBase implements ISubCommand {
 
@@ -39,6 +43,12 @@ public class PlayCommand extends AdvancedCommandBase implements ISubCommand {
     @Override
     public int getSubRequiredPermissionLevel() {
         return getRequiredPermissionLevel();
+    }
+
+
+    @Override
+    public List<String> getSubTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        return this.getTabCompletions(server, sender, args, targetPos);
     }
 
     @Override

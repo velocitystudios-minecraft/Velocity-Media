@@ -221,7 +221,23 @@ dependencies {
 
 
 
+/** Things that idea needs to process resources ? **/
+idea {
+	module {
+		inheritOutputDirs = true
+	}
+}
+subprojects {
+	apply plugin: 'idea'
+}
+task prepareAssets(type: Copy) {
+	group = 'build'
+	from project.file('src/main/resources')
+	into project.file('build/classes/java/main')
+}
 
+classes.dependsOn(prepareAssets)
+/** end of things **/
 
 def lavaplayerLibraries() {
 	final def buildDir = project(":musicplayer-lavaplayer").layout.buildDirectory

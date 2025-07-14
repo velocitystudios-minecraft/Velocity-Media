@@ -167,7 +167,7 @@ public class RegionTrackManager {
     private static void playWithRegion(ITrackManager manager, IMusicPlayer player, String regionname, String world, int DimensionId, int x1, int y1, int z1, int x2, int y2, int z2, int maxVolume, String option, AtomicBoolean controlFlag, String TrackId) {
         while (controlFlag.get() && manager.getCurrentTrack() != null) {
             maxVolume = getMaxVolumeFromTrackId(TrackId);
-            EntityPlayer clientPlayer = net.minecraft.client.Minecraft.getMinecraft().player;
+            EntityPlayer clientPlayer = Minecraft.getMinecraft().player;
             if (clientPlayer != null) {
                 int volume = 0;
                 if(Minecraft.getMinecraft().player.dimension == DimensionId) {
