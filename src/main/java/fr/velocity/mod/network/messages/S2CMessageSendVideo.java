@@ -3,6 +3,7 @@ package fr.velocity.mod.network.messages;
 import fr.velocity.Main;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -31,7 +32,7 @@ public class S2CMessageSendVideo implements IMessage
 	@Override
 	public void fromBytes(ByteBuf buffer) {
 		int l = buffer.readInt();
-		this.url = String.valueOf(buffer.readCharSequence(l, StandardCharsets.UTF_8));
+		this.url = ByteBufUtils.readUTF8String(buffer);
 		this.volume = buffer.readInt();
 		this.controlBlocked = buffer.readBoolean();
 		this.TimePosition = buffer.readInt();
@@ -40,8 +41,7 @@ public class S2CMessageSendVideo implements IMessage
 
 	@Override
 	public void toBytes(ByteBuf buffer) {
-		buffer.writeInt(url.length());
-		buffer.writeCharSequence(url, StandardCharsets.UTF_8);
+		ByteBufUtils.writeUTF8String(buffer, this.url);
 		buffer.writeInt(volume);
 		buffer.writeBoolean(controlBlocked);
 		buffer.writeInt(TimePosition);

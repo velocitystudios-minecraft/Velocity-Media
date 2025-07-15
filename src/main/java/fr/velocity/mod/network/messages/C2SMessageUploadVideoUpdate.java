@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -37,30 +38,25 @@ public class C2SMessageUploadVideoUpdate implements IMessage {
     }
 
     @Override
-    public void toBytes(ByteBuf buffer) {
-        buffer.writeInt(blockPos.getX());
-        buffer.writeInt(blockPos.getY());
-        buffer.writeInt(blockPos.getZ());
-
-        buffer.writeInt(url.length());
-        buffer.writeCharSequence(url, StandardCharsets.UTF_8);
-
-        buffer.writeInt(volume);
-        buffer.writeBoolean(loop);
-        buffer.writeBoolean(isPlaying);
-        buffer.writeBoolean(reset);
-    }
-
-    @Override
     public void fromBytes(ByteBuf buffer) {
         this.blockPos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
-
-        this.url = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
-
+        this.url = ByteBufUtils.readUTF8String(buffer);
         this.volume = buffer.readInt();
         this.loop = buffer.readBoolean();
         this.isPlaying = buffer.readBoolean();
         this.reset = buffer.readBoolean();
+    }
+
+    @Override
+    public void toBytes(ByteBuf buffer) {
+        buffer.writeInt(blockPos.getX());
+        buffer.writeInt(blockPos.getY());
+        buffer.writeInt(blockPos.getZ());
+        ByteBufUtils.writeUTF8String(buffer, this.url);
+        buffer.writeInt(volume);
+        buffer.writeBoolean(loop);
+        buffer.writeBoolean(isPlaying);
+        buffer.writeBoolean(reset);
     }
 
     public static class Handler implements IMessageHandler<C2SMessageUploadVideoUpdate, IMessage> {

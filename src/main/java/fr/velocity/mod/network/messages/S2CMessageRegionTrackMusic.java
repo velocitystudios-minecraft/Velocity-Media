@@ -3,6 +3,7 @@ package fr.velocity.mod.network.messages;
 import fr.velocity.Main;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -22,13 +23,13 @@ public class S2CMessageRegionTrackMusic implements IMessage
 	private String world;
 	private String url;
 	private int volume;
-	private String Option;
-	private String TrackId;
-	private int DimensionId;
+	private String trackId;
+	private String options;
+	private int dimensionId;
 
 	public S2CMessageRegionTrackMusic() {}
 
-	public S2CMessageRegionTrackMusic(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, int DimensionId, String url, int volume, String TrackId, String Option) {
+	public S2CMessageRegionTrackMusic(int x1, int y1, int z1, int x2, int y2, int z2, String region, String world, int DimensionId, String url, int volume, String trackId, String options) {
 		this.x1 = x1;
 		this.y1 = y1;
 		this.z1 = z1;
@@ -39,9 +40,9 @@ public class S2CMessageRegionTrackMusic implements IMessage
 		this.world = world;
 		this.url = url;
 		this.volume = volume;
-		this.TrackId = TrackId;
-		this.Option = Option;
-		this.DimensionId = DimensionId;
+		this.trackId = trackId;
+		this.options = options;
+		this.dimensionId = DimensionId;
 	}
 
 	@Override
@@ -52,13 +53,13 @@ public class S2CMessageRegionTrackMusic implements IMessage
 		this.x2 = buffer.readInt();
 		this.y2 = buffer.readInt();
 		this.z2 = buffer.readInt();
-		this.region = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
-		this.world = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
-		this.DimensionId = buffer.readInt();
-		this.url = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
+		this.region = ByteBufUtils.readUTF8String(buffer);
+		this.world = ByteBufUtils.readUTF8String(buffer);
+		this.url = ByteBufUtils.readUTF8String(buffer);
 		this.volume = buffer.readInt();
-		this.TrackId = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
-		this.Option = String.valueOf(buffer.readCharSequence(buffer.readInt(), StandardCharsets.UTF_8));
+		this.trackId = ByteBufUtils.readUTF8String(buffer);
+		this.options = ByteBufUtils.readUTF8String(buffer);
+		this.dimensionId = buffer.readInt();
 	}
 
 	@Override
@@ -69,18 +70,13 @@ public class S2CMessageRegionTrackMusic implements IMessage
 		buffer.writeInt(x2);
 		buffer.writeInt(y2);
 		buffer.writeInt(z2);
-		buffer.writeInt(region.length());
-		buffer.writeCharSequence(region, StandardCharsets.UTF_8);
-		buffer.writeInt(world.length());
-		buffer.writeCharSequence(world, StandardCharsets.UTF_8);
-		buffer.writeInt(DimensionId);
-		buffer.writeInt(url.length());
-		buffer.writeCharSequence(url, StandardCharsets.UTF_8);
+		ByteBufUtils.writeUTF8String(buffer, this.region);
+		ByteBufUtils.writeUTF8String(buffer, this.world);
+		ByteBufUtils.writeUTF8String(buffer, this.url);
 		buffer.writeInt(volume);
-		buffer.writeInt(TrackId.length());
-		buffer.writeCharSequence(TrackId, StandardCharsets.UTF_8);
-		buffer.writeInt(Option.length());
-		buffer.writeCharSequence(Option, StandardCharsets.UTF_8);
+		ByteBufUtils.writeUTF8String(buffer, this.trackId);
+		ByteBufUtils.writeUTF8String(buffer, this.options);
+		buffer.writeInt(dimensionId);
 	}
 
 	public static class Handler implements IMessageHandler<S2CMessageRegionTrackMusic, IMessage> {
@@ -93,7 +89,7 @@ public class S2CMessageRegionTrackMusic implements IMessage
 
 		private void handle(S2CMessageRegionTrackMusic message, MessageContext ctx)
 		{
-			Main.proxy.regionTrackMusic(message.x1, message.y1, message.z1, message.x2, message.y2, message.z2, message.region, message.world, message.DimensionId, message.url, message.volume, message.TrackId, message.Option);
+			Main.proxy.regionTrackMusic(message.x1, message.y1, message.z1, message.x2, message.y2, message.z2, message.region, message.world, message.dimensionId, message.url, message.volume, message.trackId, message.options);
 		}
 	}
 }
