@@ -10,7 +10,7 @@ plugins {
 
 group = "fr.velocity"
 base.archivesName = 'velocity'
-version = '2.3.0'
+version = '2.3.1'
 
 
 
@@ -92,6 +92,10 @@ tasks.register("copyTinyfd", Copy) {
 	}
 }
 
+tasks.named("jar").configure {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 tasks.named("shadowJar").configure {
 	dependsOn tasks.named("jar")
 	dependsOn tasks.named("copyTinyfd")
@@ -102,7 +106,7 @@ tasks.named("shadowJar").configure {
 	destinationDirectory = tasks.named("jar").flatMap { jar -> jar.destinationDirectory }
 	
 	configurations = [project.configurations.shade]
-	
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	from sourceSets.main.output
 	from project(":musicplayer-lavaplayer").file("src/main/resources/LICENSE-DEPENDENCIES")
 	
