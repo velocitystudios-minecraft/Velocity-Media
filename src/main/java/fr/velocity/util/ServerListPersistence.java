@@ -297,7 +297,7 @@ public class ServerListPersistence {
                                 PacketHandler.INSTANCE.sendTo(new S2CMessagePlayerTrackMusic(User, (int) Radius, url, (int) volume, TrackId, option), MPPlayer);
                             }
                         } else {
-                            if(Objects.equals(TrackType, "LocationTrack")) {
+                            if(Objects.equals(TrackType, "RegionTrack")) {
                                 if(entitylist.contains(MPPlayer)) {
                                     double X1 = GetDouble(subList.get(8));
                                     double Y1 = GetDouble(subList.get(9));
