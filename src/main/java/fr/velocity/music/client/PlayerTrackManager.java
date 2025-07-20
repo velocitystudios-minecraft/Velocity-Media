@@ -5,6 +5,7 @@ import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IPlayingTrack;
 import fr.velocity.music.lavaplayer.api.queue.ITrackManager;
+import fr.velocity.music.musicplayer.CustomPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.music.musicplayer.playlist.LoadedTracks;
 import fr.velocity.music.musicplayer.playlist.Playlist;
@@ -38,9 +39,9 @@ public class PlayerTrackManager {
         Playlist playlist = new Playlist();
 
         Thread musicthread = new Thread(() -> {
-            IMusicPlayer NewPlayer = MusicPlayerManager.testGenerate(TrackId, volume, "PlayerTrack", 0, 0, 0, radius, Option, targetPlayer, "None", 0, 0, 0, "None", 0);
+            CustomPlayer NewPlayer = MusicPlayerManager.getCustomPlayer(TrackId, volume, "PlayerTrack", 0, 0, 0, radius, Option, targetPlayer, "None", 0, 0, 0, "None", 0);
 
-            NewPlayer.getTrackSearch().getTracks(url, result -> {
+            NewPlayer.getPlayer().getTrackSearch().getTracks(url, result -> {
                 if (result.hasError()) {
                     System.out.println(new TextComponentString(result.getErrorMessage()));
                 } else {
@@ -53,7 +54,7 @@ public class PlayerTrackManager {
                     }
 
                     final Runnable runnable = () -> {
-                        final ITrackManager manager = NewPlayer.getTrackManager();
+                        final ITrackManager manager = NewPlayer.getPlayer().getTrackManager();
                         playlist.add(track);
 
                         Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
@@ -61,15 +62,15 @@ public class PlayerTrackManager {
                         manager.setTrackQueue(playlist);
 
                         if (Option.contains("--noplayagain")) {
-                            if(NewPlayer.getTrackManager().getCurrentTrack() != null) {
-                                if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getTrackManager().getCurrentTrack().getInfo().getTitle())) {
+                            if(NewPlayer.getPlayer().getTrackManager().getCurrentTrack() != null) {
+                                if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getPlayer().getTrackManager().getCurrentTrack().getInfo().getTitle())) {
                                     return;
                                 }
                             }
                         }
 
                         if (Option.contains("--onlyplaying")) {
-                            if(NewPlayer.getTrackManager().getCurrentTrack() == null) {
+                            if(NewPlayer.getPlayer().getTrackManager().getCurrentTrack() == null) {
                                 return;
                             }
                         }
@@ -125,7 +126,7 @@ public class PlayerTrackManager {
         return null;
     }
 
-    private static void playAroundEntity(ITrackManager manager, IMusicPlayer player, String targetPlayer, int maxVolume, int maxDistance, String Option, AtomicBoolean controlFlag, String IdTrack) {
+    private static void playAroundEntity(ITrackManager manager, CustomPlayer player, String targetPlayer, int maxVolume, int maxDistance, String Option, AtomicBoolean controlFlag, String IdTrack) {
         Entity NewtargetPlayer = null;
         
         manager.start();
@@ -191,7 +192,7 @@ public class PlayerTrackManager {
                 }
 
                 int realvolume = (int) (ConfigHandler.VolumeGlobaux * volume);
-                player.setVolume(realvolume);
+                player.getPlayer().setVolume(realvolume);
 
                 try {
                     Thread.sleep(200);
@@ -199,7 +200,7 @@ public class PlayerTrackManager {
                     e.printStackTrace();
                 }
             } else {
-                player.setVolume(0);
+                player.getPlayer().setVolume(0);
             }
         }
     }

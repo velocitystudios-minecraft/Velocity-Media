@@ -50,4 +50,8 @@ public class CustomPlayer {
     public void setMaxVolume(int volume) {
         MaxVolume = volume;
     }
+
+    public void setRadius(int Radius) {
+        radius = Radius;
+    }
 }

@@ -4,6 +4,7 @@ import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.S2CMessageRegionTrackMusic;
 import fr.velocity.music.command.ISubCommand;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
+import fr.velocity.music.musicplayer.CustomPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.util.WhitelistUtil;
 import fr.velocity.util.WorldGuardRegionReader;
@@ -100,11 +101,11 @@ public class RegionTrackCommand implements ISubCommand {
                         sender.sendMessage(new TextComponentString("§cImpossible de combiner --position et --save."));
                         return;
                     }
-                    IMusicPlayer NewPlayer = MusicPlayerManager.testGenerate("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
+                    CustomPlayer NewPlayer = MusicPlayerManager.getCustomPlayer("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
 
                     String finalUrl = url;
                     int finalDimensionId = DimensionId;
-                    NewPlayer.getTrackSearch().getTracks(url, result -> {
+                    NewPlayer.getPlayer().getTrackSearch().getTracks(url, result -> {
                         if(result.getTrack() != null) {
                             AddRegionTrackSaved(result.getTrack().getDuration(), finalUrl, volume, TrackId, Option, args[4], x1, y1, z1, x2, y2, z2, Region, world, finalDimensionId);
                         }

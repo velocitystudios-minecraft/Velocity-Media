@@ -7,6 +7,7 @@ public class MusicCommand extends AdvancedCommandBase {
     public MusicCommand() {
         super();
         addSubCommand(new PlayCommand(this));
+        addSubCommand(new InfoCommand());
         addSubCommand(new PauseCommand());
         addSubCommand(new StopCommand());
         addSubCommand(new ChangeTimecodeCommand());

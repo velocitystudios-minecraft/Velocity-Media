@@ -6,6 +6,7 @@ import fr.velocity.music.lavaplayer.api.IMusicPlayer;
 import fr.velocity.music.lavaplayer.api.audio.IAudioTrack;
 import fr.velocity.music.lavaplayer.api.audio.IPlayingTrack;
 import fr.velocity.music.lavaplayer.api.queue.ITrackManager;
+import fr.velocity.music.musicplayer.CustomPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.music.musicplayer.playlist.LoadedTracks;
 import fr.velocity.music.musicplayer.playlist.Playlist;
@@ -24,8 +25,8 @@ public class MusicTrack {
         Playlist playlist = new Playlist();
 
         Thread musicthread = new Thread(() -> {
-            IMusicPlayer NewPlayer = MusicPlayerManager.testGenerate(TrackId, volume, "Track", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
-            NewPlayer.getTrackSearch().getTracks(url, result -> {
+            CustomPlayer NewPlayer = MusicPlayerManager.getCustomPlayer(TrackId, volume, "Track", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
+            NewPlayer.getPlayer().getTrackSearch().getTracks(url, result -> {
                 if (result.hasError()) {
                     System.out.println(new TextComponentString(result.getErrorMessage()));
                 } else {
@@ -38,22 +39,22 @@ public class MusicTrack {
                     }
 
                     final Runnable runnable = () -> {
-                        final ITrackManager manager = NewPlayer.getTrackManager();
+                        final ITrackManager manager = NewPlayer.getPlayer().getTrackManager();
 
                         playlist.add(track);
                         Pair<LoadedTracks, IAudioTrack> pair = playlist.getFirstTrack();
                         playlist.setPlayable(pair.getLeft(), pair.getRight());
 
                         if (Option.contains("--noplayagain")) {
-                            if(NewPlayer.getTrackManager().getCurrentTrack() != null) {
-                                if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getTrackManager().getCurrentTrack().getInfo().getTitle())) {
+                            if(NewPlayer.getPlayer().getTrackManager().getCurrentTrack() != null) {
+                                if(Objects.equals(result.getTrack().getInfo().getTitle(), NewPlayer.getPlayer().getTrackManager().getCurrentTrack().getInfo().getTitle())) {
                                     return;
                                 }
                             }
                         }
 
                         if (Option.contains("--onlyplaying")) {
-                            if(NewPlayer.getTrackManager().getCurrentTrack() == null) {
+                            if(NewPlayer.getPlayer().getTrackManager().getCurrentTrack() == null) {
                                 return;
                             }
                         }
@@ -62,7 +63,7 @@ public class MusicTrack {
                         manager.start();
 
                         int realvolume = (int) (ConfigHandler.VolumeGlobaux * volume);
-                        NewPlayer.setVolume(realvolume);
+                        NewPlayer.getPlayer().setVolume(realvolume);
 
                         long StartTime = 0;
                         if (Option.contains("--position")) {
@@ -71,13 +72,13 @@ public class MusicTrack {
                             if (matcher.find()) {
                                 StartTime = Integer.parseInt(matcher.group(1));
                                 System.out.println("[Velocity Media] --position trouvé : " + StartTime);
-                                IPlayingTrack currentTrack = NewPlayer.getTrackManager().getCurrentTrack();
+                                IPlayingTrack currentTrack = NewPlayer.getPlayer().getTrackManager().getCurrentTrack();
                                 if(currentTrack!=null) {
                                     if(currentTrack.getDuration() < StartTime) {
                                         System.out.println("[Velocity Media] Duration indiqué excède la limite de " + currentTrack.getDuration());
                                     } else {
                                         while (1==1) {
-                                            long CurrentPosition = NewPlayer.getTrackManager().getCurrentTrack().getPosition();
+                                            long CurrentPosition = NewPlayer.getPlayer().getTrackManager().getCurrentTrack().getPosition();
                                             if (CurrentPosition > 0) {
                                                 System.out.println("[Velocity Media] Position mis avec succès avec un temps max de " + currentTrack.getDuration());
                                                 currentTrack.setPosition(StartTime);

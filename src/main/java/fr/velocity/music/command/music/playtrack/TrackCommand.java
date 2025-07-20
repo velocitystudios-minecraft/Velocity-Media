@@ -4,6 +4,7 @@ import fr.velocity.mod.network.PacketHandler;
 import fr.velocity.mod.network.messages.S2CMessageTrackMusic;
 import fr.velocity.music.command.ISubCommand;
 import fr.velocity.music.lavaplayer.api.IMusicPlayer;
+import fr.velocity.music.musicplayer.CustomPlayer;
 import fr.velocity.music.musicplayer.MusicPlayerManager;
 import fr.velocity.util.WhitelistUtil;
 import net.minecraft.command.CommandBase;
@@ -80,9 +81,9 @@ public class TrackCommand implements ISubCommand {
                 return;
             }
 
-            IMusicPlayer NewPlayer = MusicPlayerManager.testGenerate("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
+            CustomPlayer NewPlayer = MusicPlayerManager.getCustomPlayer("Server", volume, "Server", 0, 0, 0, 0, Option, "None", "None", 0, 0, 0, "None", 0);
 
-            NewPlayer.getTrackSearch().getTracks(url, result -> {
+            NewPlayer.getPlayer().getTrackSearch().getTracks(url, result -> {
                 if(result.getTrack() != null) {
                     AddTrackSaved(result.getTrack().getDuration(), finalUrl, volume, TrackId, Option, args[0]);
                 }
