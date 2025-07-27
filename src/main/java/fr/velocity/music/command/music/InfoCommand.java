@@ -1,7 +1,9 @@
 package fr.velocity.music.command.music;
 
 import fr.velocity.mod.network.PacketHandler;
+import fr.velocity.mod.network.messages.S2CMessageInfoMusic;
 import fr.velocity.mod.network.messages.S2CMessagePauseMusic;
+import fr.velocity.mod.network.messages.S2CMessagePlayerTrackMusic;
 import fr.velocity.music.command.ISubCommand;
 import fr.velocity.music.musicplayer.CustomPlayer;
 import net.minecraft.command.CommandBase;
@@ -41,25 +43,7 @@ public class InfoCommand implements ISubCommand {
 
     @Override
     public void subExecute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        boolean Found = false;
-        for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
-            if(entry.getValue().getPlayer().getVolume() > 0) {
-                Found = true;
 
-                TextComponentString GetText = new TextComponentString("§7- §a" + entry.getKey());
-                Style style = new Style();
-                String hoverText = "§7- CV : §a" + entry.getValue().getPlayer().getVolume();
-                hoverText = hoverText + "§7- MV : §a" + entry.getValue().getMaxVolume();
-                hoverText = hoverText + " §7- Mode : §a" + entry.getValue().getMode();
-                hoverText = hoverText + " §7- Radius : §a" + entry.getValue().getRadius();
-                hoverText = hoverText + " §7- Name : §a" + entry.getValue().getPlayer().getTrackManager().getCurrentTrack().getInfo().getFixedTitle();
-                style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(hoverText)));
-                GetText.setStyle(style);
-                sender.sendMessage(GetText);
-            }
-        }
-        if(!Found) {
-            sender.sendMessage(new TextComponentString("§cAucun son actuellement joué ou votre volume est a 0."));
-        }
+        PacketHandler.INSTANCE.sendTo(new S2CMessageInfoMusic(), (EntityPlayerMP) sender);
     }
 }

@@ -17,6 +17,7 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.util.*;
 
+import static fr.velocity.music.musicplayer.MusicPlayerManager.playerCache;
 import static net.minecraft.command.CommandBase.getEntityList;
 
 public class ServerListPersistence {
@@ -218,7 +219,7 @@ public class ServerListPersistence {
                 String TrackId = (String) subList.get(5);
                 String User = (String) subList.get(7);
 
-                double elapsedTime = (currentTime - startTime);
+                double elapsedTime = (currentTime - (startTime - 1800));
                 double currentVideoTime = elapsedTime % duration;
                 if (currentVideoTime < 0) {
                     currentVideoTime += duration;

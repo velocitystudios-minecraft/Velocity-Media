@@ -38,12 +38,20 @@ public class MusicPlayerManager {
 			for (Map.Entry<String, CustomPlayer> entry : playerCache.entrySet()) {
 				entry.getValue().setMaxVolume(Volume);
 				int ModifiedVolume = (int) (Volume * ConfigHandler.VolumeGlobaux);
-				entry.getValue().getPlayer().setVolume(ModifiedVolume);
+
+				if (Objects.equals(entry.getValue().getMode(), "Track")) {
+					entry.getValue().getPlayer().setVolume(ModifiedVolume);
+				}
 			}
 		} else {
 			setMaxVolumeFromTrackId(TrackId, Volume);
 			int ModifiedVolume = (int) (Volume * ConfigHandler.VolumeGlobaux);
-            Objects.requireNonNull(getCustomPlayer(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0)).getPlayer().setVolume(ModifiedVolume);
+			System.out.println(ModifiedVolume);
+
+			CustomPlayer Player = Objects.requireNonNull(getCustomPlayer(TrackId, 0, "Server", 0, 0, 0, 0, "None", "None", "None", 0, 0, 0, "None", 0));
+			if (Objects.equals(Player.getMode(), "Track")) {
+				Player.getPlayer().setVolume(ModifiedVolume);
+			}
 		}
 	}
 
@@ -134,8 +142,10 @@ public class MusicPlayerManager {
 			}
 
 			CustomPlayer GetInPlayerCache = playerCache.get(trackId);
-			GetInPlayerCache.setMaxVolume(volume);
-			GetInPlayerCache.setRadius(Radius);
+			if (!Objects.equals(mode, "Server")) {
+				GetInPlayerCache.setMaxVolume(volume);
+				GetInPlayerCache.setRadius(Radius);
+			}
 			return GetInPlayerCache;
 		} else {
 			try {

@@ -46,6 +46,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(S2CMessageTimecodeMusic.Handler.class, S2CMessageTimecodeMusic.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(S2CMessageRegionTrackMusic.Handler.class, S2CMessageRegionTrackMusic.class, nextID(), Side.CLIENT);
         INSTANCE.registerMessage(S2CMessageFrameVideo.Handler.class, S2CMessageFrameVideo.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(S2CMessageInfoMusic.Handler.class, S2CMessageInfoMusic.class, nextID(), Side.CLIENT);
 
         /**
          * Client to Server Messages
