@@ -1,4 +1,4 @@
-# Music-Player 1.12.2
-[Curseforge](https://www.curseforge.com/minecraft/mc-mods/music-player)
+# Velocity Media 1.12.2
+Minecraft 1.12.2 Forge mod that allows you to play sounds via URLs in specific areas, regions, to players, or around entities. For more details, see the changelog page.
 
-[Changelog](https://github.com/MC-U-Team/Music-Player/blob/1.12.2/CHANGELOG.md)
+[Changelog / Docs](https://velocity-studios.gitbook.io/velocity-studios/outils/editor/changelogs)
